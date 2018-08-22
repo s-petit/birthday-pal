@@ -5,3 +5,5 @@ go:
 sudo: false
 
 install: make setup
+
+script: make check test-cover

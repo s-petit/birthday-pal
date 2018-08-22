@@ -8,7 +8,7 @@ import (
 	"github.com/s-petit/birthday-pal/birthday"
 	"time"
 	"fmt"
-	"github.com/s-petit/birthday-pal/vcard-parser"
+	"github.com/s-petit/birthday-pal/vcardparser"
 )
 
 func main() {
@@ -28,13 +28,13 @@ func main() {
 
 	app.Action = func() {
 		contacts := carddav.Contacts(*url, *username, *password)
-		cards := vcard_parser.ParseContacts(contacts)
+		cards := vcardparser.ParseContacts(contacts)
 
 		cpt:= 0
 		daysBefore := 1
 
 		for _, card := range cards {
-			date, _ := vcard_parser.ParseVCardBirthDay(card)
+			date, _ := vcardparser.ParseVCardBirthDay(card)
 			remind := birthday.Remind(time.Now(), date, daysBefore)
 
 			if remind {
@@ -45,6 +45,8 @@ func main() {
 
 			// element is the element from someSlice for where we are
 		}
+
+		//TODO wat is fmtcheck
 		fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", cpt, daysBefore)
 
 		//fmt.Println(contacts)
