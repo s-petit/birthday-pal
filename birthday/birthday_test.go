@@ -1,9 +1,9 @@
 package birthday
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_reminderToSend(t *testing.T) {

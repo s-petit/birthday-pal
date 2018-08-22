@@ -1,12 +1,11 @@
 package vcardparser
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"time"
 	"github.com/mapaiva/vcard-go"
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
-
 
 func Test_extract_bday_from_one_contact(t *testing.T) {
 
@@ -22,7 +21,6 @@ END:VCARD
 	assert.Equal(t, 1, len(vcards))
 	assert.Equal(t, "19831028", vcards[0].BirthDay)
 }
-
 
 func Test_extract_bday_from_two_contacts(t *testing.T) {
 
@@ -45,17 +43,16 @@ END:VCARD
 	assert.Equal(t, "19860425", vcards[1].BirthDay)
 }
 
-
 func Test_parseDate(t *testing.T) {
 
-	date, err := ParseVCardBirthDay(vcard.VCard{BirthDay:"20161225"})
+	date, err := ParseVCardBirthDay(vcard.VCard{BirthDay: "20161225"})
 
 	assert.Equal(t, time.Date(2016, time.December, 25, 0, 0, 0, 0, time.UTC), date)
 	assert.NoError(t, err)
 }
 
 func Test_parseDate_error(t *testing.T) {
-	_, err := ParseVCardBirthDay(vcard.VCard{BirthDay:"20162025"})
+	_, err := ParseVCardBirthDay(vcard.VCard{BirthDay: "20162025"})
 	assert.Error(t, err)
 }
 

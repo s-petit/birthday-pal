@@ -2,7 +2,6 @@ package birthday
 
 import "time"
 
-
 // Remind return true if the birthday occurs nbDaysBefore now
 func Remind(now time.Time, birthday time.Time, nbDaysBefore int) bool {
 

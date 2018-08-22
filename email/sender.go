@@ -1,9 +1,9 @@
 package email
 
 import (
-	"time"
-	"net/smtp"
 	"log"
+	"net/smtp"
+	"time"
 )
 
 // Send sends an email to remind the birthday of the related contact

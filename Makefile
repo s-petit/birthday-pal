@@ -6,7 +6,7 @@ test-cover:
 	gover
 	goveralls -coverprofile=gover.coverprofile -service=travis-ci
 
-check: lint vet ineffassign readmecheck
+check: lint vet fmtcheck ineffassign readmecheck
 
 lint:
 	golint -set_exit_status ./...
