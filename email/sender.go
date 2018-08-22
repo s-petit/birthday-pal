@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Send sends an email to remind the birthday of the related contact
 func Send(name string, birthday time.Time) {
 
 	sender := "spetit@enjoycode.fr"

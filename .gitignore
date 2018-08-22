@@ -16,3 +16,10 @@
 .idea
 *.ipr
 *.iws
+
+.coverprofile
+gover.coverprofile
+README.generated.md
+README.original.md
+
+

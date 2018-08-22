@@ -1,4 +1,4 @@
-package vcard_parser
+package vcardparser
 
 import (
 	"testing"
