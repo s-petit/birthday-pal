@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 	"github.com/jawher/mow.cli"
-	"birthday-pal/carddav"
-	"birthday-pal/email"
-	"birthday-pal/birthday"
+	"github.com/s-petit/birthday-pal/carddav"
+	"github.com/s-petit/birthday-pal/email"
+	"github.com/s-petit/birthday-pal/birthday"
 	"time"
 	"fmt"
-	"birthday-pal/vcard-parser"
+	"github.com/s-petit/birthday-pal/vcard-parser"
 )
 
 func main() {
