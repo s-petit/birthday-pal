@@ -2,9 +2,9 @@ package vcardparser
 
 import (
 	"github.com/mapaiva/vcard-go"
-	"strings"
 	"io"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func ParseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 	birthdate := vcard.BirthDay
 
 	//TODO faire des regex pour matcher les differents formats de BDAY
-	if (len(birthdate) != 8) {
+	if len(birthdate) != 8 {
 		//return time.Time{}, errors.New("lol")
 		return time.Parse("2006-01-02 00:00:00 -0000", birthdate+" 00:00:00 -0000")
 	}

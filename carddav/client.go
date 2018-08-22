@@ -1,9 +1,9 @@
 package carddav
 
 import (
-	"net/http"
 	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 // Contacts calls a CardDAV server with an URL and BasicAuth
@@ -28,4 +28,3 @@ func Contacts(url string, username string, password string) string {
 
 	return string(body)
 }
-

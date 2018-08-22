@@ -1,14 +1,14 @@
 package main
 
 import (
-	"os"
+	"fmt"
 	"github.com/jawher/mow.cli"
+	"github.com/s-petit/birthday-pal/birthday"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
-	"github.com/s-petit/birthday-pal/birthday"
-	"time"
-	"fmt"
 	"github.com/s-petit/birthday-pal/vcardparser"
+	"os"
+	"time"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	var (
 		//recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
 
-		url = app.StringArg("URL", "", "cardDav URL")
+		url      = app.StringArg("URL", "", "cardDav URL")
 		username = app.StringArg("USERNAME", "", "basic auth username")
 		password = app.StringArg("PASSWORD", "", "basic auth password")
 	)
@@ -30,7 +30,7 @@ func main() {
 		contacts := carddav.Contacts(*url, *username, *password)
 		cards := vcardparser.ParseContacts(contacts)
 
-		cpt:= 0
+		cpt := 0
 		daysBefore := 1
 
 		for _, card := range cards {
@@ -42,11 +42,8 @@ func main() {
 				cpt++
 			}
 			//fmt.Printf("nom %s, anniv %s, formatted %s, remind %s \n", card.FormattedName, card.BirthDay, date, remind)
-
-			// element is the element from someSlice for where we are
 		}
 
-		//TODO wat is fmtcheck
 		fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", cpt, daysBefore)
 
 		//fmt.Println(contacts)
