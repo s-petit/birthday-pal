@@ -1,13 +1,15 @@
 package carddav
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // Contacts calls a CardDAV server with an URL and BasicAuth
-func Contacts(url string, username string, password string) string {
+func Contacts(url string, username string, password string) (string, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -26,5 +28,9 @@ func Contacts(url string, username string, password string) string {
 		log.Fatal(err)
 	}
 
-	return string(body)
+	if resp.StatusCode != 200 {
+		return "", errors.New("a unexpected error occurred during connexion to CardDAV server - http code is " + strconv.Itoa(resp.StatusCode))
+	}
+
+	return string(body), nil
 }
