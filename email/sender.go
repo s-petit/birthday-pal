@@ -3,14 +3,14 @@ package email
 import (
 	"log"
 	"net/smtp"
+	"strconv"
 	"time"
 )
 
 // Send sends an email to remind the birthday of the related contact
-func Send(name string, birthday time.Time) {
+func Send(name string, birthday time.Time, age int, recipients []string) {
 
 	sender := "spetit@enjoycode.fr"
-	recipients := []string{"hikaru95@gmail.com", "stephane.petit95@gmail.com"}
 	host := "smtp.fastmail.com"
 	port := "587"
 
@@ -18,11 +18,8 @@ func Send(name string, birthday time.Time) {
 	password := "awlh45n29jke5vsv"
 	auth := smtp.PlainAuth("", sender, password, host)
 
-	// TODO indiquer l'age dans le mail
-	// TODO mail quotidien pour l'anniv du jour (egalité parfaite)
 	// TODO mail hebdo pour les anniv de la semaine (notion d'inclure les 7 jours).
 	// TODO gerer les recipients
-	//TODO CI, makefile, test coverage
 
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
@@ -31,18 +28,19 @@ func Send(name string, birthday time.Time) {
 		auth,
 		sender,
 		recipients,
-		[]byte(frenchMailBody(name, birthday)),
+		[]byte(frenchMailBody(name, birthday, age)),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func frenchMailBody(name string, birthday time.Time) string {
-	return "To: recipient@example.net\r\n" +
+// TODO improve this horrible piece of code
+func frenchMailBody(name string, birthday time.Time, age int) string {
+	return "To: Birthday Pals \r\n" +
 		"Subject: Anniversaire de " + name + "!\r\n" +
 		"\r\n" +
-		"Ce sera l'anniversaire de " + name + " le " + formatFrenchDate(birthday) + ". Pensez à le lui souhaiter !\r\n"
+		"Ce sera l'anniversaire de " + name + " le " + formatFrenchDate(birthday) + ". Il aura " + strconv.Itoa(age) + " ans. Pensez a le lui souhaiter !\r\n"
 }
 
 func formatFrenchDate(birthday time.Time) string {
