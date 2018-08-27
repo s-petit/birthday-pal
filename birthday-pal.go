@@ -20,14 +20,16 @@ func main() {
 
 	var (
 		recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
-		url        = app.StringArg("URL", "", "cardDav URL")
-		username   = app.StringArg("USERNAME", "", "basic auth username")
-		password   = app.StringArg("PASSWORD", "", "basic auth password")
+		cardDavUrl        = app.StringArg("URL", "", "cardDav URL")
+		cardDavUsername   = app.StringArg("USERNAME", "", "basic auth username")
+		cardDavPassword   = app.StringArg("PASSWORD", "", "basic auth password")
 	)
 
 	app.Action = func() {
 
-		contacts, err := carddav.Contacts(*url, *username, *password)
+		client := carddav.ContactClient{Url: *cardDavUrl, Username: *cardDavUsername, Password: *cardDavPassword}
+
+		contacts, err := client.Get()
 
 		if err != nil {
 			log.Fatal("ERROR: ", err)

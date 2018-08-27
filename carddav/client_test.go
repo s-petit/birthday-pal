@@ -1,6 +1,9 @@
 package carddav
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+)
 
 /*func Test_call_cardDav(t *testing.T) {
 
@@ -15,5 +18,9 @@ import "testing"
 }*/
 
 func Test_lol(t *testing.T) {
-	//TODO
+	client := ContactClient{"https://carddav.fastmail.com/dav/addressbooks/user/spetit@enjoycode.fr/Default", "spetit@enjoycode.fr", "9jx4tgvabryracu3"}
+
+	s, _ := client.Get()
+
+	fmt.Println(s)
 }

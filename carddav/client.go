@@ -8,14 +8,27 @@ import (
 	"strconv"
 )
 
-// Contacts calls a CardDAV server with an URL and BasicAuth
-func Contacts(url string, username string, password string) (string, error) {
 
-	req, err := http.NewRequest("GET", url, nil)
+type Client interface {
+	Get(url, username, password string) (string, error)
+}
+
+type ContactClient struct {
+	Url            string
+	Username            string
+	Password string
+}
+
+func (c ContactClient) Get() (string, error) {
+
+// Contacts calls a CardDAV server with an URL and BasicAuth
+//func Contacts(url, username, password string) (string, error) {
+
+	req, err := http.NewRequest("GET", c.Url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.SetBasicAuth(username, password)
+	req.SetBasicAuth(c.Username, c.Password)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
