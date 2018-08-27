@@ -24,3 +24,13 @@ func Test_lol(t *testing.T) {
 
 	fmt.Println(s)
 }
+
+type FakeClient struct {
+	Url            string
+	Username            string
+	Password string
+}
+
+func (c FakeClient) Get() (string, error) {
+	return string(""), nil
+}

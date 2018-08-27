@@ -3,8 +3,9 @@ package main
 import (
 	"testing"
 	"os"
-	"github.com/s-petit/birthday-pal/carddav"
-	"github.com/golang/mock/gomock"
+	"github.com/s-petit/birthday-pal/email"
+	"github.com/stretchr/testify/mock"
+	"errors"
 )
 
 //TODO refacto sur le projet entier : privilegier les pointeurs
@@ -19,10 +20,41 @@ func Test_main(t *testing.T) {
 	os.Args[3] = "carddav-pass"
 	os.Args[4] = "recipient-email"*/
 
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	client := FakeClient{}
+	smtp := FakeSender{}
 
-	client := mock_carddav.NewMockClient(ctrl)
-	client.EXPECT().Get("url", "user", "pass").Return("myContacts")
-	main()
+	client.On("Get").Return("lol")
+	smtp.On("Send")
+
+	DoIt(client, smtp, []string{"spe@mail.com", "wsh@prov.fr"})
+
+	}
+
+type FakeClient struct {
+	mock.Mock
+}
+
+func (c FakeClient) Get() (string, error) {
+	args := c.Called()
+/*	contact := `
+BEGIN:VCARD
+VERSION:3.0
+FN:Alexis Foo
+BDAY:19831028
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Florence Bar
+BDAY:19860425
+END:VCARD
+`*/
+	return args.String(0), errors.New("lol")
+}
+
+type FakeSender struct {
+	mock.Mock
+}
+
+func (c FakeSender) Send(contact email.Contact, recipients []string)  {
+	//assert.Equal(t, []string{"spe@mail.com", "wsh@prov.fr"}, recipients)
 }

@@ -7,16 +7,31 @@ import (
 	"time"
 )
 
+type Sender interface {
+	Send(contact Contact, recipients []string)
+}
+
+type SmtpSender struct {
+	Host string
+	Port string
+	Username string
+	Password string
+}
+
+type Contact struct {
+	Name string
+	BirthDate time.Time
+	Age int
+}
+
+func (ss SmtpSender) hostPort() string {
+	return ss.Host + ":" + ss.Port
+}
+
 // Send sends an email to remind the birthday of the related contact
-func Send(name string, birthday time.Time, age int, recipients []string) {
+func (ss SmtpSender) Send(contact Contact, recipients []string) {
 
-	sender := "spetit@enjoycode.fr"
-	host := "smtp.fastmail.com"
-	port := "587"
-
-	//TODO a regenerer !!
-	password := "awlh45n29jke5vsv"
-	auth := smtp.PlainAuth("", sender, password, host)
+	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
 	// TODO mail hebdo pour les anniv de la semaine (notion d'inclure les 7 jours).
 	// TODO gerer les recipients
@@ -24,11 +39,11 @@ func Send(name string, birthday time.Time, age int, recipients []string) {
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
 	err := smtp.SendMail(
-		host+":"+port,
+		ss.hostPort(),
 		auth,
-		sender,
+		ss.Username,
 		recipients,
-		[]byte(frenchMailBody(name, birthday, age)),
+		[]byte(frenchMailBody(contact)),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -36,11 +51,11 @@ func Send(name string, birthday time.Time, age int, recipients []string) {
 }
 
 // TODO improve this horrible piece of code
-func frenchMailBody(name string, birthday time.Time, age int) string {
+func frenchMailBody(contact Contact) string {
 	return "To: Birthday Pals \r\n" +
-		"Subject: Anniversaire de " + name + "!\r\n" +
+		"Subject: Anniversaire de " + contact.Name + "!\r\n" +
 		"\r\n" +
-		"Ce sera l'anniversaire de " + name + " le " + formatFrenchDate(birthday) + ". Il aura " + strconv.Itoa(age) + " ans. Pensez a le lui souhaiter !\r\n"
+		"Ce sera l'anniversaire de " + contact.Name + " le " + formatFrenchDate(contact.BirthDate) + ". Il aura " + strconv.Itoa(contact.Age) + " ans. Pensez a le lui souhaiter !\r\n"
 }
 
 func formatFrenchDate(birthday time.Time) string {

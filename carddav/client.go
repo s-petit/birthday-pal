@@ -10,7 +10,7 @@ import (
 
 
 type Client interface {
-	Get(url, username, password string) (string, error)
+	Get() (string, error)
 }
 
 type ContactClient struct {
