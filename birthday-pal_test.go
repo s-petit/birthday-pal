@@ -1,42 +1,27 @@
 package main
 
 import (
-	"testing"
-	"os"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/stretchr/testify/mock"
-	"errors"
+	"testing"
+	"time"
 )
 
 //TODO refacto sur le projet entier : privilegier les pointeurs
 //TODO ajouter de la validation sur les args, notamment urls et emails
 // https://goreportcard.com/report/github.com/vektra/mockery
 
-func Test_main(t *testing.T) {
-	//TODO how to test with mow.cli ?
-	os.Args = []string{"", "https://mycarddav/com/contacts", "carddav-user", "carddav-pass", "recipient-email"}
-/*	os.Args[1] = "https://mycarddav.com/contacts"
-	os.Args[2] = "carddav-user"
-	os.Args[3] = "carddav-pass"
-	os.Args[4] = "recipient-email"*/
+func Test_remind_birthdays(t *testing.T) {
+	//os.Args = []string{"", "https://mycarddav/com/contacts", "carddav-user", "carddav-pass", "recipient-email"}
+	/*	os.Args[1] = "https://mycarddav.com/contacts"
+		os.Args[2] = "carddav-user"
+		os.Args[3] = "carddav-pass"
+		os.Args[4] = "recipient-email"*/
 
 	client := FakeClient{}
 	smtp := FakeSender{}
 
-	client.On("Get").Return("lol")
-	smtp.On("Send")
-
-	DoIt(client, smtp, []string{"spe@mail.com", "wsh@prov.fr"})
-
-	}
-
-type FakeClient struct {
-	mock.Mock
-}
-
-func (c FakeClient) Get() (string, error) {
-	args := c.Called()
-/*	contact := `
+	vcards := `
 BEGIN:VCARD
 VERSION:3.0
 FN:Alexis Foo
@@ -45,16 +30,38 @@ END:VCARD
 BEGIN:VCARD
 VERSION:3.0
 FN:Florence Bar
-BDAY:19860425
+BDAY:19860829
 END:VCARD
-`*/
-	return args.String(0), errors.New("lol")
+`
+
+	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
+	contact := email.Contact{Name: "Florence Bar", BirthDate: time.Date(1986, time.August, 29, 0, 0, 0, 0, time.UTC), Age: 31}
+
+	client.On("Get").Return(vcards)
+	smtp.On("Send", contact, recipients).Times(1)
+
+	RemindBirthdays(client, smtp, recipients)
+
+	client.AssertExpectations(t)
+	smtp.AssertExpectations(t)
+
+}
+
+//TODO implemter un struct simplifie de birthdate avec mois et annee plutot que time.
+
+type FakeClient struct {
+	mock.Mock
+}
+
+func (c FakeClient) Get() (string, error) {
+	args := c.Called()
+	return args.String(0), nil
 }
 
 type FakeSender struct {
 	mock.Mock
 }
 
-func (c FakeSender) Send(contact email.Contact, recipients []string)  {
-	//assert.Equal(t, []string{"spe@mail.com", "wsh@prov.fr"}, recipients)
+func (c FakeSender) Send(contact email.Contact, recipients []string) {
+	c.Called(contact, recipients)
 }

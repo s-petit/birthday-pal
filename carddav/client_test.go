@@ -1,10 +1,5 @@
 package carddav
 
-import (
-	"testing"
-	"fmt"
-)
-
 /*func Test_call_cardDav(t *testing.T) {
 
 	payload := RetrieveContacts("lol", "lol", "lol")
@@ -17,17 +12,17 @@ import (
 	assert.Equal(t, "19860425", vcards[1].BirthDay)
 }*/
 
-func Test_lol(t *testing.T) {
+/*func Test_lol(t *testing.T) {
 	client := ContactClient{"https://carddav.fastmail.com/dav/addressbooks/user/spetit@enjoycode.fr/Default", "spetit@enjoycode.fr", "9jx4tgvabryracu3"}
 
 	s, _ := client.Get()
 
 	fmt.Println(s)
 }
-
+*/
 type FakeClient struct {
-	Url            string
-	Username            string
+	Url      string
+	Username string
 	Password string
 }
 

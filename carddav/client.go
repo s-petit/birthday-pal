@@ -8,21 +8,20 @@ import (
 	"strconv"
 )
 
-
 type Client interface {
 	Get() (string, error)
 }
 
 type ContactClient struct {
-	Url            string
-	Username            string
+	Url      string
+	Username string
 	Password string
 }
 
 func (c ContactClient) Get() (string, error) {
 
-// Contacts calls a CardDAV server with an URL and BasicAuth
-//func Contacts(url, username, password string) (string, error) {
+	// Contacts calls a CardDAV server with an URL and BasicAuth
+	//func Contacts(url, username, password string) (string, error) {
 
 	req, err := http.NewRequest("GET", c.Url, nil)
 	if err != nil {

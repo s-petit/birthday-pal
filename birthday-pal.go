@@ -19,23 +19,23 @@ func main() {
 	app.Spec = "URL USERNAME PASSWORD RECIPIENTS..."
 
 	var (
-		recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
-		cardDavUrl        = app.StringArg("URL", "", "cardDav URL")
-		cardDavUsername   = app.StringArg("USERNAME", "", "basic auth username")
-		cardDavPassword   = app.StringArg("PASSWORD", "", "basic auth password")
+		recipients      = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
+		cardDavUrl      = app.StringArg("URL", "", "cardDav URL")
+		cardDavUsername = app.StringArg("USERNAME", "", "basic auth username")
+		cardDavPassword = app.StringArg("PASSWORD", "", "basic auth password")
 	)
 
 	app.Action = func() {
 		client := carddav.ContactClient{Url: *cardDavUrl, Username: *cardDavUsername, Password: *cardDavPassword}
 		smtp := email.SmtpSender{Host: "smtp.fastmail.com", Port: "587", Username: "spetit@enjoycode.fr", Password: "awlh45n29jke5vsv"}
 
-		DoIt(client, smtp, *recipients)
+		RemindBirthdays(client, smtp, *recipients)
 	}
 
 	app.Run(os.Args)
 }
 
-func DoIt(client carddav.Client, smtp email.Sender, recipients []string) {
+func RemindBirthdays(client carddav.Client, smtp email.Sender, recipients []string) {
 	contacts, err := client.Get()
 	if err != nil {
 		log.Fatal("ERROR: ", err)
@@ -49,7 +49,7 @@ func DoIt(client carddav.Client, smtp email.Sender, recipients []string) {
 	}
 	cpt := 0
 	//TODO as parameter pls.
-	daysBefore := 32
+	daysBefore := 1
 	for _, card := range cards {
 		date, _ := vcardparser.ParseVCardBirthDay(card)
 		now := time.Now()
@@ -67,4 +67,3 @@ func DoIt(client carddav.Client, smtp email.Sender, recipients []string) {
 
 	//fmt.Println(contacts)
 }
-

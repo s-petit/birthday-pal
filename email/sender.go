@@ -12,16 +12,16 @@ type Sender interface {
 }
 
 type SmtpSender struct {
-	Host string
-	Port string
+	Host     string
+	Port     string
 	Username string
 	Password string
 }
 
 type Contact struct {
-	Name string
+	Name      string
 	BirthDate time.Time
-	Age int
+	Age       int
 }
 
 func (ss SmtpSender) hostPort() string {
