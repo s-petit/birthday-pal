@@ -8,22 +8,27 @@ import (
 	"strconv"
 )
 
+//TODO SPE better go doc
+
+//Client represents a HTTP Client
 type Client interface {
 	Get() (string, error)
 }
 
+//ContactClient represents a HTTP Client
 type ContactClient struct {
-	Url      string
+	URL      string
 	Username string
 	Password string
 }
 
+//Get invokes a HTTP Get with BasicAuth and handles errors
 func (c ContactClient) Get() (string, error) {
 
 	// Contacts calls a CardDAV server with an URL and BasicAuth
 	//func Contacts(url, username, password string) (string, error) {
 
-	req, err := http.NewRequest("GET", c.Url, nil)
+	req, err := http.NewRequest("GET", c.URL, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

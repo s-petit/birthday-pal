@@ -11,7 +11,7 @@ func Test_should_remind_when_birthday_is_in_one_day(t *testing.T) {
 	birthday := simpleTime(2016, time.August, 22)
 	now := simpleTime(2018, time.August, 21)
 
-	remind := Remind(now, birthday, 1)
+	remind := ShouldRemind(now, birthday, 1)
 
 	assert.Equal(t, true, remind)
 }
@@ -21,7 +21,7 @@ func Test_should_not_remind_when_birthday_is_in_more_than_one_day(t *testing.T) 
 	birthday := simpleTime(2016, time.August, 22)
 	now := simpleTime(2018, time.August, 20)
 
-	remind := Remind(now, birthday, 1)
+	remind := ShouldRemind(now, birthday, 1)
 
 	assert.Equal(t, false, remind)
 }
@@ -31,7 +31,7 @@ func Test_should_not_remind_when_birthday_is_today(t *testing.T) {
 	birthday := simpleTime(2016, time.August, 22)
 	now := simpleTime(2018, time.August, 22)
 
-	remind := Remind(now, birthday, 1)
+	remind := ShouldRemind(now, birthday, 1)
 
 	assert.Equal(t, false, remind)
 }
@@ -41,7 +41,7 @@ func Test_should_not_remind_when_birthday_is_in_the_past(t *testing.T) {
 	birthday := simpleTime(2016, time.August, 22)
 	now := simpleTime(2018, time.August, 23)
 
-	remind := Remind(now, birthday, 1)
+	remind := ShouldRemind(now, birthday, 1)
 
 	assert.Equal(t, false, remind)
 }

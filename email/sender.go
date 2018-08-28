@@ -5,36 +5,32 @@ import (
 	"net/smtp"
 	"strconv"
 	"time"
+	"github.com/s-petit/birthday-pal/vcardparser"
 )
 
+// Sender represents a SMTP client
 type Sender interface {
-	Send(contact Contact, recipients []string)
+	Send(contact vcardparser.RemindContact, recipients []string)
 }
 
-type SmtpSender struct {
+// SMTPSender represents a SMTP client
+type SMTPSender struct {
 	Host     string
 	Port     string
 	Username string
 	Password string
 }
 
-type Contact struct {
-	Name      string
-	BirthDate time.Time
-	Age       int
-}
-
-func (ss SmtpSender) hostPort() string {
+func (ss SMTPSender) hostPort() string {
 	return ss.Host + ":" + ss.Port
 }
 
 // Send sends an email to remind the birthday of the related contact
-func (ss SmtpSender) Send(contact Contact, recipients []string) {
+func (ss SMTPSender) Send(contact vcardparser.RemindContact, recipients []string) {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
 	// TODO mail hebdo pour les anniv de la semaine (notion d'inclure les 7 jours).
-	// TODO gerer les recipients
 
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
@@ -51,7 +47,7 @@ func (ss SmtpSender) Send(contact Contact, recipients []string) {
 }
 
 // TODO improve this horrible piece of code
-func frenchMailBody(contact Contact) string {
+func frenchMailBody(contact vcardparser.RemindContact) string {
 	return "To: Birthday Pals \r\n" +
 		"Subject: Anniversaire de " + contact.Name + "!\r\n" +
 		"\r\n" +

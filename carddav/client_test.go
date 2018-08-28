@@ -21,7 +21,7 @@ package carddav
 }
 */
 type FakeClient struct {
-	Url      string
+	URL      string
 	Username string
 	Password string
 }

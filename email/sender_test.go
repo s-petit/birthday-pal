@@ -17,8 +17,3 @@ func Test_formatEnglishDate(t *testing.T) {
 	formattedDate := formatEnglishDate(birthday)
 	assert.Equal(t, "08/22", formattedDate)
 }
-
-/*
-func Test_send_mail(t *testing.T) {
-	sendMails()
-}*/

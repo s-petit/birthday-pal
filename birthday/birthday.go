@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Remind return true if the birthday occurs nbDaysBefore now
-func Remind(now time.Time, birthDate time.Time, nbDaysBefore int) bool {
+// ShouldRemind return true if the birthday occurs nbDaysBefore now
+func ShouldRemind(now time.Time, birthDate time.Time, nbDaysBefore int) bool {
 
 	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 
