@@ -1,31 +1,60 @@
 package carddav
 
-/*func Test_call_cardDav(t *testing.T) {
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
-	payload := RetrieveContacts("lol", "lol", "lol")
+func handler() http.Handler {
 
-	fmt.Println(payload)
+	h := func(w http.ResponseWriter, r *http.Request) {
+		vcard := "myVCard"
+		io.WriteString(w, vcard)
+	}
 
-	vcards := getCards(payload)
-	assert.Equal(t, 142, len(vcards))
-	assert.Equal(t, "19831028", vcards[0].BirthDay)
-	assert.Equal(t, "19860425", vcards[1].BirthDay)
-}*/
-
-/*func Test_lol(t *testing.T) {
-	client := ContactClient{"https://carddav.fastmail.com/dav/addressbooks/user/spetit@enjoycode.fr/Default", "spetit@enjoycode.fr", "9jx4tgvabryracu3"}
-
-	s, _ := client.Get()
-
-	fmt.Println(s)
-}
-*/
-type FakeClient struct {
-	URL      string
-	Username string
-	Password string
+	r := http.NewServeMux()
+	r.HandleFunc("/contact", h)
+	//r.HandleFunc("/nil", h2)
+	return r
 }
 
-func (c FakeClient) Get() (string, error) {
-	return string(""), nil
+func Test_Ok(t *testing.T) {
+
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	r := BasicAuthRequest{fmt.Sprintf("%s/contact", srv.URL), "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "myVCard", s)
+	assert.NoError(t, err)
 }
+
+func Test_404(t *testing.T) {
+
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	r := BasicAuthRequest{fmt.Sprintf("%s/unknown", srv.URL), "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "", s)
+	assert.Error(t, err)
+}
+
+/*	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
+	w := httptest.NewRecorder()
+	handler(w, req)
+
+	resp := w.Result()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	fmt.Println(resp.StatusCode)
+	fmt.Println(resp.Header.Get("Content-Type"))
+	fmt.Println(string(body))*/

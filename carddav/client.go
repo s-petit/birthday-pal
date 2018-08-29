@@ -10,20 +10,20 @@ import (
 
 //TODO SPE better go doc
 
-//Client represents a HTTP Client
-type Client interface {
+//Request represents a HTTP Request
+type Request interface {
 	Get() (string, error)
 }
 
-//ContactClient represents a HTTP Client
-type ContactClient struct {
+//BasicAuthRequest represents a HTTP Request
+type BasicAuthRequest struct {
 	URL      string
 	Username string
 	Password string
 }
 
 //Get invokes a HTTP Get with BasicAuth and handles errors
-func (c ContactClient) Get() (string, error) {
+func (c BasicAuthRequest) Get() (string, error) {
 
 	// Contacts calls a CardDAV server with an URL and BasicAuth
 	//func Contacts(url, username, password string) (string, error) {
@@ -39,15 +39,13 @@ func (c ContactClient) Get() (string, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.StatusCode != 200 {
+		return "", errors.New("a unexpected error occurred during connexion to CardDAV server - http code is " + strconv.Itoa(resp.StatusCode))
+	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if resp.StatusCode != 200 {
-		return "", errors.New("a unexpected error occurred during connexion to CardDAV server - http code is " + strconv.Itoa(resp.StatusCode))
-	}
-
 	return string(body), nil
 }
