@@ -51,7 +51,11 @@ func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []str
 	remindContacts := vcardparser.ContactsToRemind(cards, daysBefore)
 
 	for _, contact := range remindContacts {
-		smtp.Send(contact, recipients)
+		err := smtp.Send(contact, recipients)
+		if err != nil {
+			log.Fatal("ERROR: ", err)
+			os.Exit(1)
+		}
 	}
 
 	//fmt.Printf("nom %s, anniv %s, formatted %s, shouldRemind %s \n", card.FormattedName, card.BirthDay, date, shouldRemind)

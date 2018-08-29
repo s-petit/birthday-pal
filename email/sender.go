@@ -2,7 +2,6 @@ package email
 
 import (
 	"github.com/s-petit/birthday-pal/vcardparser"
-	"log"
 	"net/smtp"
 	"strconv"
 	"time"
@@ -10,7 +9,7 @@ import (
 
 // Sender represents a SMTP client
 type Sender interface {
-	Send(contact vcardparser.RemindContact, recipients []string)
+	Send(contact vcardparser.RemindContact, recipients []string) (error)
 }
 
 // SMTPSender represents a SMTP client
@@ -26,7 +25,7 @@ func (ss SMTPSender) hostPort() string {
 }
 
 // Send sends an email to remind the birthday of the related contact
-func (ss SMTPSender) Send(contact vcardparser.RemindContact, recipients []string) {
+func (ss SMTPSender) Send(contact Contact, recipients []string) (error) {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
@@ -39,27 +38,9 @@ func (ss SMTPSender) Send(contact vcardparser.RemindContact, recipients []string
 		auth,
 		ss.Username,
 		recipients,
-		[]byte(frenchMailBody(contact)),
+		[]byte(FormatFrench(contact)),
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	return err
 }
 
-// TODO improve this horrible piece of code
-func frenchMailBody(contact vcardparser.RemindContact) string {
-	return "To: Birthday Pals \r\n" +
-		"Subject: Anniversaire de " + contact.Name + "!\r\n" +
-		"\r\n" +
-		"Ce sera l'anniversaire de " + contact.Name + " le " + formatFrenchDate(contact.BirthDate) + ". Il aura " + strconv.Itoa(contact.Age) + " ans. Pensez a le lui souhaiter !\r\n"
-}
-
-func formatFrenchDate(birthday time.Time) string {
-	const layout = "02/01"
-	return birthday.Format(layout)
-}
-
-func formatEnglishDate(birthday time.Time) string {
-	const layout = "01/02"
-	return birthday.Format(layout)
-}

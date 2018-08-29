@@ -8,25 +8,19 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"github.com/s-petit/birthday-pal/contact"
 )
 
-//RemindContact represents a Contact eligible for reminder because his bday is near.
-type RemindContact struct {
-	Name      string
-	BirthDate time.Time
-	Age       int
-}
-
 //ContactsToRemind returns every contacts which the bday occurs in daysBefore days
-func ContactsToRemind(cards []vcard.VCard, daysBefore int) []RemindContact {
+func ContactsToRemind(cards []vcard.VCard, daysBefore int) []contact.Contact {
 
-	var s []RemindContact
+	var s []contact.Contact
 
 	for _, card := range cards {
 
-		date, _ := ParseVCardBirthDay(card)
+		birthday, _ := ParseVCardBirthDay(card)
 		now := time.Now()
-		shouldRemind := birthday.ShouldRemind(now, date, daysBefore)
+		shouldRemind := birthday.ShouldRemind(now, daysBefore)
 
 		if shouldRemind {
 			age := birthday.Age(now, date)

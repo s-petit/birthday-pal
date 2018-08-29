@@ -1,21 +1,24 @@
 package birthday
 
 import (
-	"github.com/bearbin/go-age"
 	"time"
 )
 
+
+// Birthdate represents a birth date, without any hour or timezone
+type BirthDate struct {
+	Year     int
+	Month     time.Month
+	Day int
+}
+
 // ShouldRemind return true if the birthday occurs nbDaysBefore now
-func ShouldRemind(now time.Time, birthDate time.Time, nbDaysBefore int) bool {
+func (b *BirthDate) ShouldRemind(now time.Time, nbDaysBefore int) bool {
 
 	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 
 	delay := midnight.AddDate(0, 0, nbDaysBefore)
 
-	return delay.Day() == birthDate.Day() && delay.Month() == birthDate.Month()
+	return delay.Day() == b.Day && delay.Month() == b.Month
 }
 
-// Age return the age of the contact at his incoming birthday
-func Age(now time.Time, birthDate time.Time) int {
-	return age.AgeAt(birthDate, now)
-}
