@@ -40,7 +40,13 @@ func remindBirthdays(client carddav.Client, smtp email.Sender, recipients []stri
 		log.Fatal("ERROR: ", err)
 		os.Exit(1)
 	}
-	cards := vcardparser.ParseContacts(contacts)
+	cards, err := vcardparser.ParseContacts(contacts)
+
+	if err != nil {
+		fmt.Println("An error occurred during VCard parsing. Please check that your URL refers to a CardDav endpoint.")
+		log.Fatal("ERROR: ", err)
+		os.Exit(1)
+	}
 
 	remindContacts := vcardparser.ContactsToRemind(cards, daysBefore)
 

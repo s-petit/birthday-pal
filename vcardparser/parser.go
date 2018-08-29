@@ -2,11 +2,9 @@ package vcardparser
 
 import (
 	"errors"
-	"fmt"
 	"github.com/mapaiva/vcard-go"
 	"github.com/s-petit/birthday-pal/birthday"
 	"io"
-	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -41,20 +39,12 @@ func ContactsToRemind(cards []vcard.VCard, daysBefore int) []RemindContact {
 }
 
 //ParseContacts parses one or many vcards to a vcard.VCard struct.
-func ParseContacts(contacts string) []vcard.VCard {
+func ParseContacts(contacts string) ([]vcard.VCard, error) {
 
 	reader := strings.NewReader(contacts)
 	multiReader := io.MultiReader(reader)
 
-	cards, e := vcard.GetVCardsByReader(multiReader)
-
-	if e != nil {
-		fmt.Println("An error occurred during VCard parsing. Please check that your URL refers to a CardDav endpoint.")
-		log.Fatal("ERROR: ", e)
-		//os.Exit(1)
-	}
-
-	return cards
+	return vcard.GetVCardsByReader(multiReader)
 }
 
 //ParseVCardBirthDay parse a Vcard BirthDay to a valid time

@@ -1,11 +1,11 @@
 package email
 
 import (
+	"github.com/s-petit/birthday-pal/vcardparser"
 	"log"
 	"net/smtp"
 	"strconv"
 	"time"
-	"github.com/s-petit/birthday-pal/vcardparser"
 )
 
 // Sender represents a SMTP client

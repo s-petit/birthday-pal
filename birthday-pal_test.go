@@ -31,12 +31,12 @@ END:VCARD
 BEGIN:VCARD
 VERSION:3.0
 FN:Florence Bar
-BDAY:19860829
+BDAY:19860830
 END:VCARD
 `
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
-	contact := vcardparser.RemindContact{Name: "Florence Bar", BirthDate: time.Date(1986, time.August, 29, 0, 0, 0, 0, time.UTC), Age: 31}
+	contact := vcardparser.RemindContact{Name: "Florence Bar", BirthDate: time.Date(1986, time.August, 30, 0, 0, 0, 0, time.UTC), Age: 31}
 
 	client.On("Get").Return(vcards)
 	smtp.On("Send", contact, recipients).Times(1)
@@ -54,7 +54,7 @@ type FakeClient struct {
 	mock.Mock
 }
 
-func (c FakeClient) Get() (string, error) {
+func (c *FakeClient) Get() (string, error) {
 	args := c.Called()
 	return args.String(0), nil
 }
@@ -63,6 +63,6 @@ type FakeSender struct {
 	mock.Mock
 }
 
-func (c FakeSender) Send(contact vcardparser.RemindContact, recipients []string) {
+func (c *FakeSender) Send(contact vcardparser.RemindContact, recipients []string) {
 	c.Called(contact, recipients)
 }
