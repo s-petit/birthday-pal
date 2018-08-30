@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jawher/mow.cli"
+	"github.com/s-petit/birthday-pal/birthday"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/vcardparser"
@@ -34,28 +35,25 @@ func main() {
 	app.Run(os.Args)
 }
 
+func crashIfError(err error) {
+	if err != nil {
+		log.Fatal("ERROR: ", err)
+		os.Exit(1)
+	}
+}
+
 func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int) {
-	contacts, err := client.Get()
-	if err != nil {
-		log.Fatal("ERROR: ", err)
-		os.Exit(1)
-	}
-	cards, err := vcardparser.ParseContacts(contacts)
+	cardDavPayload, err := client.Get()
+	crashIfError(err)
 
-	if err != nil {
-		fmt.Println("An error occurred during VCard parsing. Please check that your URL refers to a CardDav endpoint.")
-		log.Fatal("ERROR: ", err)
-		os.Exit(1)
-	}
+	contacts, err := vcardparser.ParseContacts(cardDavPayload)
+	crashIfError(err)
 
-	remindContacts := vcardparser.ContactsToRemind(cards, daysBefore)
+	remindContacts := birthday.ContactsToRemind(contacts, daysBefore)
 
 	for _, contact := range remindContacts {
 		err := smtp.Send(contact, recipients)
-		if err != nil {
-			log.Fatal("ERROR: ", err)
-			os.Exit(1)
-		}
+		crashIfError(err)
 	}
 
 	//fmt.Printf("nom %s, anniv %s, formatted %s, shouldRemind %s \n", card.FormattedName, card.BirthDay, date, shouldRemind)

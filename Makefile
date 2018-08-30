@@ -32,8 +32,6 @@ readmecheck:
 	diff README.generated.md README.original.md
 
 setup:
-	go get github.com/jawher/mow.cli
-	go get github.com/mapaiva/vcard-go
 	go get github.com/gordonklaus/ineffassign
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/cover

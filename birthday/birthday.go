@@ -1,24 +1,20 @@
 package birthday
 
 import (
+	"github.com/s-petit/birthday-pal/contact"
 	"time"
 )
 
+//ContactsToRemind filters every contacts which the bday occurs in daysBefore days
+func ContactsToRemind(contacts []contact.Contact, daysBefore int) []contact.Contact {
 
-// Birthdate represents a birth date, without any hour or timezone
-type BirthDate struct {
-	Year     int
-	Month     time.Month
-	Day int
+	var contactsToRemind []contact.Contact
+
+	for _, c := range contacts {
+		if c.ShouldRemindBirthday(time.Now(), daysBefore) {
+			contactsToRemind = append(contactsToRemind, c)
+		}
+	}
+
+	return contactsToRemind
 }
-
-// ShouldRemind return true if the birthday occurs nbDaysBefore now
-func (b *BirthDate) ShouldRemind(now time.Time, nbDaysBefore int) bool {
-
-	midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-
-	delay := midnight.AddDate(0, 0, nbDaysBefore)
-
-	return delay.Day() == b.Day && delay.Month() == b.Month
-}
-

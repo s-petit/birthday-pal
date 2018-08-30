@@ -3,37 +3,47 @@ package vcardparser
 import (
 	"errors"
 	"github.com/mapaiva/vcard-go"
-	"github.com/s-petit/birthday-pal/birthday"
+	"github.com/s-petit/birthday-pal/contact"
 	"io"
 	"regexp"
 	"strings"
 	"time"
-	"github.com/s-petit/birthday-pal/contact"
 )
 
-//ContactsToRemind returns every contacts which the bday occurs in daysBefore days
-func ContactsToRemind(cards []vcard.VCard, daysBefore int) []contact.Contact {
+//ParseContacts parses a cardDav payload to a contact.Contact struct.
+func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
+	vCards, err := parseVCard(cardDavPayload)
 
-	var s []contact.Contact
-
-	for _, card := range cards {
-
-		birthday, _ := ParseVCardBirthDay(card)
-		now := time.Now()
-		shouldRemind := birthday.ShouldRemind(now, daysBefore)
-
-		if shouldRemind {
-			age := birthday.Age(now, date)
-			s = append(s, RemindContact{Name: card.FormattedName, BirthDate: date, Age: age})
-		}
-
+	if err != nil {
+		return nil, err
 	}
 
-	return s
+	var contacts []contact.Contact
+	for _, card := range vCards {
+		c, err := parseContact(card)
+
+		if err != nil {
+			return nil, err
+		}
+
+		contacts = append(contacts, c)
+	}
+	return contacts, nil
 }
 
-//ParseContacts parses one or many vcards to a vcard.VCard struct.
-func ParseContacts(contacts string) ([]vcard.VCard, error) {
+//parseContact parses one vcardsto a contact.Contact struct.
+func parseContact(vcard vcard.VCard) (contact.Contact, error) {
+
+	birthday, err := parseVCardBirthDay(vcard)
+
+	if err != nil {
+		return contact.Contact{}, err
+	}
+
+	return contact.Contact{Name: vcard.FormattedName, BirthDate: birthday}, nil
+}
+
+func parseVCard(contacts string) ([]vcard.VCard, error) {
 
 	reader := strings.NewReader(contacts)
 	multiReader := io.MultiReader(reader)
@@ -42,7 +52,7 @@ func ParseContacts(contacts string) ([]vcard.VCard, error) {
 }
 
 //ParseVCardBirthDay parse a Vcard BirthDay to a valid time
-func ParseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
+func parseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 
 	birthdate := vcard.BirthDay
 
@@ -61,7 +71,9 @@ func ParseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 		month := string(runes[4:6])
 		day := string(runes[6:8])
 
-		return time.Parse("2006-01-02 00:00:00 -0000", year+"-"+month+"-"+day+" 00:00:00 -0000")
+		bday, e := time.Parse("2006-01-02 00:00:00 -0000", year+"-"+month+"-"+day+" 00:00:00 -0000")
+
+		return bday, e
 	}
 
 	return time.Time{}, errors.New("unknown vcard bday format")

@@ -1,15 +1,13 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/vcardparser"
+	"github.com/s-petit/birthday-pal/contact"
 	"net/smtp"
-	"strconv"
-	"time"
 )
 
 // Sender represents a SMTP client
 type Sender interface {
-	Send(contact vcardparser.RemindContact, recipients []string) (error)
+	Send(contactToRemind contact.Contact, recipients []string) error
 }
 
 // SMTPSender represents a SMTP client
@@ -25,7 +23,7 @@ func (ss SMTPSender) hostPort() string {
 }
 
 // Send sends an email to remind the birthday of the related contact
-func (ss SMTPSender) Send(contact Contact, recipients []string) (error) {
+func (ss SMTPSender) Send(contact contact.Contact, recipients []string) error {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
@@ -38,9 +36,8 @@ func (ss SMTPSender) Send(contact Contact, recipients []string) (error) {
 		auth,
 		ss.Username,
 		recipients,
-		[]byte(FormatFrench(contact)),
+		[]byte(French(contact)),
 	)
 
 	return err
 }
-

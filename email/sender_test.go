@@ -1,26 +1,14 @@
 package email
 
 import (
+	"fmt"
+	"github.com/flashmob/go-guerrilla"
+	"github.com/flashmob/go-guerrilla/log"
+	"github.com/s-petit/birthday-pal/contact"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-	"github.com/flashmob/go-guerrilla"
-	"fmt"
-	"github.com/s-petit/birthday-pal/vcardparser"
-	"github.com/flashmob/go-guerrilla/log"
 )
-
-func Test_formatFrenchDate(t *testing.T) {
-	birthday := time.Date(2016, time.August, 22, 0, 0, 0, 0, time.UTC)
-	formattedDate := formatFrenchDate(birthday)
-	assert.Equal(t, "22/08", formattedDate)
-}
-
-func Test_formatEnglishDate(t *testing.T) {
-	birthday := time.Date(2016, time.August, 22, 0, 0, 0, 0, time.UTC)
-	formattedDate := formatEnglishDate(birthday)
-	assert.Equal(t, "08/22", formattedDate)
-}
 
 func Test_hostPort(t *testing.T) {
 	sender := SMTPSender{"localhost", "2525", "", ""}
@@ -29,30 +17,30 @@ func Test_hostPort(t *testing.T) {
 }
 
 func Test_send(t *testing.T) {
-	d := startSmtpServer()
+	d := startSMTPServer()
 
 	birthday := time.Date(2016, time.August, 22, 0, 0, 0, 0, time.UTC)
 	sender := SMTPSender{"localhost", "2525", "", ""}
-	contact := vcardparser.RemindContact{"ttf", birthday, 12}
-	error := sender.Send(contact, []string{"recipient@test", "recipient2@test"})
-	assert.NoError(t, error)
+	c := contact.Contact{Name: "ttf", BirthDate: birthday}
+	e := sender.Send(c, []string{"recipient@test", "recipient2@test"})
+	assert.NoError(t, e)
 	d.Shutdown()
 }
 
 func Test_send_error(t *testing.T) {
-	d := startSmtpServer()
+	d := startSMTPServer()
 
 	birthday := time.Date(2016, time.August, 22, 0, 0, 0, 0, time.UTC)
 	sender := SMTPSender{"localhost", "2525", "", ""}
-	contact := vcardparser.RemindContact{"ttf", birthday, 12}
-	error := sender.Send(contact, []string{"recipient@test2"})
-	assert.EqualError(t, error, "454 4.1.1 Error: Relay access denied: test2")
+	c := contact.Contact{Name: "ttf", BirthDate: birthday}
+	e := sender.Send(c, []string{"recipient@test2"})
+	assert.EqualError(t, e, "454 4.1.1 Error: Relay access denied: test2")
 	d.Shutdown()
 }
 
-func startSmtpServer() (guerrilla.Daemon) {
+func startSMTPServer() guerrilla.Daemon {
 	cfg := &guerrilla.AppConfig{
-		LogFile: log.OutputOff.String(),
+		LogFile:      log.OutputOff.String(),
 		AllowedHosts: []string{"test"},
 	}
 
