@@ -9,6 +9,7 @@ import (
 	"github.com/s-petit/birthday-pal/vcardparser"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -29,7 +30,7 @@ func main() {
 		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
 		smtp := email.SMTPSender{Host: "smtp.fastmail.com", Port: "587", Username: "spetit@enjoycode.fr", Password: "awlh45n29jke5vsv"}
 
-		remindBirthdays(client, smtp, *recipients, *daysBefore)
+		remindBirthdays(client, smtp, *recipients, *daysBefore, time.Now())
 	}
 
 	app.Run(os.Args)
@@ -42,7 +43,7 @@ func crashIfError(err error) {
 	}
 }
 
-func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int) {
+func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int, now time.Time) {
 	cardDavPayload, err := client.Get()
 	crashIfError(err)
 

@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
+	"github.com/s-petit/birthday-pal/testdata"
 )
 
 //TODO refacto sur le projet entier : privilegier les pointeurs
@@ -36,7 +37,7 @@ END:VCARD
 `
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
-	c := contact.Contact{Name: "Florence Bar", BirthDate: birthDate(1986, time.August, 31)}
+	c := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Now: testdata.LocalDate(2018, time.August, 30)}
 
 	client.On("Get").Return(vcards, nil)
 	smtp.On("Send", c, recipients).Times(1)
@@ -48,10 +49,7 @@ END:VCARD
 
 }
 
-//TODO SPE dans go a t on un scope test comme maven ?
-func birthDate(year int, month time.Month, day int) time.Time {
-	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
-}
+
 
 type FakeClient struct {
 	mock.Mock

@@ -31,7 +31,7 @@ func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
 	return contacts, nil
 }
 
-//parseContact parses one vcardsto a contact.Contact struct.
+//parseContact parses one vcard to a contact.Contact struct.
 func parseContact(vcard vcard.VCard) (contact.Contact, error) {
 
 	birthday, err := parseVCardBirthDay(vcard)

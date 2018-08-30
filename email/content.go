@@ -22,5 +22,5 @@ func formatDate(layout string, birthday time.Time) string {
 
 //French sends a reminder email in French.
 func French(r contact.Contact) string {
-	return fmt.Sprintf(frenchBody, r.Name, r.Name, formatDate(frenchLayout, r.BirthDate), r.Age(time.Now()))
+	return fmt.Sprintf(frenchBody, r.Name, r.Name, formatDate(frenchLayout, r.BirthDate), r.Age)
 }
