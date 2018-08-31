@@ -6,7 +6,7 @@ import (
 	"github.com/s-petit/birthday-pal/birthday"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
-	"github.com/s-petit/birthday-pal/vcardparser"
+	"github.com/s-petit/birthday-pal/vcard"
 	"log"
 	"os"
 	"time"
@@ -43,14 +43,14 @@ func crashIfError(err error) {
 	}
 }
 
-func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int, now time.Time) {
+func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int, date time.Time) {
 	cardDavPayload, err := client.Get()
 	crashIfError(err)
 
-	contacts, err := vcardparser.ParseContacts(cardDavPayload)
+	contacts, err := vcard.ParseContacts(cardDavPayload)
 	crashIfError(err)
 
-	remindContacts := birthday.ContactsToRemind(contacts, daysBefore)
+	remindContacts := birthday.ContactsToRemind(contacts, daysBefore, date)
 
 	for _, contact := range remindContacts {
 		err := smtp.Send(contact, recipients)

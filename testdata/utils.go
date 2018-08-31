@@ -1,20 +1,19 @@
 package testdata
 
 import (
-	"time"
+	"fmt"
 	"github.com/flashmob/go-guerrilla"
 	"github.com/flashmob/go-guerrilla/log"
-	"fmt"
+	"time"
 )
 
 func BirthDate(year int, month time.Month, day int) time.Time {
-return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }
 
 func LocalDate(year int, month time.Month, day int) time.Time {
 	return time.Date(year, month, day, 0, 0, 0, 0, time.Local)
 }
-
 
 func StartSMTPServer() guerrilla.Daemon {
 	cfg := &guerrilla.AppConfig{

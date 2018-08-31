@@ -1,4 +1,4 @@
-package vcardparser
+package vcard
 
 import (
 	"github.com/mapaiva/vcard-go"

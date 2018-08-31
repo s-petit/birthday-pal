@@ -1,62 +1,72 @@
 package birthday
 
 import (
-	"testing"
-	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/testdata"
-	"time"
+	"github.com/s-petit/birthday-pal/vcard"
 	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 //TODO distinguer UT et ITs
 
 func Test_remind_contacts(t *testing.T) {
-	now := testdata.LocalDate(2018, time.November, 21)
-	c := contact.Contact{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23)}
-	c2 := contact.Contact{Name: "Bill", BirthDate: testdata.BirthDate(1980, time.November, 28)}
+	date := testdata.LocalDate(2018, time.November, 21)
+	c := vcard.Contact{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23)}
+	c2 := vcard.Contact{Name: "Bill", BirthDate: testdata.BirthDate(1980, time.November, 28)}
 
-	contactsToRemind := ContactsToRemind([]contact.Contact{c, c2}, 2, now)
+	contactsToRemind := ContactsToRemind([]vcard.Contact{c, c2}, 2, date)
 
-	expected := contact.Contact{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23), Age: 38}
+	expected := ContactBirthday{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23), Age: 38}
 
-	assert.Equal(t, []contact.Contact{expected}, contactsToRemind)
+	assert.Equal(t, []ContactBirthday{expected}, contactsToRemind)
 }
 
-func Test_should_calculate_age(t *testing.T) {
+/*
+func Test_should_remind_when_birthday_is_in_one_day(t *testing.T) {
 
-	birthday := testdata.BirthDate(1986, time.August, 22)
-	now := testdata.LocalDate(2018, time.August, 23)
+	birthdate := testdata.BirthDate(2016, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 21)
 
-	age := ageAfterBirthday(birthday, now)
+	contact := Contact{Name: "John", BirthDate: birthdate}
 
-	assert.Equal(t, 32, age)
+	remind := contact.ShouldRemindBirthday( 1, date)
+
+	assert.Equal(t, true, remind)
 }
 
-func Test_should_calculate_age_one_day_before_birthday(t *testing.T) {
+func Test_should_not_remind_when_birthday_is_in_more_than_one_day(t *testing.T) {
 
-	birthday := testdata.BirthDate(1986, time.August, 22)
-	now := testdata.LocalDate(2018, time.August, 21)
+	birthdate := testdata.BirthDate(2016, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 20)
 
-	age := ageAfterBirthday(birthday, now)
+	contact := Contact{Name: "John", BirthDate: birthdate}
 
-	assert.Equal(t, 31, age)
+	remind := contact.ShouldRemindBirthday(1, date)
+
+	assert.Equal(t, false, remind)
 }
 
-func Test_age_should_be_negative_when_birthday_is_in_the_future(t *testing.T) {
+func Test_should_not_remind_when_birthday_is_today(t *testing.T) {
 
-	birthday := testdata.BirthDate(2019, time.August, 22)
-	now := testdata.LocalDate(2018, time.August, 23)
+	birthdate := testdata.BirthDate(2016, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 22)
 
-	age := ageAfterBirthday(birthday, now)
+	contact := Contact{Name: "John", BirthDate: birthdate}
+	remind := contact.ShouldRemindBirthday(1)
 
-	assert.Equal(t, -1, age)
+	assert.Equal(t, false, remind)
 }
 
-func Test_age_should_be_0_for_new_born(t *testing.T) {
-	birthday := testdata.BirthDate(2017, time.November, 22)
-	now := testdata.LocalDate(2018, time.August, 23)
+func Test_should_not_remind_when_birthday_is_in_the_past(t *testing.T) {
 
-	age := ageAfterBirthday(birthday, now)
+	birthdate := testdata.BirthDate(2016, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 23)
 
-	assert.Equal(t, 0, age)
-}
+	contact := Contact{Name: "John", BirthDate: birthdate}
+	remind := contact.ShouldRemindBirthday(1, date)
+
+	assert.Equal(t, false, remind)
+}*/
+
+// TODO more tests with timezones subtilities

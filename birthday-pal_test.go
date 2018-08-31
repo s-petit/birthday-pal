@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/birthday"
+	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
-	"github.com/s-petit/birthday-pal/testdata"
 )
 
 //TODO refacto sur le projet entier : privilegier les pointeurs
@@ -31,25 +31,24 @@ BDAY:19831028
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:Florence Bar
+FN:John Bar
 BDAY:19860831
 END:VCARD
 `
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
-	c := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Now: testdata.LocalDate(2018, time.August, 30)}
+
+	contactToRemind := birthday.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
 
 	client.On("Get").Return(vcards, nil)
-	smtp.On("Send", c, recipients).Times(1)
+	smtp.On("Send", contactToRemind, recipients).Times(1)
 
-	remindBirthdays(client, smtp, recipients, 1)
+	remindBirthdays(client, smtp, recipients, 1, testdata.LocalDate(2018, time.August, 30))
 
 	client.AssertExpectations(t)
 	smtp.AssertExpectations(t)
 
 }
-
-
 
 type FakeClient struct {
 	mock.Mock
@@ -64,7 +63,7 @@ type FakeSender struct {
 	mock.Mock
 }
 
-func (c *FakeSender) Send(contact contact.Contact, recipients []string) error {
+func (c *FakeSender) Send(contact birthday.ContactBirthday, recipients []string) error {
 	c.Called(contact, recipients)
 	return nil
 }

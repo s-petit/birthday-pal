@@ -1,13 +1,13 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/birthday"
 	"net/smtp"
 )
 
 // Sender represents a SMTP client
 type Sender interface {
-	Send(contactToRemind contact.Contact, recipients []string) error
+	Send(contactToRemind birthday.ContactBirthday, recipients []string) error
 }
 
 // SMTPSender represents a SMTP client
@@ -23,7 +23,7 @@ func (ss SMTPSender) hostPort() string {
 }
 
 // Send sends an email to remind the birthday of the related contact
-func (ss SMTPSender) Send(contact contact.Contact, recipients []string) error {
+func (ss SMTPSender) Send(contact birthday.ContactBirthday, recipients []string) error {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 

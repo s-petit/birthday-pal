@@ -1,24 +1,23 @@
-package vcardparser
+package vcard
 
 import (
 	"errors"
 	"github.com/mapaiva/vcard-go"
-	"github.com/s-petit/birthday-pal/contact"
 	"io"
 	"regexp"
 	"strings"
 	"time"
 )
 
-//ParseContacts parses a cardDav payload to a contact.Contact struct.
-func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
+//ParseContacts parses a cardDav payload to a Contact struct.
+func ParseContacts(cardDavPayload string) ([]Contact, error) {
 	vCards, err := parseVCard(cardDavPayload)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var contacts []contact.Contact
+	var contacts []Contact
 	for _, card := range vCards {
 		c, err := parseContact(card)
 
@@ -31,16 +30,16 @@ func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
 	return contacts, nil
 }
 
-//parseContact parses one vcard to a contact.Contact struct.
-func parseContact(vcard vcard.VCard) (contact.Contact, error) {
+//parseContact parses one vcard to a Contact struct.
+func parseContact(vcard vcard.VCard) (Contact, error) {
 
 	birthday, err := parseVCardBirthDay(vcard)
 
 	if err != nil {
-		return contact.Contact{}, err
+		return Contact{}, err
 	}
 
-	return contact.Contact{Name: vcard.FormattedName, BirthDate: birthday}, nil
+	return Contact{Name: vcard.FormattedName, BirthDate: birthday}, nil
 }
 
 func parseVCard(contacts string) ([]vcard.VCard, error) {
