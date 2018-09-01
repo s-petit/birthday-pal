@@ -6,7 +6,7 @@ import (
 	"github.com/s-petit/birthday-pal/birthday"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
-	"github.com/s-petit/birthday-pal/vcardparser"
+	"github.com/s-petit/birthday-pal/vcard"
 	"log"
 	"os"
 	"time"
@@ -16,54 +16,50 @@ func main() {
 
 	app := cli.App("bpal", "Remind me birthdays pls.")
 
-	app.Spec = "URL USERNAME PASSWORD RECIPIENTS..."
+	app.Spec = "URL USERNAME PASSWORD DAYSBEFORE SMTPHOST SMTPPORT SMTPUSER SMTPPASS RECIPIENTS..."
 
 	var (
-		recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
-		url        = app.StringArg("URL", "", "cardDav URL")
-		username   = app.StringArg("USERNAME", "", "basic auth username")
-		password   = app.StringArg("PASSWORD", "", "basic auth password")
+		cardDavURL      = app.StringArg("URL", "", "cardDav URL")
+		cardDavUsername = app.StringArg("USERNAME", "", "basic auth username")
+		cardDavPassword = app.StringArg("PASSWORD", "", "basic auth password")
+		daysBefore      = app.IntArg("DAYSBEFORE", 1, "Send Reminder Days Before Birthday")
+		SMTPURL         = app.StringArg("SMTPHOST", "", "SMTP URL")
+		SMTPPort        = app.StringArg("SMTPPORT", "", "SMTP URL")
+		SMTPUsername    = app.StringArg("SMTPUSER", "", "SMTP username")
+		SMTPPassword    = app.StringArg("SMTPPASS", "", "SMTP password")
+		recipients      = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
 	)
 
 	app.Action = func() {
+		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
+		smtp := email.SMTPSender{Host: *SMTPURL, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
 
-		contacts, err := carddav.Contacts(*url, *username, *password)
-
-		if err != nil {
-			log.Fatal("ERROR: ", err)
-			os.Exit(1)
-		}
-
-		cards, err := vcardparser.ParseContacts(contacts)
-
-		if err != nil {
-			fmt.Println("An error occurred during VCard parsing. Please check that your URL refers to a CardDav endpoint.")
-			log.Fatal("ERROR: ", err)
-			os.Exit(1)
-		}
-
-		cpt := 0
-		//TODO as parameter pls.
-		daysBefore := 32
-
-		for _, card := range cards {
-			date, _ := vcardparser.ParseVCardBirthDay(card)
-			now := time.Now()
-			remind := birthday.Remind(now, date, daysBefore)
-
-			if remind {
-				age := birthday.Age(now, date)
-				email.Send(card.FormattedName, date, age, *recipients)
-				cpt++
-			}
-			//fmt.Printf("nom %s, anniv %s, formatted %s, remind %s \n", card.FormattedName, card.BirthDay, date, remind)
-		}
-
-		fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", cpt, daysBefore)
-
-		//fmt.Println(contacts)
+		remindBirthdays(client, smtp, *recipients, *daysBefore, time.Now())
 	}
 
-	// Invoke the app passing in os.Args
 	app.Run(os.Args)
+}
+
+func crashIfError(err error) {
+	if err != nil {
+		log.Fatal("ERROR: ", err)
+		os.Exit(1)
+	}
+}
+
+func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, daysBefore int, date time.Time) {
+	cardDavPayload, err := client.Get()
+	crashIfError(err)
+
+	contacts, err := vcard.ParseContacts(cardDavPayload)
+	crashIfError(err)
+
+	remindContacts := birthday.ContactsToRemind(contacts, daysBefore, date)
+
+	for _, contact := range remindContacts {
+		err := smtp.Send(contact, recipients)
+		crashIfError(err)
+	}
+
+	fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", len(remindContacts), daysBefore)
 }

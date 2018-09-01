@@ -1,19 +1,61 @@
 package carddav
 
-import "testing"
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
-/*func Test_call_cardDav(t *testing.T) {
+func handler() http.Handler {
 
-	payload := RetrieveContacts("lol", "lol", "lol")
+	h := func(w http.ResponseWriter, r *http.Request) {
+		vcard := "myVCard"
+		io.WriteString(w, vcard)
+	}
 
-	fmt.Println(payload)
+	r := http.NewServeMux()
+	r.HandleFunc("/contact", h)
+	return r
+}
 
-	vcards := getCards(payload)
-	assert.Equal(t, 142, len(vcards))
-	assert.Equal(t, "19831028", vcards[0].BirthDay)
-	assert.Equal(t, "19860425", vcards[1].BirthDay)
-}*/
+func Test_Get_should_return_payload(t *testing.T) {
 
-func Test_lol(t *testing.T) {
-	//TODO
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	r := BasicAuthRequest{fmt.Sprintf("%s/contact", srv.URL), "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "myVCard", s)
+	assert.NoError(t, err)
+}
+
+func Test_Get_should_return_error_when_url_goes_to_404(t *testing.T) {
+
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	r := BasicAuthRequest{fmt.Sprintf("%s/unknown", srv.URL), "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "", s)
+	assert.Error(t, err)
+}
+
+func Test_Get_should_return_error_when_url_is_malformed(t *testing.T) {
+
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	r := BasicAuthRequest{"http://://", "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "", s)
+	assert.Error(t, err)
 }
