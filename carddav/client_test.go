@@ -18,11 +18,10 @@ func handler() http.Handler {
 
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
-	//r.HandleFunc("/nil", h2)
 	return r
 }
 
-func Test_Ok(t *testing.T) {
+func Test_Get_should_return_payload(t *testing.T) {
 
 	srv := httptest.NewServer(handler())
 	defer srv.Close()
@@ -35,7 +34,7 @@ func Test_Ok(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func Test_404(t *testing.T) {
+func Test_Get_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 	srv := httptest.NewServer(handler())
 	defer srv.Close()
@@ -48,13 +47,15 @@ func Test_404(t *testing.T) {
 	assert.Error(t, err)
 }
 
-/*	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
-	w := httptest.NewRecorder()
-	handler(w, req)
+func Test_Get_should_return_error_when_url_is_malformed(t *testing.T) {
 
-	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
 
-	fmt.Println(resp.StatusCode)
-	fmt.Println(resp.Header.Get("Content-Type"))
-	fmt.Println(string(body))*/
+	r := BasicAuthRequest{"http://://", "user", "pass"}
+
+	s, err := r.Get()
+
+	assert.Equal(t, "", s)
+	assert.Error(t, err)
+}

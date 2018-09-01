@@ -3,7 +3,6 @@ package carddav
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,7 +14,7 @@ type Request interface {
 	Get() (string, error)
 }
 
-//BasicAuthRequest represents a HTTP Request
+//BasicAuthRequest represents a HTTP Request with Basic Auth
 type BasicAuthRequest struct {
 	URL      string
 	Username string
@@ -25,27 +24,27 @@ type BasicAuthRequest struct {
 //Get invokes a HTTP Get with BasicAuth and handles errors
 func (c BasicAuthRequest) Get() (string, error) {
 
-	// Contacts calls a CardDAV server with an URL and BasicAuth
-	//func Contacts(url, username, password string) (string, error) {
-
 	req, err := http.NewRequest("GET", c.URL, nil)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	req.SetBasicAuth(c.Username, c.Password)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
+
 	if resp.StatusCode != 200 {
 		return "", errors.New("a unexpected error occurred during connexion to CardDAV server - http code is " + strconv.Itoa(resp.StatusCode))
 	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
+
 	return string(body), nil
 }

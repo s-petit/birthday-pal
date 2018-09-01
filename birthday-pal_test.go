@@ -1,9 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"github.com/s-petit/birthday-pal/birthday"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/mock"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 )
@@ -12,16 +17,43 @@ import (
 //TODO ajouter de la validation sur les args, notamment urls et emails
 // https://goreportcard.com/report/github.com/vektra/mockery
 
-//TODO faire un test moins fragile, moins dependant de la date courante
-func Test_remind_birthdays(t *testing.T) {
-	//os.Args = []string{"", "https://mycarddav/com/contacts", "carddav-user", "carddav-pass", "recipient-email"}
-	/*	os.Args[1] = "https://mycarddav.com/contacts"
-		os.Args[2] = "carddav-user"
-		os.Args[3] = "carddav-pass"
-		os.Args[4] = "recipient-email"*/
+func handler() http.Handler {
 
-	client := new(FakeClient)
-	smtp := new(FakeSender)
+	h := func(w http.ResponseWriter, r *http.Request) {
+		vcard := `
+BEGIN:VCARD
+VERSION:3.0
+FN:Alexis Foo
+N:Foo;Alexis;;;
+BDAY:19831028
+END:VCARD
+`
+		io.WriteString(w, vcard)
+	}
+
+	r := http.NewServeMux()
+	r.HandleFunc("/contact", h)
+	return r
+}
+
+func Test_main(t *testing.T) {
+
+	srv := httptest.NewServer(handler())
+	defer srv.Close()
+
+	d := testdata.StartSMTPServer()
+
+	os.Args = []string{"", fmt.Sprintf("%s/contact", srv.URL), "carddav-user", "carddav-pass", "1", "localhost", "2525", "smtp-user", "smtp-pass", "recipient-email"}
+
+	main()
+
+	d.Shutdown()
+}
+
+func Test_remind_birthdays(t *testing.T) {
+
+	client := new(fakeClient)
+	smtp := new(fakeSender)
 
 	vcards := `
 BEGIN:VCARD
@@ -50,20 +82,20 @@ END:VCARD
 
 }
 
-type FakeClient struct {
+type fakeClient struct {
 	mock.Mock
 }
 
-func (c *FakeClient) Get() (string, error) {
+func (c *fakeClient) Get() (string, error) {
 	args := c.Called()
 	return args.String(0), args.Error(1)
 }
 
-type FakeSender struct {
+type fakeSender struct {
 	mock.Mock
 }
 
-func (c *FakeSender) Send(contact birthday.ContactBirthday, recipients []string) error {
+func (c *fakeSender) Send(contact birthday.ContactBirthday, recipients []string) error {
 	c.Called(contact, recipients)
 	return nil
 }

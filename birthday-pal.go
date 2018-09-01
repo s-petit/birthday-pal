@@ -16,19 +16,24 @@ func main() {
 
 	app := cli.App("bpal", "Remind me birthdays pls.")
 
-	app.Spec = "URL USERNAME PASSWORD DAYSBEFORE RECIPIENTS..."
+	app.Spec = "URL USERNAME PASSWORD DAYSBEFORE SMTPHOST SMTPPORT SMTPUSER SMTPPASS RECIPIENTS..."
 
 	var (
-		recipients      = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
 		cardDavURL      = app.StringArg("URL", "", "cardDav URL")
 		cardDavUsername = app.StringArg("USERNAME", "", "basic auth username")
 		cardDavPassword = app.StringArg("PASSWORD", "", "basic auth password")
 		daysBefore      = app.IntArg("DAYSBEFORE", 1, "Send Reminder Days Before Birthday")
+		SMTPURL         = app.StringArg("SMTPHOST", "", "SMTP URL")
+		SMTPPort        = app.StringArg("SMTPPORT", "", "SMTP URL")
+		SMTPUsername    = app.StringArg("SMTPUSER", "", "SMTP username")
+		SMTPPassword    = app.StringArg("SMTPPASS", "", "SMTP password")
+		recipients      = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
 	)
 
 	app.Action = func() {
 		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
-		smtp := email.SMTPSender{Host: "smtp.fastmail.com", Port: "587", Username: "spetit@enjoycode.fr", Password: "awlh45n29jke5vsv"}
+		smtp := email.SMTPSender{Host: *SMTPURL, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
+		//		smtp := email.SMTPSender{Host: "smtp.fastmail.com", Port: "587", Username: "spetit@enjoycode.fr", Password: "awlh45n29jke5vsv"}
 
 		remindBirthdays(client, smtp, *recipients, *daysBefore, time.Now())
 	}
