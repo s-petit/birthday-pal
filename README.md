@@ -1,6 +1,6 @@
 # birthday-pal
 
-[![Build Status](https://travis-ci.org/s-petit/birthday-pal.svg?branch=master)](https://travis-ci.org/s-petit/birthday-pal)
+[![Build Status](https://travis-ci.com/s-petit/birthday-pal.svg?branch=master)](https://travis-ci.com/s-petit/birthday-pal)
 [![GoDoc](https://godoc.org/github.com/github.com/s-petit/birthday-pal?status.svg)](https://godoc.org/github.com/s-petit/birthday-pal)
 [![Coverage Status](https://coveralls.io/repos/github/s-petit/birthday-pal/badge.svg?branch=master)](https://coveralls.io/github/s-petit/birthday-pal?branch=master)
 
@@ -55,7 +55,7 @@ Here is one exemple :
 At this point, the CLI invokation is pretty unclear and verbose and it will be evolve as something like that :
 
 
-``
+```
 birthday-pal
 
   --carddav https://USER:PASS@carddav.PROVIDER.com/URL
