@@ -1,6 +1,6 @@
 # birthday-pal
 
-[![Build Status](https://travis-ci.org/{{.RepoPath}}.svg?branch=master)](https://travis-ci.org/{{.RepoPath}})
+[![Build Status](https://travis-ci.com/{{.RepoPath}}.svg?branch=master)](https://travis-ci.com/{{.RepoPath}})
 [![GoDoc](https://godoc.org/github.com/{{.Import}}?status.svg)](https://godoc.org/{{.Import}})
 [![Coverage Status](https://coveralls.io/repos/github/{{.RepoPath}}/badge.svg?branch=master)](https://coveralls.io/github/{{.RepoPath}}?branch=master)
 
