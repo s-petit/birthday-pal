@@ -33,7 +33,6 @@ func main() {
 	app.Action = func() {
 		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
 		smtp := email.SMTPSender{Host: *SMTPURL, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
-		//		smtp := email.SMTPSender{Host: "smtp.fastmail.com", Port: "587", Username: "spetit@enjoycode.fr", Password: "awlh45n29jke5vsv"}
 
 		remindBirthdays(client, smtp, *recipients, *daysBefore, time.Now())
 	}
@@ -62,8 +61,5 @@ func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []str
 		crashIfError(err)
 	}
 
-	//fmt.Printf("nom %s, anniv %s, formatted %s, shouldRemind %s \n", card.FormattedName, card.BirthDay, date, shouldRemind)
 	fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", len(remindContacts), daysBefore)
-
-	//fmt.Println(contacts)
 }

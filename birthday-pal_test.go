@@ -15,7 +15,6 @@ import (
 
 //TODO refacto sur le projet entier : privilegier les pointeurs
 //TODO ajouter de la validation sur les args, notamment urls et emails
-// https://goreportcard.com/report/github.com/vektra/mockery
 
 func handler() http.Handler {
 
@@ -46,6 +45,9 @@ func Test_main(t *testing.T) {
 	os.Args = []string{"", fmt.Sprintf("%s/contact", srv.URL), "carddav-user", "carddav-pass", "1", "localhost", "2525", "smtp-user", "smtp-pass", "recipient-email"}
 
 	main()
+
+	// TODO add an assertion
+	// TODO why the test does not crash with a wrong smtp creds ?
 
 	d.Shutdown()
 }
