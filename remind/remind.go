@@ -1,4 +1,4 @@
-package birthday
+package remind
 
 import "time"
 

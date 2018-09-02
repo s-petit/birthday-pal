@@ -2,7 +2,7 @@ package email
 
 import (
 	"fmt"
-	"github.com/s-petit/birthday-pal/birthday"
+	"github.com/s-petit/birthday-pal/remind"
 	"time"
 )
 
@@ -21,6 +21,6 @@ func formatDate(layout string, birthday time.Time) string {
 //TODO implement i18n
 
 //French sends a reminder email in French.
-func French(c birthday.ContactBirthday) string {
+func French(c remind.ContactBirthday) string {
 	return fmt.Sprintf(frenchBody, c.Name, c.Name, formatDate(frenchLayout, c.BirthDate), c.Age)
 }

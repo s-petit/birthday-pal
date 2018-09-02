@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-//TODO testdata.BirthDate = date naissance birthDay = Anniver
-
 func Test_should_calculate_age(t *testing.T) {
 
 	birthday := testdata.BirthDate(1986, time.August, 22)

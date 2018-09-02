@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/s-petit/birthday-pal/birthday"
+	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/mock"
 	"io"
@@ -42,7 +42,7 @@ func Test_main(t *testing.T) {
 
 	d := testdata.StartSMTPServer()
 
-	os.Args = []string{"", fmt.Sprintf("%s/contact", srv.URL), "carddav-user", "carddav-pass", "1", "localhost", "2525", "smtp-user", "smtp-pass", "recipient-email"}
+	os.Args = []string{"", fmt.Sprintf("%s/contact", srv.URL), "carddav-user", "carddav-pass", "1", "false", "localhost", "2525", "smtp-user", "smtp-pass", "recipient-email"}
 
 	main()
 
@@ -72,8 +72,8 @@ END:VCARD
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
-	contactToRemind := birthday.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
-	reminder := birthday.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
+	contactToRemind := remind.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
+	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
 
 	client.On("Get").Return(vcards, nil)
 	smtp.On("Send", contactToRemind, recipients).Times(1)
@@ -98,7 +98,7 @@ type fakeSender struct {
 	mock.Mock
 }
 
-func (c *fakeSender) Send(contact birthday.ContactBirthday, recipients []string) error {
+func (c *fakeSender) Send(contact remind.ContactBirthday, recipients []string) error {
 	c.Called(contact, recipients)
 	return nil
 }
