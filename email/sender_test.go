@@ -1,7 +1,7 @@
 package email
 
 import (
-	birthday2 "github.com/s-petit/birthday-pal/birthday"
+	birthday2 "github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"

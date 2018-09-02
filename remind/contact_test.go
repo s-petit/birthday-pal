@@ -1,4 +1,4 @@
-package birthday
+package remind
 
 import (
 	"github.com/s-petit/birthday-pal/testdata"
@@ -15,7 +15,7 @@ func Test_remind_contacts(t *testing.T) {
 	c := vcard.Contact{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23)}
 	c2 := vcard.Contact{Name: "Bill", BirthDate: testdata.BirthDate(1980, time.November, 28)}
 
-	contactsToRemind := ContactsToRemind([]vcard.Contact{c, c2}, 2, date)
+	contactsToRemind := ContactsToRemind([]vcard.Contact{c, c2}, Reminder{CurrentDate: date, NbDaysBeforeBDay: 2})
 
 	expected := ContactBirthday{Name: "John", BirthDate: testdata.BirthDate(1980, time.November, 23), Age: 38}
 
