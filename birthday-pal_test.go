@@ -73,11 +73,12 @@ END:VCARD
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := birthday.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
+	reminder := birthday.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
 
 	client.On("Get").Return(vcards, nil)
 	smtp.On("Send", contactToRemind, recipients).Times(1)
 
-	remindBirthdays(client, smtp, recipients, 1, testdata.LocalDate(2018, time.August, 30))
+	remindBirthdays(client, smtp, recipients, reminder)
 
 	client.AssertExpectations(t)
 	smtp.AssertExpectations(t)

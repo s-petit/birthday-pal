@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/{{.RepoPath}}.svg?branch=master)](https://travis-ci.com/{{.RepoPath}})
 [![GoDoc](https://godoc.org/github.com/{{.Import}}?status.svg)](https://godoc.org/{{.Import}})
-[![Coverage Status](https://coveralls.io/repos/github/{{.RepoPath}}/badge.svg?branch=master)](https://coveralls.io/github/{{.RepoPath}}?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/s-petit/birthday-pal/badge.svg?branch=master)](https://coveralls.io/github/s-petit/birthday-pal?branch=master)
 
 {{.Synopsis}}
 
