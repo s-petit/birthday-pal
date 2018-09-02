@@ -55,7 +55,7 @@ Here is one exemple :
 At this point, the CLI invokation is pretty unclear and verbose and it will be evolve as something like that :
 
 
-``
+```
 birthday-pal
 
   --carddav https://USER:PASS@carddav.PROVIDER.com/URL
