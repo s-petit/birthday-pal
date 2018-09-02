@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/jawher/mow.cli"
-	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
+	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/vcard"
 	"log"
 	"os"
