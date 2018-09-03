@@ -9,7 +9,7 @@ import (
 const frenchBody = "To: Birthday Pals \r\n" +
 	"Subject: Anniversaire de %s !\r\n" +
 	"\r\n" +
-	"Ce sera l'anniversaire de %s le %s. Il aura %d ans. Pensez a le lui souhaiter !\r\n"
+	"Ce sera l'anniversaire de %s le %s. Il aura %d an(s). Pensez a le lui souhaiter !\r\n"
 
 const frenchLayout = "02/01"
 const englishLayout = "01/01"

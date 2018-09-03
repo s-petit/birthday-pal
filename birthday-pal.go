@@ -12,28 +12,69 @@ import (
 	"time"
 )
 
+//TODO DOCKER : pb de date qui ne correspond pas a la date hote, pb de smtp qui part pas
 func main() {
 
-	app := cli.App("bpal", "Remind me birthdays pls.")
+	app := cli.App("birthday-pal", "Remind me birthdays pls.")
 
-	app.Spec = "CARDDAVURL CARDDAVUSER CARDDAVPASS DAYSBEFORE REMINDEVERYDAY SMTPHOST SMTPPORT SMTPUSER SMTPPASS RECIPIENTS..."
+	app.Spec = "[--carddav-url] [--carddav-user] [--carddav-pass] " +
+		"[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
+		"[--days-before] [--remind-everyday] " +
+		"RECIPIENTS..."
 
 	var (
-		cardDavURL      = app.StringArg("CARDDAVURL", "", "cardDav URL")
-		cardDavUsername = app.StringArg("CARDDAVUSER", "", "basic auth username")
-		cardDavPassword = app.StringArg("CARDDAVPASS", "", "basic auth password")
-		daysBefore      = app.IntArg("DAYSBEFORE", 1, "Send Reminder Days Before Birthday")
-		remindEveryDay  = app.BoolArg("REMINDEVERYDAY", false, "Send only one reminder n days before bday or one reminder per day until bday ")
-		SMTPURL         = app.StringArg("SMTPHOST", "", "SMTP URL")
-		SMTPPort        = app.StringArg("SMTPPORT", "", "SMTP URL")
-		SMTPUsername    = app.StringArg("SMTPUSER", "", "SMTP username")
-		SMTPPassword    = app.StringArg("SMTPPASS", "", "SMTP password")
-		recipients      = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
+		cardDavURL = app.String(cli.StringOpt{
+			Name:   "carddav-url",
+			Desc:   "CardDAV server URL",
+			EnvVar: "BPAL_CARDDAV_URL",
+		})
+
+		cardDavUsername = app.String(cli.StringOpt{
+			Name:   "carddav-user",
+			Desc:   "CardDAV server username",
+			EnvVar: "BPAL_CARDDAV_USERNAME",
+		})
+
+		cardDavPassword = app.String(cli.StringOpt{
+			Name:   "carddav-pass",
+			Desc:   "CardDAV server password",
+			EnvVar: "BPAL_CARDDAV_PASSWORD",
+		})
+
+		SMTPHost = app.String(cli.StringOpt{
+			Name:   "smtp-host",
+			Desc:   "SMTP server hostname",
+			EnvVar: "BPAL_SMTP_HOST",
+		})
+
+		SMTPPort = app.Int(cli.IntOpt{
+			Name:   "smtp-port",
+			Value:  587,
+			Desc:   "SMTP server port",
+			EnvVar: "BPAL_SMTP_PORT",
+		})
+
+		SMTPUsername = app.String(cli.StringOpt{
+			Name:   "smtp-user",
+			Desc:   "SMTP server username",
+			EnvVar: "BPAL_SMTP_USERNAME",
+		})
+
+		SMTPPassword = app.String(cli.StringOpt{
+			Name:   "smtp-pass",
+			Desc:   "SMTP server password",
+			EnvVar: "BPAL_SMTP_PASSWORD",
+		})
+
+		recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
+
+		remindEveryDay = app.BoolOpt("e remind-everyday", false, "Send a reminder everyday until birthday instead of once.")
+		daysBefore     = app.IntOpt("d days-before", 0, "Number of days before birthday you want to be reminded.")
 	)
 
 	app.Action = func() {
 		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
-		smtp := email.SMTPSender{Host: *SMTPURL, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
+		smtp := email.SMTPSender{Host: *SMTPHost, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
 		reminder := remind.Reminder{CurrentDate: time.Now(), NbDaysBeforeBDay: *daysBefore, EveryDayUntilBDay: *remindEveryDay}
 
 		remindBirthdays(client, smtp, *recipients, reminder)
