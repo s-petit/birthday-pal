@@ -78,7 +78,7 @@ Prequisites :
 
 - Go or Docker
 
-## Installation
+## Installation with Go
 To install this package, run the following:
 
 ```shell
@@ -86,6 +86,17 @@ go get {{.Import}}
 ```
 
 If you do not have the go command on your system, you need to [Install Go](http://golang.org/doc/install/source) first
+
+## Installation with Docker
+To install this package, run the following:
+
+```shell
+docker build -t=birthday-pal-image .
+docker run birthday-pal-image birthday-pal [ARGS]
+```
+
+If you do not have the docker command on your system, you need to [Install Docker](https://docs.docker.com/install/) first
+
 
 # Package Documentation
 
