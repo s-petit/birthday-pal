@@ -39,3 +39,6 @@ setup:
 	go get github.com/modocache/gover
 	go get github.com/divan/autoreadme
 	go get -t -u ./...
+
+setup-prod:
+	go get github.com/s-petit/birthday-pal
