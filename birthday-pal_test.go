@@ -42,7 +42,7 @@ func Test_main(t *testing.T) {
 
 	d := testdata.StartSMTPServer()
 
-	os.Args = []string{"", fmt.Sprintf("%s/contact", srv.URL), "carddav-user", "carddav-pass", "1", "false", "localhost", "2525", "smtp-user", "smtp-pass", "recipient-email"}
+	os.Args = []string{"", fmt.Sprintf("--carddav-url=%s/contact", srv.URL), "--smtp-host=localhost", "--smtp-port=2525", "--smtp-user=smtp-user", "--smtp-pass=smtp-pass", "recipient-email"}
 
 	main()
 
@@ -78,7 +78,7 @@ END:VCARD
 	client.On("Get").Return(vcards, nil)
 	smtp.On("Send", contactToRemind, recipients).Times(1)
 
-	remindBirthdays(client, smtp, recipients, reminder)
+	remindBirthdays(client, smtp, reminder, recipients)
 
 	client.AssertExpectations(t)
 	smtp.AssertExpectations(t)

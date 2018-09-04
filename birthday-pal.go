@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jawher/mow.cli"
 	"github.com/s-petit/birthday-pal/carddav"
 	"github.com/s-petit/birthday-pal/email"
@@ -23,6 +22,9 @@ func main() {
 		"RECIPIENTS..."
 
 	var (
+
+		// OPTS
+
 		cardDavURL = app.String(cli.StringOpt{
 			Name:   "carddav-url",
 			Desc:   "CardDAV server URL",
@@ -66,18 +68,48 @@ func main() {
 			EnvVar: "BPAL_SMTP_PASSWORD",
 		})
 
-		recipients = app.StringsArg("RECIPIENTS", nil, "Reminders email recipients")
+		remindEveryDay = app.Bool(cli.BoolOpt{
+			Name:  "e remind-everyday",
+			Value: false,
+			Desc:  "Send a reminder everyday until birthday instead of once.",
+		})
 
-		remindEveryDay = app.BoolOpt("e remind-everyday", false, "Send a reminder everyday until birthday instead of once.")
-		daysBefore     = app.IntOpt("d days-before", 0, "Number of days before birthday you want to be reminded.")
+		daysBefore = app.Int(cli.IntOpt{
+			Name:  "d days-before",
+			Value: 0,
+			Desc:  "Number of days before birthday you want to be reminded.",
+		})
+
+		// ARGS
+
+		recipients = app.Strings(cli.StringsArg{
+			Name: "RECIPIENTS",
+			Desc: "Reminders email recipients",
+		})
 	)
 
 	app.Action = func() {
-		client := carddav.BasicAuthRequest{URL: *cardDavURL, Username: *cardDavUsername, Password: *cardDavPassword}
-		smtp := email.SMTPSender{Host: *SMTPHost, Port: *SMTPPort, Username: *SMTPUsername, Password: *SMTPPassword}
-		reminder := remind.Reminder{CurrentDate: time.Now(), NbDaysBeforeBDay: *daysBefore, EveryDayUntilBDay: *remindEveryDay}
 
-		remindBirthdays(client, smtp, *recipients, reminder)
+		client := carddav.BasicAuthRequest{
+			URL:      *cardDavURL,
+			Username: *cardDavUsername,
+			Password: *cardDavPassword,
+		}
+
+		smtp := email.SMTPSender{
+			Host:     *SMTPHost,
+			Port:     *SMTPPort,
+			Username: *SMTPUsername,
+			Password: *SMTPPassword,
+		}
+
+		reminder := remind.Reminder{
+			CurrentDate:       time.Now(),
+			NbDaysBeforeBDay:  *daysBefore,
+			EveryDayUntilBDay: *remindEveryDay,
+		}
+
+		remindBirthdays(client, smtp, reminder, *recipients)
 	}
 
 	app.Run(os.Args)
@@ -89,7 +121,7 @@ func crashIfError(err error) {
 	}
 }
 
-func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []string, reminder remind.Reminder) {
+func remindBirthdays(client carddav.Request, smtp email.Sender, reminder remind.Reminder, recipients []string) {
 	cardDavPayload, err := client.Get()
 	crashIfError(err)
 
@@ -103,5 +135,5 @@ func remindBirthdays(client carddav.Request, smtp email.Sender, recipients []str
 		crashIfError(err)
 	}
 
-	fmt.Printf("Rappels envoyés pour les %d anniversaire(s) qui auront lieu dans les %d jours.", len(remindContacts), reminder.NbDaysBeforeBDay)
+	log.Printf("--> %d Reminders sent. %d contact will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
 }

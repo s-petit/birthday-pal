@@ -22,7 +22,7 @@ func ContactsToRemind(contacts []vcard.Contact, reminder Reminder) []ContactBirt
 	for _, c := range contacts {
 
 		if reminder.remindEveryDay(c.BirthDate) || reminder.remindOnce(c.BirthDate) {
-			contactsToRemind = append(contactsToRemind, ContactBirthday{c.Name, c.BirthDate, c.Age(reminder.remindDay())})
+			contactsToRemind = append(contactsToRemind, ContactBirthday{c.Name, c.BirthDate, c.Age(reminder.RemindDay())})
 		}
 	}
 
