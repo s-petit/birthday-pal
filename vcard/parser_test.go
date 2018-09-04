@@ -113,6 +113,12 @@ func Test_parseDate_YYYY_MM_DD_should_return_error_when_date_is_malformed(t *tes
 	assert.Error(t, err)
 }
 
+func Test_parseDate_should_ignore_empty_bday(t *testing.T) {
+	date, err := parseVCardBirthDay(vcard.VCard{BirthDay: ""})
+	assert.Equal(t, time.Time{}, date)
+	assert.NoError(t, err)
+}
+
 func Test_parseDate_should_return_error_when_layout_is_unknown(t *testing.T) {
 	_, err := parseVCardBirthDay(vcard.VCard{BirthDay: "25-12-2016"})
 	assert.Error(t, err)

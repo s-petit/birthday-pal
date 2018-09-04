@@ -21,14 +21,22 @@ type BasicAuthRequest struct {
 	Password string
 }
 
+func (c BasicAuthRequest) request() (*http.Request, error) {
+
+	//TODO gerer le cas avec ou sans les creds dans URL
+
+	req, err := http.NewRequest("GET", c.URL, nil)
+	req.SetBasicAuth(c.Username, c.Password)
+	return req, err
+}
+
 //Get invokes a HTTP Get with BasicAuth and handles errors
 func (c BasicAuthRequest) Get() (string, error) {
 
-	req, err := http.NewRequest("GET", c.URL, nil)
+	req, err := c.request()
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(c.Username, c.Password)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

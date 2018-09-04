@@ -55,6 +55,10 @@ func parseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 
 	birthdate := vcard.BirthDay
 
+	if birthdate == "" {
+		return time.Time{}, nil
+	}
+
 	//YYYY-MM-DD
 	vcardBdayAcceptedFormat := regexp.MustCompile("(\\d{4})-(\\d{2})-(\\d{2})")
 	//YYYYMMDD
@@ -75,6 +79,6 @@ func parseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 		return bday, e
 	}
 
-	return time.Time{}, errors.New("unknown vcard bday format")
+	return time.Time{}, errors.New("unknown vcard bday format: " + vcard.BirthDay)
 
 }

@@ -3,6 +3,7 @@ package email
 import (
 	"github.com/s-petit/birthday-pal/remind"
 	"net/smtp"
+	"strconv"
 )
 
 // Sender represents a SMTP client
@@ -13,13 +14,13 @@ type Sender interface {
 // SMTPSender represents a SMTP client
 type SMTPSender struct {
 	Host     string
-	Port     string
+	Port     int
 	Username string
 	Password string
 }
 
 func (ss SMTPSender) hostPort() string {
-	return ss.Host + ":" + ss.Port
+	return ss.Host + ":" + strconv.Itoa(ss.Port)
 }
 
 // Send sends an email to remind the birthday of the related contact
