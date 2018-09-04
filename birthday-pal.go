@@ -134,5 +134,5 @@ func remindBirthdays(client carddav.Request, smtp email.Sender, reminder remind.
 		crashIfError(err)
 	}
 
-	log.Printf("--> %d Reminders sent. %d contact will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
+	log.Printf("--> %d Reminder(s) sent. %d contact(s) will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
 }
