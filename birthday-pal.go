@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-//TODO DOCKER : pb de date qui ne correspond pas a la date hote, pb de smtp qui part pas
 func main() {
 
 	app := cli.App("birthday-pal", "Remind me birthdays pls.")

@@ -28,8 +28,6 @@ func (ss SMTPSender) Send(contact remind.ContactBirthday, recipients []string) e
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
-	// TODO mail hebdo pour les anniv de la semaine (notion d'inclure les 7 jours).
-
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
 	err := smtp.SendMail(

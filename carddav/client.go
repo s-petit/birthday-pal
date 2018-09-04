@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-//TODO SPE better go doc
-
 //Request represents a HTTP Request
 type Request interface {
 	Get() (string, error)
@@ -22,9 +20,6 @@ type BasicAuthRequest struct {
 }
 
 func (c BasicAuthRequest) request() (*http.Request, error) {
-
-	//TODO gerer le cas avec ou sans les creds dans URL
-
 	req, err := http.NewRequest("GET", c.URL, nil)
 	req.SetBasicAuth(c.Username, c.Password)
 	return req, err

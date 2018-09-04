@@ -54,16 +54,16 @@ Here is one exemple :
 ```
 birthday-pal
 
-  --carddav-url https://carddav.PROVIDER.com/URL
-  --carddav-user zeUser
-  --carddav-pass zePass
-  --smtp-host smtp.PROVIDER.com
-  --smtp-port 587
-  --smtpuser smtpUser
-  --smtppass smtpPass
-  --days-before 3
-  --remind-everyday
-  --recipients foo@mail.com bar@mail.com
+  --carddav-url https://carddav.PROVIDER.com/URL \
+  --carddav-user zeUser \
+  --carddav-pass zePass \
+  --smtp-host smtp.PROVIDER.com \
+  --smtp-port 587 \
+  --smtp-user smtpUser \
+  --smtp-pass smtpPass \
+  --days-before 3 \
+  --remind-everyday \
+  foo@mail.com bar@mail.com
 ```
 
 There are plenty of parameters and it can be annoying to retype them for each call. So you can export CardDAV and SMTP values inside
@@ -124,6 +124,13 @@ To install this package, run the following:
 docker build -t=birthday-pal-image .
 docker run birthday-pal-image birthday-pal [ARGS]
 ```
+
+### Timezone issues
+
+If you encounter timezone issues with your container, please read this:
+
+Mac users: https://github.com/docker/for-mac/issues/17#issuecomment-290667509
+Linux users: https://stackoverflow.com/questions/24551592/how-to-make-sure-dockers-time-syncs-with-that-of-the-host
 
 If you do not have the docker command on your system, you need to [Install Docker](https://docs.docker.com/install/) first
 

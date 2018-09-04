@@ -48,7 +48,6 @@ func Test_should_remind_once_a_given_days_before_until_birthday(t *testing.T) {
 	assert.Equal(t, false, remind)
 }
 
-//TODO interdire nbdaysbefore negatif ?
 func Test_should_remind_once_when_current_day_is_a_birthday(t *testing.T) {
 	birthday := testdata.BirthDate(2016, time.August, 22)
 	aug22 := testdata.LocalDate(2018, time.August, 22)

@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-//TODO revoir le nommage des structs metier, ainsi que des variables et methodes
-
 //ContactBirthday represents a Contact eligible for reminder because his bday is near.
 type ContactBirthday struct {
 	Name      string

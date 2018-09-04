@@ -14,12 +14,9 @@ const frenchBody = "To: Birthday Pals \r\n" +
 const frenchLayout = "02/01"
 const englishLayout = "01/01"
 
-//TODO move elsewhere
 func formatDate(layout string, date time.Time) string {
 	return date.Format(layout)
 }
-
-//TODO implement i18n
 
 //French sends a reminder email in French.
 func French(contact remind.ContactBirthday) string {

@@ -13,9 +13,6 @@ import (
 	"time"
 )
 
-//TODO refacto sur le projet entier : privilegier les pointeurs
-//TODO ajouter de la validation sur les args, notamment urls et emails
-
 func handler() http.Handler {
 
 	h := func(w http.ResponseWriter, r *http.Request) {
@@ -45,9 +42,6 @@ func Test_main(t *testing.T) {
 	os.Args = []string{"", fmt.Sprintf("--carddav-url=%s/contact", srv.URL), "--smtp-host=localhost", "--smtp-port=2525", "--smtp-user=smtp-user", "--smtp-pass=smtp-pass", "recipient-email"}
 
 	main()
-
-	// TODO add an assertion
-	// TODO why the test does not crash with a wrong smtp creds ?
 
 	d.Shutdown()
 }
