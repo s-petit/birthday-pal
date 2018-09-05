@@ -25,11 +25,11 @@ func (r Reminder) remindEveryDay(birthDate time.Time) bool {
 		(birthDate.Day() >= dateAtMidnight.Day() && birthDate.Month() >= dateAtMidnight.Month())
 }
 
-func (r *Reminder) dateAtMidnight() time.Time {
+func (r Reminder) dateAtMidnight() time.Time {
 	return time.Date(r.CurrentDate.Year(), r.CurrentDate.Month(), r.CurrentDate.Day(), 0, 0, 0, 0, time.Local)
 }
 
 //RemindDay returns the day to remind
-func (r *Reminder) RemindDay() time.Time {
+func (r Reminder) RemindDay() time.Time {
 	return r.dateAtMidnight().AddDate(0, 0, r.NbDaysBeforeBDay)
 }

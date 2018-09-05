@@ -12,6 +12,6 @@ type Contact struct {
 }
 
 // Age return the Age of the contact at a given date
-func (c *Contact) Age(date time.Time) int {
+func (c Contact) Age(date time.Time) int {
 	return age.AgeAt(c.BirthDate, date)
 }

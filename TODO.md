@@ -11,7 +11,5 @@
 
 
 ## refacto
-
-- Verify in the whole project that we favor pointers instead of values.
 - Add unit test with timezone weird cases (wish bday to a contact which lives in LA or Sydney)
 
