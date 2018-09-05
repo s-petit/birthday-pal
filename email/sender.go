@@ -6,25 +6,25 @@ import (
 	"strconv"
 )
 
-// Sender represents a SMTP client
+// Sender holds methods necessary for sending reminder emails.
 type Sender interface {
 	Send(contactToRemind remind.ContactBirthday, recipients []string) error
 }
 
-// SMTPSender represents a SMTP client
-type SMTPSender struct {
+// SMTPClient represents a SMTP client with its credentials
+type SMTPClient struct {
 	Host     string
 	Port     int
 	Username string
 	Password string
 }
 
-func (ss SMTPSender) hostPort() string {
+func (ss SMTPClient) hostPort() string {
 	return ss.Host + ":" + strconv.Itoa(ss.Port)
 }
 
-// Send sends an email to remind the birthday of the related contact
-func (ss SMTPSender) Send(contact remind.ContactBirthday, recipients []string) error {
+//Send sends an email to recipients about the related contact incoming birthday.
+func (ss SMTPClient) Send(contact remind.ContactBirthday, recipients []string) error {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 

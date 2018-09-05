@@ -50,7 +50,7 @@ func parseVCard(contacts string) ([]vcard.VCard, error) {
 	return vcard.GetVCardsByReader(multiReader)
 }
 
-//ParseVCardBirthDay parse a Vcard BirthDay to a valid time
+//ParseVCardBirthDay parse a Vcard BirthDay field to a valid golang time
 func parseVCardBirthDay(vcard vcard.VCard) (time.Time, error) {
 
 	birthdate := vcard.BirthDay

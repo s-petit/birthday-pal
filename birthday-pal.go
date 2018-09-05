@@ -95,7 +95,7 @@ func main() {
 			Password: *cardDavPassword,
 		}
 
-		smtp := email.SMTPSender{
+		smtp := email.SMTPClient{
 			Host:     *SMTPHost,
 			Port:     *SMTPPort,
 			Username: *SMTPUsername,

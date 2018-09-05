@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -21,10 +23,11 @@ BEGIN:VCARD
 VERSION:3.0
 FN:Alexis Foo
 N:Foo;Alexis;;;
-BDAY:19831028
+BDAY:%s
 END:VCARD
 `
-		io.WriteString(w, vcard)
+		bday := vcardBday(time.Now())
+		io.WriteString(w, fmt.Sprintf(vcard, bday))
 	}
 
 	r := http.NewServeMux()
@@ -39,9 +42,16 @@ func Test_main(t *testing.T) {
 
 	d := testdata.StartSMTPServer()
 
-	os.Args = []string{"", fmt.Sprintf("--carddav-url=%s/contact", srv.URL), "--smtp-host=localhost", "--smtp-port=2525", "--smtp-user=smtp-user", "--smtp-pass=smtp-pass", "recipient-email"}
+	os.Args = []string{"",
+		fmt.Sprintf("--carddav-url=%s/contact", srv.URL),
+		"--smtp-host=localhost",
+		"--smtp-port=2525",
+		"--smtp-user=user@test",
+		"--smtp-pass=smtp-pass",
+		"recipient@test",
+	}
 
-	main()
+	assert.NotPanics(t, main)
 
 	d.Shutdown()
 }
@@ -77,6 +87,21 @@ END:VCARD
 	client.AssertExpectations(t)
 	smtp.AssertExpectations(t)
 
+}
+
+func vcardBday(date time.Time) string {
+	year := strconv.Itoa(date.Year())
+	month := strconv.Itoa(int(date.Month()))
+	day := strconv.Itoa(date.Day())
+
+	if int(date.Month()) < 10 {
+		month = "0" + month
+	}
+	if date.Day() < 10 {
+		day = "0" + day
+	}
+	bday := year + month + day
+	return bday
 }
 
 type fakeClient struct {

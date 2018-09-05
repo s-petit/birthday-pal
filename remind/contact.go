@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-//ContactBirthday represents a Contact eligible for reminder because his bday is near.
+//ContactBirthday represents a Contact with all information necessary for the email content.
 type ContactBirthday struct {
 	Name      string
 	BirthDate time.Time
 	Age       int
 }
 
-//ContactsToRemind filters every contacts which the bday occurs in daysBefore days
+//ContactsToRemind filters every contacts which the bday matches the reminder's conditions.
 func ContactsToRemind(contacts []vcard.Contact, reminder Reminder) []ContactBirthday {
 
 	var contactsToRemind []ContactBirthday

@@ -7,28 +7,28 @@ import (
 	"strconv"
 )
 
-//Request represents a HTTP Request
+//Request holds methods necessary for requesting cardDAV HTTP servers.
 type Request interface {
 	Get() (string, error)
 }
 
-//BasicAuthRequest represents a HTTP Request with Basic Auth
+//BasicAuthRequest represents a CardDAV HTTP Request with Basic Auth
 type BasicAuthRequest struct {
 	URL      string
 	Username string
 	Password string
 }
 
-func (c BasicAuthRequest) request() (*http.Request, error) {
-	req, err := http.NewRequest("GET", c.URL, nil)
-	req.SetBasicAuth(c.Username, c.Password)
-	return req, err
+func (r BasicAuthRequest) request() (*http.Request, error) {
+	httpRequest, err := http.NewRequest("GET", r.URL, nil)
+	httpRequest.SetBasicAuth(r.Username, r.Password)
+	return httpRequest, err
 }
 
 //Get invokes a HTTP Get with BasicAuth and handles errors
-func (c BasicAuthRequest) Get() (string, error) {
+func (r BasicAuthRequest) Get() (string, error) {
 
-	req, err := c.request()
+	req, err := r.request()
 	if err != nil {
 		return "", err
 	}
