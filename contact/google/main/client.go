@@ -1,17 +1,21 @@
-package google
+package main
 
 import (
 	"log"
-	"net/http"
 	"fmt"
 	"google.golang.org/api/calendar/v3"
 	"time"
 	"context"
+	"net/http"
+	"strconv"
+	"io/ioutil"
+	"google.golang.org/api/people/v1"
+	"github.com/s-petit/birthday-pal/contact/google"
 )
 
 func main() {
 	// Initialize authentication
-	auth := new(Authentication)
+	auth := new(google.Authentication)
 
 	// Load the configuration from client_secret.json
 	config, err := auth.Config()
@@ -29,22 +33,66 @@ func main() {
 	ctx := context.Background()
 	client := config.Client(ctx, token)
 
-	req, err := http.NewRequest("PROPFIND", "https://www.googleapis.com/.well-known/carddav", nil)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	//https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays
 
+	//manualRequest(client)
+
+	googleApiRequest(client)
+
+}
+
+func googleApiRequest(client *http.Client) {
+	people, err := people.New(client)
+	if err != nil {
+		log.Fatal("could not create the google calendar service")
+	}
+	fmt.Println(people)
+	response, err := people.People.Connections.List("people/me").PageSize(500).RequestMaskIncludeField("person.names,person.birthdays").Do()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(response.TotalPeople)
+	fmt.Println(len(response.Connections))
+
+	// Loop over the events and print them out.
+	for _, i := range response.Connections {
+		/*for _, n := range i.Names {
+			fmt.Println(n.DisplayName)
+			//fmt.Printf("%s: %s\n", n.DisplayName, i.Birthdays[0].Text)
+		}*/
+		for _, b := range i.Birthdays {
+			//fmt.Println(b.Text)
+			fmt.Printf("%s: %d\n", i.Names[0].DisplayName, b.Date.Month)
+		}
+		//var when string
+		//fmt.Printf("%s: %s (%s)\n", i.Names, i.Birthdays, when)
+	}
+}
+
+func manualRequest(client *http.Client) {
+	req, err := http.NewRequest("GET", "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
-
-	fmt.Println(resp.StatusCode)
+	if resp.StatusCode != 200 {
+		log.Fatal("a unexpected error occurred during connexion to Google People API server - http code is " + strconv.Itoa(resp.StatusCode))
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(body))
 }
 
 func cal() {
 	// Initialize authentication
-	auth := new(Authentication)
+	auth := new(google.Authentication)
 
 	// Load the configuration from client_secret.json
 	config, err := auth.Config()

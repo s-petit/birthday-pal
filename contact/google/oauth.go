@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"io/ioutil"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
+	"google.golang.org/api/people/v1"
 	"os/user"
 	"path/filepath"
 	"os"
@@ -109,7 +109,7 @@ func (auth *Authentication) Config() (*oauth2.Config, error) {
 		return nil, fmt.Errorf("unable to read client secret file: %v", err)
 	}
 
-	config, err := google.ConfigFromJSON(data, calendar.CalendarReadonlyScope)
+	config, err := google.ConfigFromJSON(data, people.ContactsReadonlyScope)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse client secret file to config: %v", err)
 	}
@@ -152,7 +152,7 @@ func (auth *Authentication) ConfigPath() (string, error) {
 
 		// Create the path to the default configuration
 		auth.configPath = filepath.Join(
-			usr.HomeDir, "dev/go/src/github.com/s-petit/birthday-pal/main/.birthday-pal", "client_secret.json",
+			usr.HomeDir, "dev/go/src/github.com/s-petit/birthday-pal/contact/google/.birthday-pal", "client_secret.json",
 		)
 	}
 
