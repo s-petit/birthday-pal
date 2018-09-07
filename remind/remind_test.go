@@ -63,17 +63,17 @@ func Test_should_remind_once_with_different_timezones(t *testing.T) {
 	SydneyLoc, _ := time.LoadLocation("Australia/Sydney")
 	ParisLoc, _ := time.LoadLocation("Europe/Paris")
 
-	aug22LA := time.Date(2018, time.August, 22, 0, 0 ,0 , 0, LAloc)
+	aug22LA := time.Date(2018, time.August, 22, 0, 0, 0, 0, LAloc)
 
 	remind := Reminder{CurrentDate: aug22LA, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(birthday)
 	assert.Equal(t, true, remind)
 
-	aug22Sydney := time.Date(2018, time.August, 22, 0, 0 ,0 , 0, SydneyLoc)
+	aug22Sydney := time.Date(2018, time.August, 22, 0, 0, 0, 0, SydneyLoc)
 
 	remind = Reminder{CurrentDate: aug22Sydney, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(birthday)
 	assert.Equal(t, true, remind)
 
-	aug22Paris := time.Date(2018, time.August, 22, 0, 0 ,0 , 0, ParisLoc)
+	aug22Paris := time.Date(2018, time.August, 22, 0, 0, 0, 0, ParisLoc)
 
 	remind = Reminder{CurrentDate: aug22Paris, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(birthday)
 	assert.Equal(t, true, remind)
