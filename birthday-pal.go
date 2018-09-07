@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/jawher/mow.cli"
-	"github.com/s-petit/birthday-pal/carddav"
+	"github.com/s-petit/birthday-pal/contact/carddav"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/vcard"
