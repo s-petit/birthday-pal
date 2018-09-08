@@ -42,3 +42,6 @@ setup:
 
 setup-prod:
 	go get github.com/s-petit/birthday-pal
+
+build:
+	GOARCH=amd64 GOOS=linux go build
