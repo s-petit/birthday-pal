@@ -12,11 +12,18 @@ type Request interface {
 	Get() (string, error)
 }
 
+
+//TODO decorreleer basic auth de carddav ?
 //BasicAuthRequest represents a CardDAV HTTP Request with Basic Auth
 type BasicAuthRequest struct {
 	URL      string
 	Username string
 	Password string
+}
+
+//GoogleRequest represents a Google HTTP Request with Basic Auth
+type GoogleRequest struct {
+	URL      string
 }
 
 func (r BasicAuthRequest) request() (*http.Request, error) {

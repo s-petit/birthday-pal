@@ -2,7 +2,7 @@ package remind
 
 import (
 	"github.com/s-petit/birthday-pal/testdata"
-	"github.com/s-petit/birthday-pal/vcard"
+	"github.com/s-petit/birthday-pal/contact/vcard"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

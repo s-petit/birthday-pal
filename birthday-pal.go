@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/jawher/mow.cli"
-	"github.com/s-petit/birthday-pal/contact/carddav"
+	"github.com/s-petit/birthday-pal/http/carddav"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
-	"github.com/s-petit/birthday-pal/vcard"
+	"github.com/s-petit/birthday-pal/contact/vcard"
 	"log"
 	"os"
 	"time"
@@ -121,6 +121,9 @@ func crashIfError(err error) {
 }
 
 func remindBirthdays(client carddav.Request, smtp email.Sender, reminder remind.Reminder, recipients []string) {
+
+	if (client.)
+
 	cardDavPayload, err := client.Get()
 	crashIfError(err)
 

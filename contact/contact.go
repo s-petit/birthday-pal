@@ -1,4 +1,4 @@
-package vcard
+package contact
 
 import (
 	"github.com/bearbin/go-age"

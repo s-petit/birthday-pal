@@ -1,19 +1,18 @@
 package google
 
 import (
-	"golang.org/x/oauth2"
+	"bufio"
+	"encoding/json"
 	"fmt"
-	"runtime"
-	"os/exec"
-	"io/ioutil"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/people/v1"
+	"io/ioutil"
+	"net/url"
+	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
-	"os"
-	"net/url"
-	"encoding/json"
-	"bufio"
+	"runtime"
 	"strings"
 )
 
@@ -24,6 +23,7 @@ type Authentication struct {
 	cachePath  string        // the path to the token cache file on disk
 	configPath string        // the path to the client_secret.json file on disk
 	token      *oauth2.Token // the oauth token cached in the cache file
+	Scope      string        // the oauth desired scope which delimits access to user data
 }
 
 // Token returns the authentication token by first looking on disk for the
@@ -56,11 +56,11 @@ func (auth *Authentication) Authenticate() error {
 		return err
 	}
 
-	// Compute the URL for the authoerization
+	// Compute the URL for the authorization
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 
 	// Notify the user of the web browser.
-	fmt.Println("In order to authenticate, use a browser to authorize daytimer with Google")
+	fmt.Println("In order to authenticate, use a browser to authorize birthday-pal")
 
 	// Open the web browser
 	switch runtime.GOOS {
@@ -109,7 +109,7 @@ func (auth *Authentication) Config() (*oauth2.Config, error) {
 		return nil, fmt.Errorf("unable to read client secret file: %v", err)
 	}
 
-	config, err := google.ConfigFromJSON(data, people.ContactsReadonlyScope)
+	config, err := google.ConfigFromJSON(data, auth.Scope)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse client secret file to config: %v", err)
 	}
@@ -128,7 +128,7 @@ func (auth *Authentication) CachePath() (string, error) {
 		}
 
 		// Get the hidden credentials directory, making sure it's created
-		cacheDir := filepath.Join(usr.HomeDir, ".daytimer")
+		cacheDir := filepath.Join(usr.HomeDir, ".birthday-pal")
 		os.MkdirAll(cacheDir, 0700)
 
 		// Determine the path to the token cache file
@@ -237,8 +237,6 @@ func (auth *Authentication) Delete(path string) {
 	//  Delete the file at the cache path if it exists
 	os.Remove(path)
 }
-
-
 
 func Prompt(prompt string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
