@@ -10,14 +10,31 @@ import (
 	"context"
 	"google.golang.org/api/people/v1"
 	"fmt"
+	"github.com/s-petit/birthday-pal/contact"
 )
 
 //TODO revoir la godoc
+
+//Request holds methods necessary for requesting cardDAV HTTP servers.
+type AuthProvider interface {
+	Get(client *http.Client) ([]contact.Contact, error)
+}
 
 //BasicAuth represents a HTTP Request with Basic Auth
 type BasicAuth struct {
 	Username string
 	Password string
+}
+
+func (r BasicAuth) Request(URL string) (*http.Request) {
+	httpRequest, err := http.NewRequest("GET", URL, nil)
+	//TODO log.fatal here ?
+	if err != nil {
+		log.Fatal(err)
+	}
+	httpRequest.SetBasicAuth(r.Username, r.Password)
+
+	return httpRequest
 }
 
 //Get invokes a HTTP Get with BasicAuth and handles errors

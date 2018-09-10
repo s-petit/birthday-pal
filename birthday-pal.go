@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"github.com/s-petit/birthday-pal/http"
 )
 
 func main() {
@@ -89,11 +90,13 @@ func main() {
 
 	app.Action = func() {
 
-		client := carddav.BasicAuthRequest{
-			URL:      *cardDavURL,
+		//TODO songer a remettre url dans basic auth
+		client := http.BasicAuth{
 			Username: *cardDavUsername,
 			Password: *cardDavPassword,
 		}
+
+		provider := http.CardDavContactsProvider{Request: client.Request(*cardDavURL)}
 
 		smtp := email.SMTPClient{
 			Host:     *SMTPHost,
@@ -108,7 +111,7 @@ func main() {
 			EveryDayUntilBDay: *remindEveryDay,
 		}
 
-		remindBirthdays(client, smtp, reminder, *recipients)
+		remindBirthdays(provider, smtp, reminder, *recipients)
 	}
 
 	app.Run(os.Args)
@@ -120,14 +123,16 @@ func crashIfError(err error) {
 	}
 }
 
-func remindBirthdays(client carddav.Request, smtp email.Sender, reminder remind.Reminder, recipients []string) {
+func remindBirthdays(contactsProvider http.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) {
 
-	if (client.)
+/*	if (client.)
 
 	cardDavPayload, err := client.Get()
-	crashIfError(err)
+	crashIfError(err)*/
 
-	contacts, err := vcard.ParseContacts(cardDavPayload)
+
+
+	contacts, err := contactsProvider.Get
 	crashIfError(err)
 
 	remindContacts := remind.ContactsToRemind(contacts, reminder)
