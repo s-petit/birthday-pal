@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
@@ -58,33 +59,24 @@ func Test_main(t *testing.T) {
 
 func Test_remind_birthdays(t *testing.T) {
 
-	client := new(fakeClient)
+	contactProvider := new(fakeContactProvider)
 	smtp := new(fakeSender)
 
-	vcards := `
-BEGIN:VCARD
-VERSION:3.0
-FN:Alexis Foo
-BDAY:19831028
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:John Bar
-BDAY:19860831
-END:VCARD
-`
+	al := contact.Contact{Name: "Al Foo", BirthDate: testdata.BirthDate(1983, time.October, 28)}
+	john := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
+	con := []contact.Contact{al, john}
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := remind.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
 	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
 
-	client.On("Get").Return(vcards, nil)
+	contactProvider.On("Get").Return(con, nil)
 	smtp.On("Send", contactToRemind, recipients).Times(1)
 
-	remindBirthdays(client, smtp, reminder, recipients)
+	remindBirthdays(contactProvider, smtp, reminder, recipients)
 
-	client.AssertExpectations(t)
+	contactProvider.AssertExpectations(t)
 	smtp.AssertExpectations(t)
 
 }
@@ -104,13 +96,20 @@ func vcardBday(date time.Time) string {
 	return bday
 }
 
-type fakeClient struct {
+type fakeContactProvider struct {
 	mock.Mock
 }
 
-func (c *fakeClient) Get() (string, error) {
+func (c *fakeContactProvider) Get() ([]contact.Contact, error) {
 	args := c.Called()
-	return args.String(0), args.Error(1)
+
+	var s []contact.Contact
+	var ok bool
+	if s, ok = args.Get(0).([]contact.Contact); !ok {
+		panic(fmt.Sprintf("assert: arguments: Int(%d) failed because object wasn't correct type: %v", 0, args.Get(0)))
+	}
+
+	return s, args.Error(1)
 }
 
 type fakeSender struct {

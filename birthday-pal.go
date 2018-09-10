@@ -2,14 +2,13 @@ package main
 
 import (
 	"github.com/jawher/mow.cli"
-	"github.com/s-petit/birthday-pal/http/carddav"
+	"github.com/s-petit/birthday-pal/auth"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
-	"github.com/s-petit/birthday-pal/contact/vcard"
+	"github.com/s-petit/birthday-pal/request"
 	"log"
 	"os"
 	"time"
-	"github.com/s-petit/birthday-pal/http"
 )
 
 func main() {
@@ -90,13 +89,31 @@ func main() {
 
 	app.Action = func() {
 
+		// a tester
+		// cardav avec basic
+		// cardav avec oauth (theorique)
+		// google avec oauth
+
 		//TODO songer a remettre url dans basic auth
-		client := http.BasicAuth{
+		auth := auth.BasicAuth{
 			Username: *cardDavUsername,
 			Password: *cardDavPassword,
 		}
 
-		provider := http.CardDavContactsProvider{Request: client.Request(*cardDavURL)}
+		//auth.Get(*cardDavURL)
+
+		/*		oauth := http.OAuth2{
+					Auth: google.authentication{Scope: people.ContactsReadonlyScope},
+				}
+
+				oauth.OauthClient().Get(*cardDavURL)
+		*/
+
+		contactsProvider := request.NewContactsProvider(*cardDavURL, auth)
+
+		//provider, _ := http.GoogleContactsProvider{}.Get(ores)
+
+		//fmt.Println(provider)
 
 		smtp := email.SMTPClient{
 			Host:     *SMTPHost,
@@ -111,7 +128,7 @@ func main() {
 			EveryDayUntilBDay: *remindEveryDay,
 		}
 
-		remindBirthdays(provider, smtp, reminder, *recipients)
+		remindBirthdays(contactsProvider, smtp, reminder, *recipients)
 	}
 
 	app.Run(os.Args)
@@ -123,16 +140,13 @@ func crashIfError(err error) {
 	}
 }
 
-func remindBirthdays(contactsProvider http.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) {
+func remindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) {
 
-/*	if (client.)
+	/*	if (client.)
 
-	cardDavPayload, err := client.Get()
-	crashIfError(err)*/
-
-
-
-	contacts, err := contactsProvider.Get
+		cardDavPayload, err := client.Get()
+		crashIfError(err)*/
+	contacts, err := contactsProvider.Get()
 	crashIfError(err)
 
 	remindContacts := remind.ContactsToRemind(contacts, reminder)

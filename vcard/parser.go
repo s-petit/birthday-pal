@@ -3,19 +3,12 @@ package vcard
 import (
 	"errors"
 	"github.com/mapaiva/vcard-go"
+	"github.com/s-petit/birthday-pal/contact"
 	"io"
 	"regexp"
 	"strings"
 	"time"
-	"github.com/s-petit/birthday-pal/contact"
 )
-
-//Request holds methods necessary for requesting cardDAV HTTP servers.
-type Contact interface {
-	Get() ([]contact.Contact, error)
-}
-
-
 
 //ParseContacts parses a cardDav payload to a Contact struct.
 func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {

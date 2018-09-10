@@ -2,6 +2,7 @@ package vcard
 
 import (
 	"github.com/mapaiva/vcard-go"
+	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -61,8 +62,8 @@ func Test_should_parse_one_contact_from_vcard_to_contact(t *testing.T) {
 	card.FormattedName = "John Doe"
 	card.BirthDay = "19830409"
 
-	contact, err := parseContact(card)
-	assert.Equal(t, Contact{"John Doe", testdata.BirthDate(1983, time.April, 9)}, contact)
+	c, err := parseContact(card)
+	assert.Equal(t, contact.Contact{"John Doe", testdata.BirthDate(1983, time.April, 9)}, c)
 	assert.NoError(t, err)
 }
 
@@ -72,8 +73,8 @@ func Test_parsecontanct_should_return_error_when_bdate_malformed(t *testing.T) {
 	card.FormattedName = "John Doe"
 	card.BirthDay = "foo"
 
-	contact, err := parseContact(card)
-	assert.Equal(t, Contact{}, contact)
+	c, err := parseContact(card)
+	assert.Equal(t, contact.Contact{}, c)
 	assert.Error(t, err)
 }
 
@@ -126,7 +127,7 @@ func Test_parseDate_should_return_error_when_layout_is_unknown(t *testing.T) {
 
 func Test_should_parse_two_contacts_from_string_to_contact(t *testing.T) {
 
-	contact := `
+	vcard := `
 BEGIN:VCARD
 VERSION:3.0
 FN:Alexis Foo
@@ -139,35 +140,35 @@ BDAY:19861125
 END:VCARD
 `
 
-	contacts, err := ParseContacts(contact)
+	contacts, err := ParseContacts(vcard)
 	assert.Equal(t, 2, len(contacts))
-	assert.Equal(t, Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
-	assert.Equal(t, Contact{"John Bar", testdata.BirthDate(1986, time.November, 25)}, contacts[1])
+	assert.Equal(t, contact.Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
+	assert.Equal(t, contact.Contact{"John Bar", testdata.BirthDate(1986, time.November, 25)}, contacts[1])
 	assert.NoError(t, err)
 }
 
 func Test_ParseContacts_should_return_error_when_vcard_is_malformed(t *testing.T) {
 
-	contact := "doh"
+	vcard := "doh"
 
-	contacts, err := ParseContacts(contact)
+	contacts, err := ParseContacts(vcard)
 
-	var emptyContacts []Contact
+	var emptyContacts []contact.Contact
 	assert.Equal(t, emptyContacts, contacts)
 	assert.NoError(t, err)
 }
 
 func Test_ParseContacts_should_return_error_when_vcard_bdate_is_malformed(t *testing.T) {
 
-	contact := `BEGIN:VCARD
+	vcard := `BEGIN:VCARD
 VERSION:3.0
 FN:John Bar
 BDAY:doh
 END:VCARD`
 
-	contacts, err := ParseContacts(contact)
+	contacts, err := ParseContacts(vcard)
 
-	var emptyContacts []Contact
+	var emptyContacts []contact.Contact
 	assert.Equal(t, emptyContacts, contacts)
 	assert.Error(t, err)
 }
