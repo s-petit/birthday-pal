@@ -138,6 +138,8 @@ func main() {
 
 			//ARGS
 
+
+			//TODO cette url ne devrait pas etre overridable. trop risque. on ne saura probablement pas traiter le resultat.
 			googleURL = cmd.String(cli.StringArg{
 				Name:   "URL",
 				Desc:   "Google API URL",
