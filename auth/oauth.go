@@ -13,18 +13,21 @@ import (
 
 //OAuth2 represents a HTTP Request with OAuth2
 type OAuth2 struct {
-	Scope string
+	Scope      string
 	SecretPath string
-	auth authentication
+	auth       *authentication
 }
 
 func (oa OAuth2) authentication() *authentication {
-	oa.auth = authentication{}
+	if oa.auth == nil {
+		oa.auth = &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
+	}
+	return oa.auth
 }
 
 func (oa OAuth2) oauthClient() *http.Client {
 	// Initialize authentication
-	auth := oa.Auth
+	auth := oa.auth
 
 	// load the configuration from client_secret.json
 	config, err := auth.config()

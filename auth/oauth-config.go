@@ -16,14 +16,16 @@ import (
 	"strings"
 )
 
+//TODO SPE peut on cacher le token de 2 identifications differentes ?
 // authentication is a wrapper for the OAuth token authentication process,
 // reading and writing the token from a credentials file on disk. It is meant
 // to perform 100% of the workflow of authentication.
 type authentication struct {
-	cachePath  string        // the path to the token cache file on disk
-	configPath string        // the path to the client_secret.json file on disk
+	cachePath string // the path to the token cache file on disk
+	//configPath string        // the path to the client_secret.json file on disk
 	token      *oauth2.Token // the oauth token cached in the cache file
 	Scope      string        // the oauth desired scope which delimits access to user data
+	SecretPath string
 }
 
 // token returns the authentication token by first looking on disk for the
@@ -99,12 +101,12 @@ func (auth *authentication) authenticate() error {
 // config loads the client_secret.json from the getConfigPath. It is used both to
 // create the client for requests as well as to perform authentication.
 func (auth *authentication) config() (*oauth2.Config, error) {
-	path, err := auth.getConfigPath()
-	if err != nil {
+	//path, err := auth.getConfigPath()
+	/*	if err != nil {
 		return nil, err
-	}
+	}*/
 
-	data, err := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(auth.SecretPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read client secret file: %v", err)
 	}
@@ -142,7 +144,7 @@ func (auth *authentication) getCachePath() (string, error) {
 }
 
 // getConfigPath computes the path to the configuration file, client_secret.json.
-func (auth *authentication) getConfigPath() (string, error) {
+/*func (auth *authentication) getConfigPath() (string, error) {
 	if auth.configPath == "" {
 		// Get the user to look up the user's home directory
 		usr, err := user.Current()
@@ -157,7 +159,7 @@ func (auth *authentication) getConfigPath() (string, error) {
 	}
 
 	return auth.configPath, nil
-}
+}*/
 
 // load the token from the specified path (and saves the path to the struct).
 // If path is an empty string then it will load the token from the default

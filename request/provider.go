@@ -10,13 +10,13 @@ type ContactsProvider interface {
 }
 
 //NewContactsProvider create the right instance of ContactsProvider depending on the url
-/*func NewContactsProvider(URL string, client auth.Client) ContactsProvider {
+/*func NewContactsProvider(URL string, Client auth.Client) ContactsProvider {
 
 	googleAPI := regexp.MustCompile("https://(\\w+).googleapis.com/(\\w+)")
 
 	if googleAPI.MatchString(URL) {
-		return googleContactsProvider{client: client, URL: URL}
+		return GoogleContactsProvider{Client: Client, URL: URL}
 	}
 
-	return CardDavContactsProvider{client: client, URL: URL}
+	return CardDavContactsProvider{Client: Client, URL: URL}
 }*/

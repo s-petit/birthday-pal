@@ -6,6 +6,7 @@ import (
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/request"
+	"google.golang.org/api/people/v1"
 	"log"
 	"os"
 	"time"
@@ -95,9 +96,7 @@ func main() {
 				Name: "RECIPIENTS",
 				Desc: "Reminders email recipients",
 			})
-
 		)
-
 
 		// Run this function when the command is invoked
 		cmd.Action = func() {
@@ -145,13 +144,16 @@ func main() {
 			})
 		)
 
+		//TODO exporter le scope et l'url dans une fontion dediee ?
 		cmd.Action = func() {
 			auth := auth.OAuth2{
-				Auth: Auth
+				Scope:      people.ContactsReadonlyScope,
+				SecretPath: *secret,
 			}
 
-			contactsProvider := request.CardDavContactsProvider{Client: auth, URL: *cardDavURL}
+			contactsProvider := request.GoogleContactsProvider{Client: auth, URL: "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays"}
 
+			//TODO SPE: mutualiser smtp/reminder voire recipient
 			smtp := email.SMTPClient{
 				Host:     *SMTPHost,
 				Port:     *SMTPPort,
@@ -178,10 +180,10 @@ func main() {
 		// google avec oauth
 
 		//TODO songer a remettre url dans basic auth
-/*		auth := auth.BasicAuth{
-			Username: *cardDavUsername,
-			Password: *cardDavPassword,
-		}*/
+		/*		auth := auth.BasicAuth{
+				Username: *cardDavUsername,
+				Password: *cardDavPassword,
+			}*/
 
 		//auth.Get(*cardDavURL)
 
@@ -189,7 +191,7 @@ func main() {
 					Auth: google.authentication{Scope: people.ContactsReadonlyScope},
 				}
 
-				oauth.OauthClient().Get(*cardDavURL)
+				oauth.oauthClient().Get(*cardDavURL)
 		*/
 
 		//contactsProvider := request.CardDavContactsProvider{auth, *cardDavURL}
@@ -198,20 +200,20 @@ func main() {
 
 		//fmt.Println(provider)
 
-/*		smtp := email.SMTPClient{
-			Host:     *SMTPHost,
-			Port:     *SMTPPort,
-			Username: *SMTPUsername,
-			Password: *SMTPPassword,
-		}
+		/*		smtp := email.SMTPClient{
+					Host:     *SMTPHost,
+					Port:     *SMTPPort,
+					Username: *SMTPUsername,
+					Password: *SMTPPassword,
+				}
 
-		reminder := remind.Reminder{
-			CurrentDate:       time.Now(),
-			NbDaysBeforeBDay:  *daysBefore,
-			EveryDayUntilBDay: *remindEveryDay,
-		}
+				reminder := remind.Reminder{
+					CurrentDate:       time.Now(),
+					NbDaysBeforeBDay:  *daysBefore,
+					EveryDayUntilBDay: *remindEveryDay,
+				}
 
-		remindBirthdays(contactsProvider, smtp, reminder, *recipients)*/
+				remindBirthdays(contactsProvider, smtp, reminder, *recipients)*/
 	}
 
 	app.Run(os.Args)

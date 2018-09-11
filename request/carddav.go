@@ -6,12 +6,13 @@ import (
 	"github.com/s-petit/birthday-pal/vcard"
 )
 
-//GoogleRequest represents a Google HTTP Request with Basic Auth
+//CardDavContactsProvider represents a provider which return contacts via CardDav protocol
 type CardDavContactsProvider struct {
 	Client auth.Client
 	URL    string
 }
 
+//Get returns contacts via a CardDav API call
 func (carddav CardDavContactsProvider) Get() ([]contact.Contact, error) {
 	vcards, err := carddav.Client.Get(carddav.URL)
 	if err != nil {

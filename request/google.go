@@ -6,14 +6,15 @@ import (
 	"github.com/s-petit/birthday-pal/contact"
 )
 
-//GoogleRequest represents a Google HTTP Request with Basic Auth
-type googleContactsProvider struct {
-	client auth.Client
+//GoogleContactsProvider represents a provider which return contacts via Google People API
+type GoogleContactsProvider struct {
+	Client auth.Client
 	URL    string
 }
 
-func (gp googleContactsProvider) Get() ([]contact.Contact, error) {
-	response, err := gp.client.Get(gp.URL)
+//Get returns contacts via a Google People API call
+func (gp GoogleContactsProvider) Get() ([]contact.Contact, error) {
+	response, err := gp.Client.Get(gp.URL)
 	if err != nil {
 		return []contact.Contact{}, err
 	}
