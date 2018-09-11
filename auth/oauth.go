@@ -13,8 +13,13 @@ import (
 
 //OAuth2 represents a HTTP Request with OAuth2
 type OAuth2 struct {
-	//scope string
-	Auth authentication
+	Scope string
+	SecretPath string
+	auth authentication
+}
+
+func (oa OAuth2) authentication() *authentication {
+	oa.auth = authentication{}
 }
 
 func (oa OAuth2) oauthClient() *http.Client {

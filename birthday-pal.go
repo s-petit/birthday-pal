@@ -15,32 +15,12 @@ func main() {
 
 	app := cli.App("birthday-pal", "Remind me birthdays pls.")
 
-	app.Spec = "[--carddav-url] [--carddav-user] [--carddav-pass] " +
-		"[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
-		"[--days-before] [--remind-everyday] " +
-		"RECIPIENTS..."
+	app.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
+		"[--days-before] [--remind-everyday]"
 
 	var (
 
 		// OPTS
-
-		cardDavURL = app.String(cli.StringOpt{
-			Name:   "carddav-url",
-			Desc:   "CardDAV server URL",
-			EnvVar: "BPAL_CARDDAV_URL",
-		})
-
-		cardDavUsername = app.String(cli.StringOpt{
-			Name:   "carddav-user",
-			Desc:   "CardDAV server username",
-			EnvVar: "BPAL_CARDDAV_USERNAME",
-		})
-
-		cardDavPassword = app.String(cli.StringOpt{
-			Name:   "carddav-pass",
-			Desc:   "CardDAV server password",
-			EnvVar: "BPAL_CARDDAV_PASSWORD",
-		})
 
 		SMTPHost = app.String(cli.StringOpt{
 			Name:   "smtp-host",
@@ -81,11 +61,114 @@ func main() {
 
 		// ARGS
 
-		recipients = app.Strings(cli.StringsArg{
-			Name: "RECIPIENTS",
-			Desc: "Reminders email recipients",
-		})
 	)
+
+	app.Command("carddav", "use carddav to retrieve contacts", func(cmd *cli.Cmd) {
+
+		cmd.Spec = "[--user] [--pass] [URL] RECIPIENTS..."
+
+		var (
+
+			// OPTS
+
+			cardDavUsername = cmd.String(cli.StringOpt{
+				Name:   "u user",
+				Desc:   "CardDAV server username",
+				EnvVar: "BPAL_CARDDAV_USERNAME",
+			})
+
+			cardDavPassword = cmd.String(cli.StringOpt{
+				Name:   "p pass",
+				Desc:   "CardDAV server password",
+				EnvVar: "BPAL_CARDDAV_PASSWORD",
+			})
+
+			//ARGS
+
+			cardDavURL = cmd.String(cli.StringArg{
+				Name:   "URL",
+				Desc:   "CardDAV server URL",
+				EnvVar: "BPAL_CARDDAV_URL",
+			})
+
+			recipients = cmd.Strings(cli.StringsArg{
+				Name: "RECIPIENTS",
+				Desc: "Reminders email recipients",
+			})
+
+		)
+
+
+		// Run this function when the command is invoked
+		cmd.Action = func() {
+			auth := auth.BasicAuth{
+				Username: *cardDavUsername,
+				Password: *cardDavPassword,
+			}
+
+			contactsProvider := request.CardDavContactsProvider{Client: auth, URL: *cardDavURL}
+
+			smtp := email.SMTPClient{
+				Host:     *SMTPHost,
+				Port:     *SMTPPort,
+				Username: *SMTPUsername,
+				Password: *SMTPPassword,
+			}
+
+			reminder := remind.Reminder{
+				CurrentDate:       time.Now(),
+				NbDaysBeforeBDay:  *daysBefore,
+				EveryDayUntilBDay: *remindEveryDay,
+			}
+
+			remindBirthdays(contactsProvider, smtp, reminder, *recipients)
+		}
+	})
+
+	app.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
+
+		cmd.Spec = "[--secret] RECIPIENTS..."
+
+		var (
+			// OPTS
+
+			secret = cmd.String(cli.StringOpt{
+				Name: "s secret",
+				Desc: "Google OAuth2 client_secret.json",
+			})
+
+			//ARGS
+
+			recipients = cmd.Strings(cli.StringsArg{
+				Name: "RECIPIENTS",
+				Desc: "Reminders email recipients",
+			})
+		)
+
+		cmd.Action = func() {
+			auth := auth.OAuth2{
+				Auth: Auth
+			}
+
+			contactsProvider := request.CardDavContactsProvider{Client: auth, URL: *cardDavURL}
+
+			smtp := email.SMTPClient{
+				Host:     *SMTPHost,
+				Port:     *SMTPPort,
+				Username: *SMTPUsername,
+				Password: *SMTPPassword,
+			}
+
+			reminder := remind.Reminder{
+				CurrentDate:       time.Now(),
+				NbDaysBeforeBDay:  *daysBefore,
+				EveryDayUntilBDay: *remindEveryDay,
+			}
+
+			remindBirthdays(contactsProvider, smtp, reminder, *recipients)
+		}
+
+	})
 
 	app.Action = func() {
 
@@ -95,10 +178,10 @@ func main() {
 		// google avec oauth
 
 		//TODO songer a remettre url dans basic auth
-		auth := auth.BasicAuth{
+/*		auth := auth.BasicAuth{
 			Username: *cardDavUsername,
 			Password: *cardDavPassword,
-		}
+		}*/
 
 		//auth.Get(*cardDavURL)
 
@@ -109,13 +192,13 @@ func main() {
 				oauth.OauthClient().Get(*cardDavURL)
 		*/
 
-		contactsProvider := request.NewContactsProvider(*cardDavURL, auth)
+		//contactsProvider := request.CardDavContactsProvider{auth, *cardDavURL}
 
 		//provider, _ := http.GoogleContactsProvider{}.Get(ores)
 
 		//fmt.Println(provider)
 
-		smtp := email.SMTPClient{
+/*		smtp := email.SMTPClient{
 			Host:     *SMTPHost,
 			Port:     *SMTPPort,
 			Username: *SMTPUsername,
@@ -128,7 +211,7 @@ func main() {
 			EveryDayUntilBDay: *remindEveryDay,
 		}
 
-		remindBirthdays(contactsProvider, smtp, reminder, *recipients)
+		remindBirthdays(contactsProvider, smtp, reminder, *recipients)*/
 	}
 
 	app.Run(os.Args)

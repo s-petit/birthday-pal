@@ -7,13 +7,13 @@ import (
 )
 
 //GoogleRequest represents a Google HTTP Request with Basic Auth
-type cardDavContactsProvider struct {
-	client auth.Client
+type CardDavContactsProvider struct {
+	Client auth.Client
 	URL    string
 }
 
-func (gp cardDavContactsProvider) Get() ([]contact.Contact, error) {
-	vcards, err := gp.client.Get(gp.URL)
+func (carddav CardDavContactsProvider) Get() ([]contact.Contact, error) {
+	vcards, err := carddav.Client.Get(carddav.URL)
 	if err != nil {
 		return []contact.Contact{}, err
 	}
