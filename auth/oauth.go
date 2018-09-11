@@ -15,19 +15,23 @@ import (
 type OAuth2 struct {
 	Scope      string
 	SecretPath string
-	auth       *authentication
 }
 
 func (oa OAuth2) authentication() *authentication {
-	if oa.auth == nil {
-		oa.auth = &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
-	}
-	return oa.auth
+	return &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
+}
+
+func (oa OAuth2) Authenticate() error {
+	return oa.authentication().authenticate()
+}
+
+func (oa OAuth2) Clt(url string) (*http.Client, error) {
+	return oa.oauthClient(), nil
 }
 
 func (oa OAuth2) oauthClient() *http.Client {
 	// Initialize authentication
-	auth := oa.auth
+	auth := oa.authentication()
 
 	// load the configuration from client_secret.json
 	config, err := auth.config()
@@ -46,7 +50,6 @@ func (oa OAuth2) oauthClient() *http.Client {
 	client := config.Client(ctx, token)
 
 	return client
-
 }
 
 //Get invokes a HTTP Get with BasicAuth and handles errors
@@ -69,4 +72,9 @@ func (oa OAuth2) Get(url string) (string, error) {
 	}
 
 	return string(body), nil
+}
+
+//Get invokes a HTTP Get with BasicAuth and handles errors
+func (oa OAuth2) GetRes(url string) (*http.Response, error) {
+	return oa.oauthClient().Get(url)
 }

@@ -3,6 +3,7 @@ package auth
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -36,9 +37,10 @@ func (auth *authentication) getToken() (*oauth2.Token, error) {
 		if err := auth.load(""); err != nil {
 			// If we cannot load the token from disk, authenticate
 			if err != nil {
-				if err = auth.authenticate(); err != nil {
+				/*if err = auth.authenticate(); err != nil {
 					return nil, err
-				}
+				}*/
+				return nil, errors.New("Authentication failed ! Please use birthday-pal oauth.")
 			}
 		}
 	}

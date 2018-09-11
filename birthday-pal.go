@@ -126,48 +126,91 @@ func main() {
 
 	app.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "[--secret] RECIPIENTS..."
+		cmd.Spec = "SECRET [URL]"
 
 		var (
 			// OPTS
 
-			secret = cmd.String(cli.StringOpt{
-				Name: "s secret",
+			secret = cmd.String(cli.StringArg{
+				Name: "SECRET",
 				Desc: "Google OAuth2 client_secret.json",
 			})
 
 			//ARGS
 
-			recipients = cmd.Strings(cli.StringsArg{
-				Name: "RECIPIENTS",
-				Desc: "Reminders email recipients",
+			googleURL = cmd.String(cli.StringArg{
+				Name:   "URL",
+				Desc:   "Google API URL",
+				Value:  "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=500",
+				EnvVar: "BPAL_GOOGLE_API_URL",
 			})
+			/*
+				recipients = cmd.Strings(cli.StringsArg{
+					Name: "RECIPIENTS",
+					Desc: "Reminders email recipients",
+				})*/
 		)
+
+		//TODO faire un birthday-pal smtp ? rendre obligatoire le smtp ou alors faire une erreur claire ?
 
 		//TODO exporter le scope et l'url dans une fontion dediee ?
 		cmd.Action = func() {
+
 			auth := auth.OAuth2{
 				Scope:      people.ContactsReadonlyScope,
 				SecretPath: *secret,
 			}
 
-			contactsProvider := request.GoogleContactsProvider{Client: auth, URL: "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays"}
+			contactsProvider := request.GoogleContactsProvider{Client: auth, URL: *googleURL}
 
 			//TODO SPE: mutualiser smtp/reminder voire recipient
-			smtp := email.SMTPClient{
-				Host:     *SMTPHost,
-				Port:     *SMTPPort,
-				Username: *SMTPUsername,
-				Password: *SMTPPassword,
+			/*			smtp := email.SMTPClient{
+							Host:     *SMTPHost,
+							Port:     *SMTPPort,
+							Username: *SMTPUsername,
+							Password: *SMTPPassword,
+						}
+
+						reminder := remind.Reminder{
+							CurrentDate:       time.Now(),
+							NbDaysBeforeBDay:  *daysBefore,
+							EveryDayUntilBDay: *remindEveryDay,
+						}
+			*/
+			contactsProvider.Get()
+
+			//remindBirthdays(contactsProvider, smtp, reminder, *recipients)
+		}
+
+	})
+
+	app.Command("oauth", "identify birthday-pal to your oauth api provider", func(cmd *cli.Cmd) {
+
+		cmd.Spec = "SECRET"
+
+		var (
+			secret = cmd.String(cli.StringArg{
+				Name: "SECRET",
+				Desc: "Google OAuth2 client_secret.json",
+			})
+		)
+
+		//TODO voir si on peut auth plusieurs personnes... mais flemme...
+		//TODO exporter le scope et l'url dans une fontion dediee ?
+		cmd.Action = func() {
+
+			auth := auth.OAuth2{
+				Scope:      people.ContactsReadonlyScope,
+				SecretPath: *secret,
 			}
 
-			reminder := remind.Reminder{
-				CurrentDate:       time.Now(),
-				NbDaysBeforeBDay:  *daysBefore,
-				EveryDayUntilBDay: *remindEveryDay,
+			err := auth.Authenticate()
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				log.Println("Oauth2 authentication successful !")
 			}
 
-			remindBirthdays(contactsProvider, smtp, reminder, *recipients)
 		}
 
 	})

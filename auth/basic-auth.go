@@ -16,6 +16,16 @@ type BasicAuth struct {
 	Password string
 }
 
+func (r BasicAuth) Clt(url string) (*http.Client, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	/*	if err != nil {
+		return nil, err
+	}*/
+	req.SetBasicAuth(r.Username, r.Password)
+
+	return &http.Client{}, err
+}
+
 //Get invokes a HTTP Get with BasicAuth and handles errors
 func (r BasicAuth) Get(url string) (string, error) {
 
