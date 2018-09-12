@@ -2,11 +2,7 @@ package auth
 
 import (
 	"context"
-	"errors"
-	"io/ioutil"
-	"log"
 	"net/http"
-	"strconv"
 )
 
 //TODO revoir la godoc
@@ -17,45 +13,41 @@ type OAuth2 struct {
 	SecretPath string
 }
 
-func (oa OAuth2) authentication() *authentication {
-	return &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
-}
-
 func (oa OAuth2) Authenticate() error {
 	return oa.authentication().authenticate()
 }
 
-func (oa OAuth2) Clt(url string) (*http.Client, error) {
-	return oa.oauthClient(), nil
-}
-
-func (oa OAuth2) oauthClient() *http.Client {
+func (oa OAuth2) Client() (*http.Client, error) {
 	// Initialize authentication
 	auth := oa.authentication()
 
 	// load the configuration from client_secret.json
 	config, err := auth.config()
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, err
 	}
-
 	// load the token from the cache or force authentication
 	token, err := auth.getToken()
 	if err != nil {
-		log.Fatal(err.Error())
+		return nil, err
 	}
 
 	// Create the API client with a background context.
 	ctx := context.Background()
 	client := config.Client(ctx, token)
 
-	return client
+	return client, nil
 }
 
 //Get invokes a HTTP Get with BasicAuth and handles errors
-func (oa OAuth2) Get(url string) (string, error) {
+/*func (oa OAuth2) Call(url string) (string, error) {
 
-	resp, err := oa.oauthClient().Get(url)
+	client, err := oa.Client()
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Get(url)
 
 	if err != nil {
 		return "", err
@@ -72,9 +64,8 @@ func (oa OAuth2) Get(url string) (string, error) {
 	}
 
 	return string(body), nil
-}
+}*/
 
-//Get invokes a HTTP Get with BasicAuth and handles errors
-func (oa OAuth2) GetRes(url string) (*http.Response, error) {
-	return oa.oauthClient().Get(url)
+func (oa OAuth2) authentication() *authentication {
+	return &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
 }

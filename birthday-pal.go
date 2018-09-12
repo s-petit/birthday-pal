@@ -179,7 +179,7 @@ func main() {
 							EveryDayUntilBDay: *remindEveryDay,
 						}
 			*/
-			contactsProvider.Get()
+			contactsProvider.GetContacts()
 
 			//remindBirthdays(contactsProvider, smtp, reminder, *recipients)
 		}
@@ -276,7 +276,7 @@ func remindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sende
 
 		cardDavPayload, err := client.Get()
 		crashIfError(err)*/
-	contacts, err := contactsProvider.Get()
+	contacts, err := contactsProvider.GetContacts()
 	crashIfError(err)
 
 	remindContacts := remind.ContactsToRemind(contacts, reminder)
