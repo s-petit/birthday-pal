@@ -22,7 +22,3 @@ func (ba BasicAuth) Client() (*http.Client, error) {
 
 	return &http.Client{}, err
 }
-
-//Get invokes a HTTP Get with BasicAuth and handles errors
-/*
-*/

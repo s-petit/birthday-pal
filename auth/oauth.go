@@ -42,7 +42,7 @@ func (oa OAuth2) Client() (*http.Client, error) {
 //Get invokes a HTTP Get with BasicAuth and handles errors
 /*func (oa OAuth2) Call(url string) (string, error) {
 
-	client, err := oa.Client()
+	client, err := oa.AuthClient()
 	if err != nil {
 		return "", err
 	}

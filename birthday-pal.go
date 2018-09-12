@@ -105,7 +105,7 @@ func main() {
 				Password: *cardDavPassword,
 			}
 
-			contactsProvider := request.CardDavContactsProvider{Client: auth, URL: *cardDavURL}
+			contactsProvider := request.CardDavContactsProvider{AuthClient: auth, URL: *cardDavURL}
 
 			smtp := email.SMTPClient{
 				Host:     *SMTPHost,
@@ -126,7 +126,7 @@ func main() {
 
 	app.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "SECRET [URL]"
+		cmd.Spec = "SECRET [URL] RECIPIENTS"
 
 		var (
 			// OPTS
@@ -139,23 +139,19 @@ func main() {
 			//ARGS
 
 
-			//TODO cette url ne devrait pas etre overridable. trop risque. on ne saura probablement pas traiter le resultat.
 			googleURL = cmd.String(cli.StringArg{
 				Name:   "URL",
 				Desc:   "Google API URL",
 				Value:  "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=500",
 				EnvVar: "BPAL_GOOGLE_API_URL",
 			})
-			/*
-				recipients = cmd.Strings(cli.StringsArg{
-					Name: "RECIPIENTS",
-					Desc: "Reminders email recipients",
-				})*/
+
+			recipients = cmd.Strings(cli.StringsArg{
+				Name: "RECIPIENTS",
+				Desc: "Reminders email recipients",
+			})
 		)
 
-		//TODO faire un birthday-pal smtp ? rendre obligatoire le smtp ou alors faire une erreur claire ?
-
-		//TODO exporter le scope et l'url dans une fontion dediee ?
 		cmd.Action = func() {
 
 			auth := auth.OAuth2{
@@ -165,8 +161,7 @@ func main() {
 
 			contactsProvider := request.GoogleContactsProvider{Client: auth, URL: *googleURL}
 
-			//TODO SPE: mutualiser smtp/reminder voire recipient
-			/*			smtp := email.SMTPClient{
+						smtp := email.SMTPClient{
 							Host:     *SMTPHost,
 							Port:     *SMTPPort,
 							Username: *SMTPUsername,
@@ -178,10 +173,8 @@ func main() {
 							NbDaysBeforeBDay:  *daysBefore,
 							EveryDayUntilBDay: *remindEveryDay,
 						}
-			*/
-			contactsProvider.GetContacts()
 
-			//remindBirthdays(contactsProvider, smtp, reminder, *recipients)
+			remindBirthdays(contactsProvider, smtp, reminder, *recipients)
 		}
 
 	})
@@ -197,8 +190,6 @@ func main() {
 			})
 		)
 
-		//TODO voir si on peut auth plusieurs personnes... mais flemme...
-		//TODO exporter le scope et l'url dans une fontion dediee ?
 		cmd.Action = func() {
 
 			auth := auth.OAuth2{
@@ -219,12 +210,6 @@ func main() {
 
 	app.Action = func() {
 
-		// a tester
-		// cardav avec basic
-		// cardav avec oauth (theorique)
-		// google avec oauth
-
-		//TODO songer a remettre url dans basic auth
 		/*		auth := auth.BasicAuth{
 				Username: *cardDavUsername,
 				Password: *cardDavPassword,

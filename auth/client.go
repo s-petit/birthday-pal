@@ -2,7 +2,7 @@ package auth
 
 import "net/http"
 
-//Client can do a HTTP GET with required authentication
-type Client interface {
+//AuthClient can do a HTTP GET with required authentication
+type AuthClient interface {
 	Client() (*http.Client, error)
 }
