@@ -1,15 +1,15 @@
 package request
 
 import (
-	"testing"
-	"net/http/httptest"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"net/http"
-	"io"
 	"github.com/s-petit/birthday-pal/auth"
 	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/testdata"
+	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 	"time"
 )
 
@@ -46,10 +46,10 @@ func Test_GetContacts_should_return_carddav_contacts(t *testing.T) {
 
 	contacts, err := carddav.GetContacts()
 
+	assert.NoError(t, err)
 	assert.Equal(t, 1, len(contacts))
 	assert.Equal(t, contact.Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
 
-	assert.NoError(t, err)
 }
 
 func Test_call_should_return_carddav_payload(t *testing.T) {
@@ -64,8 +64,8 @@ func Test_call_should_return_carddav_payload(t *testing.T) {
 
 	payload, err := carddav.call()
 
-	assert.Equal(t, vcardContact, payload)
 	assert.NoError(t, err)
+	assert.Equal(t, vcardContact, payload)
 }
 
 func Test_call_carddav_should_return_error_when_url_goes_to_404(t *testing.T) {
@@ -80,8 +80,8 @@ func Test_call_carddav_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 	payload, err := r.call()
 
-	assert.Equal(t, "", payload)
 	assert.Error(t, err)
+	assert.Equal(t, "", payload)
 }
 
 func Test_call_carddav_should_return_error_when_url_is_malformed(t *testing.T) {
@@ -96,7 +96,6 @@ func Test_call_carddav_should_return_error_when_url_is_malformed(t *testing.T) {
 
 	payload, err := r.call()
 
-	assert.Equal(t, "", payload)
 	assert.Error(t, err)
+	assert.Equal(t, "", payload)
 }
-

@@ -40,7 +40,7 @@ func (auth *authentication) getToken() (*oauth2.Token, error) {
 				/*if err = auth.authenticate(); err != nil {
 					return nil, err
 				}*/
-				return nil, errors.New("Authentication failed ! Please use birthday-pal oauth.")
+				return nil, errors.New("authentication failed ! please use birthday-pal oauth")
 			}
 		}
 	}

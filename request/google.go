@@ -1,21 +1,21 @@
 package request
 
 import (
+	"github.com/s-petit/birthday-pal/auth"
 	"github.com/s-petit/birthday-pal/contact"
 	"google.golang.org/api/gensupport"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/people/v1"
 	"time"
-	"github.com/s-petit/birthday-pal/auth"
 )
 
 //GoogleContactsProvider represents a provider which return contacts via Google People API
 type GoogleContactsProvider struct {
-	AuthClient auth.AuthClient
+	AuthClient auth.AuthenticationClient
 	URL        string
 }
 
-//Get returns contacts via a Google People API call
+//GetContacts returns contacts via a Google People API call
 func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
 	clt, err := gp.AuthClient.Client()
 	if err != nil {
@@ -39,10 +39,10 @@ func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
 		return nil, err
 	}
 
-	return parseContacts(connections)
+	return parseContacts(connections), nil
 }
 
-func parseContacts(connections *people.ListConnectionsResponse) ([]contact.Contact, error) {
+func parseContacts(connections *people.ListConnectionsResponse) []contact.Contact {
 
 	var contacts []contact.Contact
 
@@ -52,5 +52,5 @@ func parseContacts(connections *people.ListConnectionsResponse) ([]contact.Conta
 		}
 	}
 
-	return contacts, nil
+	return contacts
 }

@@ -138,7 +138,6 @@ func main() {
 
 			//ARGS
 
-
 			googleURL = cmd.String(cli.StringArg{
 				Name:   "URL",
 				Desc:   "Google API URL",
@@ -161,18 +160,18 @@ func main() {
 
 			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
 
-						smtp := email.SMTPClient{
-							Host:     *SMTPHost,
-							Port:     *SMTPPort,
-							Username: *SMTPUsername,
-							Password: *SMTPPassword,
-						}
+			smtp := email.SMTPClient{
+				Host:     *SMTPHost,
+				Port:     *SMTPPort,
+				Username: *SMTPUsername,
+				Password: *SMTPPassword,
+			}
 
-						reminder := remind.Reminder{
-							CurrentDate:       time.Now(),
-							NbDaysBeforeBDay:  *daysBefore,
-							EveryDayUntilBDay: *remindEveryDay,
-						}
+			reminder := remind.Reminder{
+				CurrentDate:       time.Now(),
+				NbDaysBeforeBDay:  *daysBefore,
+				EveryDayUntilBDay: *remindEveryDay,
+			}
 
 			remindBirthdays(contactsProvider, smtp, reminder, *recipients)
 		}
@@ -257,10 +256,6 @@ func crashIfError(err error) {
 
 func remindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) {
 
-	/*	if (client.)
-
-		cardDavPayload, err := client.Get()
-		crashIfError(err)*/
 	contacts, err := contactsProvider.GetContacts()
 	crashIfError(err)
 

@@ -1,55 +1,40 @@
 package request
 
 import (
-	"net/http"
-	"io"
-	"testing"
-	"net/http/httptest"
-	"github.com/s-petit/birthday-pal/auth"
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/s-petit/birthday-pal/auth"
 	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/testdata"
+	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 	"time"
 )
 
 var (
 	googleContact = `
 {
-      "resourceName": "people/c2442229414628784193",
-      "etag": "%EgYBAj0HNy4aDAECAwQFBgcICQoLDCIMS3RaMzZHN0s4MkE9",
-      "names": [
-        {
-          "metadata": {
-            "primary": true,
-            "source": {
-              "type": "CONTACT",
-              "id": "21e48ab68ef57841"
-            }
-          },
-          "displayName": "Naoki Francomme",
-          "familyName": "Francomme",
-          "givenName": "Naoki",
-          "displayNameLastFirst": "Francomme, Naoki"
-        }
-      ],
-      "birthdays": [
-        {
-          "metadata": {
-            "primary": true,
-            "source": {
-              "type": "CONTACT",
-              "id": "21e48ab68ef57841"
-            }
-          },
-          "date": {
-            "month": 11,
-            "day": 15
-          },
-          "text": "15/11"
-        }
-      ]
-    }
+	"connections": [
+		{
+      		"names": [
+      		  {
+      		    "displayName": "Alexis Foo"
+      		  }
+      		],
+      		"birthdays": [
+      		  {
+      		    "date": {
+      		      "year": 1983,
+      		      "month": 12,
+      		      "day": 28
+      		    }
+      		  }
+      		]
+    	}
+	]
+}
 `
 )
 
@@ -59,14 +44,24 @@ func googleHandler() http.Handler {
 		io.WriteString(w, googleContact)
 	}
 
+	h2 := func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "{\"contact\": \"Alexis\"}")
+	}
+
+	h3 := func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "{[}")
+	}
+
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
+	r.HandleFunc("/other-api", h2)
+	r.HandleFunc("/not-json", h3)
 	return r
 }
 
 func Test_GetContacts_should_return_google_contacts(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
 	google := GoogleContactsProvider{
@@ -81,54 +76,67 @@ func Test_GetContacts_should_return_google_contacts(t *testing.T) {
 	assert.Equal(t, contact.Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
 
 }
-/*
-func Test_call_should_return_google_payload(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+func Test_GetContacts_should_not_return_contact_when_payload_is_not_from_people_api(t *testing.T) {
+
+	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	carddav := GoogleContactsProvider{
+	google := GoogleContactsProvider{
 		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
-		URL:        fmt.Sprintf("%s/contact", srv.URL),
+		URL:        fmt.Sprintf("%s/other-api", srv.URL),
 	}
 
-	payload, err := carddav.call()
+	contacts, err := google.GetContacts()
 
-	assert.Equal(t, googleContact, payload)
 	assert.NoError(t, err)
+	assert.Equal(t, 0, len(contacts))
 }
 
-func Test_call_google_should_return_error_when_url_goes_to_404(t *testing.T) {
+func Test_GetContacts_should_return_error_when_payload_is_not_valid_json(t *testing.T) {
+
+	srv := httptest.NewServer(googleHandler())
+	defer srv.Close()
+
+	google := GoogleContactsProvider{
+		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+		URL:        fmt.Sprintf("%s/not-json", srv.URL),
+	}
+
+	contacts, err := google.GetContacts()
+
+	assert.Error(t, err)
+	assert.Equal(t, 0, len(contacts))
+}
+
+func Test_GetContacts_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 	srv := httptest.NewServer(handler())
 	defer srv.Close()
 
-	r := GoogleContactsProvider{
+	google := GoogleContactsProvider{
 		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/unknown", srv.URL),
 	}
 
-	payload, err := r.call()
+	contacts, err := google.GetContacts()
 
-	assert.Equal(t, "", payload)
 	assert.Error(t, err)
+	assert.Equal(t, 0, len(contacts))
 }
 
-func Test_call_google_should_return_error_when_url_is_malformed(t *testing.T) {
+func Test_GetContacts_should_return_error_when_url_is_malformed(t *testing.T) {
 
 	srv := httptest.NewServer(handler())
 	defer srv.Close()
 
-	r := GoogleContactsProvider{
+	google := GoogleContactsProvider{
 		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
 		URL:        "http://://",
 	}
 
-	payload, err := r.call()
+	contacts, err := google.GetContacts()
 
-	assert.Equal(t, "", payload)
 	assert.Error(t, err)
+	assert.Equal(t, 0, len(contacts))
 }
-
-
-*/

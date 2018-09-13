@@ -44,11 +44,12 @@ func Test_main(t *testing.T) {
 	d := testdata.StartSMTPServer()
 
 	os.Args = []string{"",
-		fmt.Sprintf("--carddav-url=%s/contact", srv.URL),
 		"--smtp-host=localhost",
 		"--smtp-port=2525",
 		"--smtp-user=user@test",
 		"--smtp-pass=smtp-pass",
+		"carddav",
+		fmt.Sprintf("%s/contact", srv.URL),
 		"recipient@test",
 	}
 
@@ -71,7 +72,7 @@ func Test_remind_birthdays(t *testing.T) {
 	contactToRemind := remind.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
 	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
 
-	contactProvider.On("Get").Return(con, nil)
+	contactProvider.On("GetContacts").Return(con, nil)
 	smtp.On("Send", contactToRemind, recipients).Times(1)
 
 	remindBirthdays(contactProvider, smtp, reminder, recipients)
@@ -100,7 +101,7 @@ type fakeContactProvider struct {
 	mock.Mock
 }
 
-func (c *fakeContactProvider) Get() ([]contact.Contact, error) {
+func (c *fakeContactProvider) GetContacts() ([]contact.Contact, error) {
 	args := c.Called()
 
 	var s []contact.Contact

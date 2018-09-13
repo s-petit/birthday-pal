@@ -13,10 +13,12 @@ type OAuth2 struct {
 	SecretPath string
 }
 
+//Authenticate performs a an OAuth2 authentication
 func (oa OAuth2) Authenticate() error {
 	return oa.authentication().authenticate()
 }
 
+//Client returns a HTTP client authenticated with OAuth2
 func (oa OAuth2) Client() (*http.Client, error) {
 	// Initialize authentication
 	auth := oa.authentication()
@@ -38,33 +40,6 @@ func (oa OAuth2) Client() (*http.Client, error) {
 
 	return client, nil
 }
-
-//Get invokes a HTTP Get with BasicAuth and handles errors
-/*func (oa OAuth2) Call(url string) (string, error) {
-
-	client, err := oa.AuthClient()
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := client.Get(url)
-
-	if err != nil {
-		return "", err
-	}
-
-	if resp.StatusCode != 200 {
-		return "", errors.New("a unexpected error occurred during connexion to CardDAV server - http code is " + strconv.Itoa(resp.StatusCode))
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(body), nil
-}*/
 
 func (oa OAuth2) authentication() *authentication {
 	return &authentication{Scope: oa.Scope, SecretPath: oa.SecretPath}
