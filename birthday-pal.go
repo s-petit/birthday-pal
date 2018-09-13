@@ -159,7 +159,7 @@ func main() {
 				SecretPath: *secret,
 			}
 
-			contactsProvider := request.GoogleContactsProvider{Client: auth, URL: *googleURL}
+			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
 
 						smtp := email.SMTPClient{
 							Host:     *SMTPHost,

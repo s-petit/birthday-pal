@@ -6,12 +6,13 @@
 - implement a real i18n and templating solution
 - send a "digest" reminder for a given period. Example : Here are the birthdays of the week...
 - un vrai readme pro
+- essayer de clean les args du SMTP pour faire mieux: bpal smtp ??
 
 
 ## Refacto
 
 //TODO google Request : trouver une solution pour la page size... --> pagination des req google ?
-essayer de clean les args du SMTP pour faire mieux: bpal smtp ??
+
 //TODO gerer mieux le cote overridable de l url google ou abandonner
 tenter de mutualiser la gestion des recipents
 

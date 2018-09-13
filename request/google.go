@@ -11,13 +11,13 @@ import (
 
 //GoogleContactsProvider represents a provider which return contacts via Google People API
 type GoogleContactsProvider struct {
-	Client auth.AuthClient
-	URL    string
+	AuthClient auth.AuthClient
+	URL        string
 }
 
 //Get returns contacts via a Google People API call
 func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
-	clt, err := gp.Client.Client()
+	clt, err := gp.AuthClient.Client()
 	if err != nil {
 		return []contact.Contact{}, err
 	}
