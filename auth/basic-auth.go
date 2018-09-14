@@ -4,9 +4,6 @@ import (
 	"net/http"
 )
 
-//TODO revoir la godoc
-//TODO SPE revoir la visibilite de la plupart des fields et methods
-
 //BasicAuth provides
 type BasicAuth struct {
 	Username string
