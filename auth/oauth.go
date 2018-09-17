@@ -1,30 +1,27 @@
 package auth
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/s-petit/birthday-pal/system"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
-	"os/user"
-	"path/filepath"
 	"runtime"
-	"strings"
 )
 
 //OAuth2 represents a HTTP Request with OAuth2
 type OAuth2 struct {
 	Scope      string
 	SecretPath string
-	cachePath  string
+	//TODO revoir ce champ et mocker
+	//cachePath string
+	system system.System
 }
 
 //Client returns a HTTP client authenticated with OAuth2
@@ -52,31 +49,11 @@ func (oa OAuth2) Client() (*http.Client, error) {
 	return client, nil
 }
 
-func prompt(secret string) (string, error) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("%s ", secret)
-
-	response, err := reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-
-	response = strings.TrimSpace(response)
-	if response == "" {
-		return prompt(secret)
-	}
-
-	return response, nil
-}
-
 // saveTokenInCache the token to the specified path (and saveTokenInCache the path to the struct).
 // If the path is empty, then it will saveTokenInCache the path to the current cachePath.
 func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 
-	path, err := oa.cache()
-	if err != nil {
-		return err
-	}
+	path := oa.system.CachePath()
 
 	// Open the file for writing
 	f, err := os.Create(path)
@@ -98,12 +75,8 @@ func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 // cache path in the home directory. This method returns an error if the token
 // cannot be loaded from the file.
 func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
-	var err error
 
-	path, err := oa.cache()
-	if err != nil {
-		return nil, err
-	}
+	path := oa.system.CachePath()
 
 	// Open the file at the path
 	f, err := os.Open(path)
@@ -122,12 +95,8 @@ func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
 }
 
 //Authenticate performs a an OAuth2 authentication and save token in cache
-// authenticateAndSaveToken runs an interactive authentication on the command line,
-// prompting the user to open a brower page and enter an authorization code.
-// It will then fetch an token via OAuth and cache it as credentials. Note
-// that this method will overwrite any previously cached token.
 func (oa OAuth2) Authenticate() error {
-	// loadTokenFromCache and create the OAuth2 Configuration
+
 	config, err := oa.config()
 	if err != nil {
 		return err
@@ -137,7 +106,7 @@ func (oa OAuth2) Authenticate() error {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 
 	// Notify the user of the web browser.
-	fmt.Println("In order to authenticateAndSaveToken, use a browser to authorize birthday-pal")
+	fmt.Println("Please use a browser in order to let birthday-pal access your contacts.")
 
 	// Open the web browser
 	switch runtime.GOOS {
@@ -155,7 +124,7 @@ func (oa OAuth2) Authenticate() error {
 	}
 
 	// prompt for the authorization code
-	code, err := prompt("enter authorization code:")
+	code, err := oa.system.Prompt()
 	if err != nil {
 		return fmt.Errorf("unable to read authorization code %v", err)
 	}
@@ -191,29 +160,12 @@ func (oa OAuth2) config() (*oauth2.Config, error) {
 
 // cachePath computes the path to the credential token file, creating the
 // directory if necessary and stores it in the authentication struct.
-func (oa OAuth2) cache() (string, error) {
+/*func (oa OAuth2) cache() (string, error) {
 	// Get the user to look up the user's home directory
 	path := oa.cachePath
 	if path == "" {
-		path = defaultCachePath()
+		path = oa.defaultCachePath()
 	}
 
 	return path, nil
-}
-
-func defaultCachePath() string {
-	// Get the hidden credentials directory, making sure it's created
-	cacheDir := filepath.Join(homeDir(), ".birthday-pal")
-	os.MkdirAll(cacheDir, 0700)
-	// Determine the path to the token cache file
-	cacheFile := url.QueryEscape("credentials.json")
-	return filepath.Join(cacheDir, cacheFile)
-}
-
-func homeDir() string {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return usr.HomeDir
-}
+}*/
