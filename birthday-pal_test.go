@@ -36,12 +36,13 @@ END:VCARD
 	return r
 }
 
-func Test_main(t *testing.T) {
+func Test_main_with_carddav(t *testing.T) {
 
 	srv := httptest.NewServer(handler())
 	defer srv.Close()
 
 	d := testdata.StartSMTPServer()
+	defer d.Shutdown()
 
 	os.Args = []string{"",
 		"--smtp-host=localhost",
@@ -54,8 +55,6 @@ func Test_main(t *testing.T) {
 	}
 
 	assert.NotPanics(t, main)
-
-	d.Shutdown()
 }
 
 func Test_remind_birthdays(t *testing.T) {

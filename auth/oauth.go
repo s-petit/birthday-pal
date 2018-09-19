@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/s-petit/birthday-pal/system"
 	"golang.org/x/oauth2"
@@ -11,35 +10,28 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
-	"runtime"
 )
 
 //OAuth2 represents a HTTP Request with OAuth2
 type OAuth2 struct {
 	Scope      string
 	SecretPath string
-	//TODO revoir ce champ et mocker
-	//cachePath string
-	system system.System
+	system     system.System
 }
 
 //Client returns a HTTP client authenticated with OAuth2
 func (oa OAuth2) Client() (*http.Client, error) {
 
-	// loadTokenFromCache the configuration from client_secret.json
+	// config returns the configuration from client_secret.json
 	config, err := oa.config()
 	if err != nil {
 		return nil, err
 	}
-	// loadTokenFromCache the token from the cache or force authentication
+	// load the token from the cache
 	token, err := oa.loadTokenFromCache()
 	if err != nil {
+		fmt.Println("not authenticated yet! please use 'birthday-pal oauth' command.")
 		return nil, err
-	}
-
-	if token == nil {
-		return nil, errors.New("not authenticated yet! please use birthday-pal oauth")
 	}
 
 	// Create the API client with a background context.
@@ -49,8 +41,7 @@ func (oa OAuth2) Client() (*http.Client, error) {
 	return client, nil
 }
 
-// saveTokenInCache the token to the specified path (and saveTokenInCache the path to the struct).
-// If the path is empty, then it will saveTokenInCache the path to the current cachePath.
+// save the token to the specified path.
 func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 
 	path := oa.system.CachePath()
@@ -70,10 +61,7 @@ func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 	return nil
 }
 
-// loadTokenFromCache the token from the specified path (and saves the path to the struct).
-// If path is an empty string then it will loadTokenFromCache the token from the default
-// cache path in the home directory. This method returns an error if the token
-// cannot be loaded from the file.
+// load the oauth2 token from the specified path
 func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
 
 	path := oa.system.CachePath()
@@ -108,15 +96,7 @@ func (oa OAuth2) Authenticate() error {
 	// Notify the user of the web browser.
 	fmt.Println("Please use a browser in order to let birthday-pal access your contacts.")
 
-	// Open the web browser
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", authURL).Start()
-	case "windows", "darwin":
-		err = exec.Command("open", authURL).Start()
-	default:
-		err = fmt.Errorf("unsupported platform: %s", runtime.GOOS)
-	}
+	err = oa.system.OpenBrowser(authURL)
 
 	// If we couldn't open the web browser, prompt the user to do it manually.
 	if err != nil {
@@ -130,7 +110,7 @@ func (oa OAuth2) Authenticate() error {
 	}
 
 	// Perform the exchange for the token
-	token, err := config.Exchange(context.Background(), code)
+	token, err := oa.system.ExchangeToken(config, code)
 	if err != nil {
 		return fmt.Errorf("unable to retrieve token from web %v", err)
 	}
@@ -157,15 +137,3 @@ func (oa OAuth2) config() (*oauth2.Config, error) {
 
 	return config, nil
 }
-
-// cachePath computes the path to the credential token file, creating the
-// directory if necessary and stores it in the authentication struct.
-/*func (oa OAuth2) cache() (string, error) {
-	// Get the user to look up the user's home directory
-	path := oa.cachePath
-	if path == "" {
-		path = oa.defaultCachePath()
-	}
-
-	return path, nil
-}*/

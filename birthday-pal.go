@@ -209,40 +209,6 @@ func main() {
 
 	app.Action = func() {
 
-		/*		auth := auth.BasicAuth{
-				Username: *cardDavUsername,
-				Password: *cardDavPassword,
-			}*/
-
-		//auth.Get(*cardDavURL)
-
-		/*		oauth := http.OAuth2{
-					Auth: google.authentication{Scope: people.ContactsReadonlyScope},
-				}
-
-				oauth.oauthClient().Get(*cardDavURL)
-		*/
-
-		//contactsProvider := request.CardDavContactsProvider{auth, *cardDavURL}
-
-		//provider, _ := http.GoogleContactsProvider{}.Get(ores)
-
-		//fmt.Println(provider)
-
-		/*		smtp := email.SMTPClient{
-					Host:     *SMTPHost,
-					Port:     *SMTPPort,
-					Username: *SMTPUsername,
-					Password: *SMTPPassword,
-				}
-
-				reminder := remind.Reminder{
-					CurrentDate:       time.Now(),
-					NbDaysBeforeBDay:  *daysBefore,
-					EveryDayUntilBDay: *remindEveryDay,
-				}
-
-				remindBirthdays(contactsProvider, smtp, reminder, *recipients)*/
 	}
 
 	app.Run(os.Args)
