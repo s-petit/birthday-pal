@@ -2,7 +2,7 @@ package auth
 
 import (
 	"errors"
-	"fmt"
+	"github.com/s-petit/birthday-pal/system"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -21,10 +21,10 @@ func Test_should_return_oauth2_authenticated_client(t *testing.T) {
 	tempFileConfig := testdata.TempFileWithName(jsonConfig, tempDir, "config")
 	tempFileToken := testdata.TempFileWithName(token, tempDir, "token")
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return(tempFileToken)
 
-	oauth2 := OAuth2{SecretPath: tempFileConfig, system: sys}
+	oauth2 := OAuth2{SecretPath: tempFileConfig, System: sys}
 
 	clt, err := oauth2.Client()
 
@@ -51,10 +51,10 @@ func Test_should_not_return_oauth2_client_when_authentication_token_not_found(t 
 	defer os.RemoveAll(tempDir)
 	tempFileConfig := testdata.TempFileWithName(jsonConfig, tempDir, "config")
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return("")
 
-	oauth2 := OAuth2{SecretPath: tempFileConfig, system: sys}
+	oauth2 := OAuth2{SecretPath: tempFileConfig, System: sys}
 
 	clt, err := oauth2.Client()
 
@@ -70,10 +70,10 @@ func Test_should_get_token_from_cache(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonToken, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return(tempFile)
 
-	auth := OAuth2{system: sys}
+	auth := OAuth2{System: sys}
 
 	token, err := auth.loadTokenFromCache()
 
@@ -90,10 +90,10 @@ func Test_should_not_get_token_from_cache_when_json_not_deserilizable(t *testing
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonToken, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return(tempFile)
 
-	auth := OAuth2{system: sys}
+	auth := OAuth2{System: sys}
 
 	token, err := auth.loadTokenFromCache()
 
@@ -126,13 +126,13 @@ func Test_should_authenticate_with_config(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonConfig, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("CachePath").Return(tempDir + "/cache-file")
 
-	auth := OAuth2{SecretPath: tempFile, system: sys}
+	auth := OAuth2{SecretPath: tempFile, System: sys}
 
 	err := auth.Authenticate()
 
@@ -147,12 +147,12 @@ func Test_should_not_authenticate_when_token_not_exchanged(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonConfig, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, errors.New("oops"))
 
-	auth := OAuth2{SecretPath: tempFile, system: sys}
+	auth := OAuth2{SecretPath: tempFile, System: sys}
 
 	err := auth.Authenticate()
 
@@ -167,11 +167,11 @@ func Test_should_not_authenticate_when_value_prompted_is_malformed(t *testing.T)
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonConfig, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("Prompt").Return("", errors.New("oops"))
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 
-	auth := OAuth2{SecretPath: tempFile, system: sys}
+	auth := OAuth2{SecretPath: tempFile, System: sys}
 
 	err := auth.Authenticate()
 
@@ -186,13 +186,13 @@ func Test_should_authenticate_even_when_browser_not_openable(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 	tempFile := testdata.TempFile(jsonConfig, tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(errors.New("erf"))
 	sys.On("ExchangeToken", &oauth2.Config{ClientID: "c0nf1d3ential", ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}, "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("CachePath").Return(tempDir + "/cache-file")
 
-	auth := OAuth2{SecretPath: tempFile, system: sys}
+	auth := OAuth2{SecretPath: tempFile, System: sys}
 
 	err := auth.Authenticate()
 
@@ -246,10 +246,10 @@ func Test_should_save_token_in_cache_then_load_it(t *testing.T) {
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return(tempDir + "/token.json")
 
-	auth := OAuth2{system: sys}
+	auth := OAuth2{System: sys}
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
@@ -267,10 +267,10 @@ func Test_should_save_token_in_cache_then_load_it(t *testing.T) {
 
 func Test_should_not_save_token_in_not_authorized_path(t *testing.T) {
 
-	sys := new(fakeSystem)
+	sys := new(system.FakeSystem)
 	sys.On("CachePath").Return("/root/token.json")
 
-	auth := OAuth2{system: sys}
+	auth := OAuth2{System: sys}
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
@@ -282,35 +282,4 @@ func Test_should_not_save_token_in_not_authorized_path(t *testing.T) {
 
 func oauth2Config(clientID string) *oauth2.Config {
 	return &oauth2.Config{ClientID: clientID, ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}
-}
-
-type fakeSystem struct {
-	mock.Mock
-}
-
-func (fs *fakeSystem) Prompt() (string, error) {
-	called := fs.Called()
-	return called.String(0), called.Error(1)
-}
-
-func (fs *fakeSystem) CachePath() string {
-	called := fs.Called()
-	return called.String(0)
-}
-
-func (fs *fakeSystem) OpenBrowser(URL string) error {
-	called := fs.Called(URL)
-	return called.Error(0)
-}
-
-func (fs *fakeSystem) ExchangeToken(config *oauth2.Config, code string) (*oauth2.Token, error) {
-	called := fs.Called(config, code)
-
-	var s *oauth2.Token
-	var ok bool
-	if s, ok = called.Get(0).(*oauth2.Token); !ok {
-		panic(fmt.Sprintf("assert: arguments: Int(%d) failed because object wasn't correct type: %v", 0, called.Get(0)))
-	}
-
-	return s, called.Error(1)
 }

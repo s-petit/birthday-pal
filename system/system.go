@@ -13,10 +13,12 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 )
 
 // System holds system-dependant methods which are hard to test/mock
 type System interface {
+	Now() time.Time
 	CachePath() string
 	Prompt() (string, error)
 	OpenBrowser(url string) error
@@ -25,6 +27,11 @@ type System interface {
 
 // RealSystem is how the hosting system works in real life
 type RealSystem struct {
+}
+
+//Now return the current date and time
+func (rs RealSystem) Now() time.Time {
+	return time.Now()
 }
 
 //CachePath is the location where the token will be stored in order to remember authentication.

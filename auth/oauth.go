@@ -16,7 +16,7 @@ import (
 type OAuth2 struct {
 	Scope      string
 	SecretPath string
-	system     system.System
+	System     system.System
 }
 
 //Client returns a HTTP client authenticated with OAuth2
@@ -44,7 +44,7 @@ func (oa OAuth2) Client() (*http.Client, error) {
 // save the token to the specified path.
 func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 
-	path := oa.system.CachePath()
+	path := oa.System.CachePath()
 
 	// Open the file for writing
 	f, err := os.Create(path)
@@ -64,7 +64,7 @@ func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 // load the oauth2 token from the specified path
 func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
 
-	path := oa.system.CachePath()
+	path := oa.System.CachePath()
 
 	// Open the file at the path
 	f, err := os.Open(path)
@@ -96,7 +96,7 @@ func (oa OAuth2) Authenticate() error {
 	// Notify the user of the web browser.
 	fmt.Println("Please use a browser in order to let birthday-pal access your contacts.")
 
-	err = oa.system.OpenBrowser(authURL)
+	err = oa.System.OpenBrowser(authURL)
 
 	// If we couldn't open the web browser, prompt the user to do it manually.
 	if err != nil {
@@ -104,13 +104,13 @@ func (oa OAuth2) Authenticate() error {
 	}
 
 	// prompt for the authorization code
-	code, err := oa.system.Prompt()
+	code, err := oa.System.Prompt()
 	if err != nil {
 		return fmt.Errorf("unable to read authorization code %v", err)
 	}
 
 	// Perform the exchange for the token
-	token, err := oa.system.ExchangeToken(config, code)
+	token, err := oa.System.ExchangeToken(config, code)
 	if err != nil {
 		return fmt.Errorf("unable to retrieve token from web %v", err)
 	}
