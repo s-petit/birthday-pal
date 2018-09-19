@@ -208,7 +208,7 @@ func main() {
 	})
 
 	app.Action = func() {
-
+		app.PrintHelp()
 	}
 
 	app.Run(os.Args)
