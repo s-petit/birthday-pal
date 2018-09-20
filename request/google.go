@@ -52,7 +52,7 @@ func parseContacts(connections *people.ListConnectionsResponse) []contact.Contac
 			if connection.Names[0] != nil && b.Date != nil {
 				contacts = append(contacts, contact.Contact{Name: connection.Names[0].DisplayName, BirthDate: time.Date(int(b.Date.Year), time.Month(b.Date.Month), int(b.Date.Day), 0, 0, 0, 0, time.UTC)})
 			} else {
-				fmt.Printf("This contact is malformed %s %s", connection.Names[0], b)
+				fmt.Println("This contact is malformed: ", connection.Names[0], b)
 			}
 		}
 	}
