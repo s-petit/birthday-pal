@@ -2,7 +2,6 @@ package bpal
 
 import (
 	"errors"
-	"fmt"
 	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
@@ -81,14 +80,7 @@ type fakeContactProvider struct {
 
 func (c *fakeContactProvider) GetContacts() ([]contact.Contact, error) {
 	args := c.Called()
-
-	var s []contact.Contact
-	var ok bool
-	if s, ok = args.Get(0).([]contact.Contact); !ok {
-		panic(fmt.Sprintf("assert: arguments: Int(%d) failed because object wasn't correct type: %v", 0, args.Get(0)))
-	}
-
-	return s, args.Error(1)
+	return args.Get(0).([]contact.Contact), args.Error(1)
 }
 
 type fakeSender struct {

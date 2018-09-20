@@ -153,7 +153,6 @@ func Mowcli(birthdayPal bpal.Pal, system system.System) {
 			})
 		)
 
-		//TODO SPE duplication du code...
 		cmd.Action = func() {
 
 			auth := auth.OAuth2{

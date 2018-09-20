@@ -19,14 +19,7 @@ tenter de mutualiser la gestion des recipents
 //TODO SPE revoir la visibilite de la plupart des fields et methods
 //TODO faire un birthday-pal smtp ? rendre obligatoire le smtp ou alors faire une erreur claire ?
 //TODO SPE: mutualiser smtp/reminder voire recipient
-			
-			
-		// a tester
-		// cardav avec basic
-		// cardav avec oauth (theorique)
-		// google avec oauth
+//TODO SPE duplication du code dans le CLI
+//TODO SPE duplication du code dans les mocks complexes
 
-
-TODO TESTS
-			
 
