@@ -18,5 +18,5 @@ func (ba BasicAuth) Client() (*http.Client, error) {
 	}
 	req.SetBasicAuth(ba.Username, ba.Password)
 
-	return &http.Client{}, err
+	return &http.Client{}.Do(), err
 }

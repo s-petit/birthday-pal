@@ -26,8 +26,25 @@ END:VCARD
 func handler() http.Handler {
 
 	h := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, vcardContact)
+		username, password, ok := r.BasicAuth()
+		if ok && username == "user" && password == "pass" {
+			io.WriteString(w, vcardContact)
+		} else {
+			w.Header().Set("WWW-Authenticate", `Basic realm="Authorization Required"`)
+			w.WriteHeader(401)
+		}
 	}
+
+/*	lol := func (w http.ResponseWriter) {
+		w.Header().Set("WWW-Authenticate", `Basic realm="Authorization Required"`)
+		w.WriteHeader(401)
+	}
+
+	rire := func (r *http.Request) bool {
+		username, password, ok := r.BasicAuth()
+		return ok && f(username, password)
+	}*/
+
 
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
