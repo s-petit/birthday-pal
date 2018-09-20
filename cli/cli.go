@@ -199,14 +199,13 @@ func Mowcli(birthdayPal bpal.Pal, system system.System) {
 			auth := auth.OAuth2{
 				Scope:      people.ContactsReadonlyScope,
 				SecretPath: *secret,
+				System:     system,
 			}
 
 			err := auth.Authenticate()
-			if err != nil {
-				log.Fatal(err)
-			} else {
-				log.Println("Oauth2 authentication successful !")
-			}
+			crashIfError(err)
+
+			log.Println("Oauth2 authentication successful !")
 
 		}
 

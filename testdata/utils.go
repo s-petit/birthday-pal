@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/flashmob/go-guerrilla"
 	glog "github.com/flashmob/go-guerrilla/log"
+	"golang.org/x/oauth2"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -60,4 +61,8 @@ func JsonOauthConfig(clientId string) string {
 	return "{\"installed\": " +
 		"{\"client_id\": \"" + clientId + "\"," +
 		"\"redirect_uris\": [\"http://uri\"]}}"
+}
+
+func Oauth2Config(clientID string) *oauth2.Config {
+	return &oauth2.Config{ClientID: clientID, ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}
 }
