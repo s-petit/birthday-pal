@@ -7,6 +7,7 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/people/v1"
 	"time"
+	"fmt"
 )
 
 //GoogleContactsProvider represents a provider which return contacts via Google People API
@@ -48,7 +49,11 @@ func parseContacts(connections *people.ListConnectionsResponse) []contact.Contac
 
 	for _, connection := range connections.Connections {
 		for _, b := range connection.Birthdays {
-			contacts = append(contacts, contact.Contact{Name: connection.Names[0].DisplayName, BirthDate: time.Date(int(b.Date.Year), time.Month(b.Date.Month), int(b.Date.Day), 0, 0, 0, 0, time.UTC)})
+			if (connection.Names[0] != nil && b.Date != nil) {
+				contacts = append(contacts, contact.Contact{Name: connection.Names[0].DisplayName, BirthDate: time.Date(int(b.Date.Year), time.Month(b.Date.Month), int(b.Date.Day), 0, 0, 0, 0, time.UTC)})
+			} else {
+				fmt.Printf("This contact is malformed %s %s", connection.Names[0], b)
+			}
 		}
 	}
 
