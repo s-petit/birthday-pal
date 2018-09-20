@@ -16,7 +16,7 @@ func (ba BasicAuth) Client() (*http.Client, error) {
 
 	basicAuth := func(req *http.Request) (*url.URL, error) {
 		req.SetBasicAuth(ba.Username, ba.Password)
-		return req.URL, nil
+		return http.ProxyFromEnvironment(req)
 	}
 
 	return &http.Client{
