@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"net/url"
 )
 
 //BasicAuth provides
@@ -12,11 +13,15 @@ type BasicAuth struct {
 
 //Client returns a HTTP client authenticated with basic Auth
 func (ba BasicAuth) Client() (*http.Client, error) {
-	req, err := http.NewRequest("GET", "", nil)
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(ba.Username, ba.Password)
 
-	return &http.Client{}.Do(), err
+	basicAuth := func(req *http.Request) (*url.URL, error) {
+		req.SetBasicAuth(ba.Username, ba.Password)
+		return req.URL, nil
+	}
+
+	return &http.Client{
+		Transport: &http.Transport{
+			Proxy: basicAuth,
+		},
+	}, nil
 }

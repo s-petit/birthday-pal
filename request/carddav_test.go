@@ -35,17 +35,6 @@ func handler() http.Handler {
 		}
 	}
 
-/*	lol := func (w http.ResponseWriter) {
-		w.Header().Set("WWW-Authenticate", `Basic realm="Authorization Required"`)
-		w.WriteHeader(401)
-	}
-
-	rire := func (r *http.Request) bool {
-		username, password, ok := r.BasicAuth()
-		return ok && f(username, password)
-	}*/
-
-
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
 	return r
