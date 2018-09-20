@@ -1,7 +1,7 @@
 package remind
 
 import (
-	"github.com/s-petit/birthday-pal/vcard"
+	"github.com/s-petit/birthday-pal/contact"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type ContactBirthday struct {
 }
 
 //ContactsToRemind filters every contacts which the bday matches the reminder's conditions.
-func ContactsToRemind(contacts []vcard.Contact, reminder Reminder) []ContactBirthday {
+func ContactsToRemind(contacts []contact.Contact, reminder Reminder) []ContactBirthday {
 
 	var contactsToRemind []ContactBirthday
 
