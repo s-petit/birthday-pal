@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-//OAuth2 represents a HTTP Request with OAuth2
+//OAuth2 is used to perform OAuth2 authentication
 type OAuth2 struct {
 	Scope      string
 	SecretPath string

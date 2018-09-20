@@ -2,8 +2,8 @@ package cli
 
 import (
 	"github.com/jawher/mow.cli"
+	"github.com/s-petit/birthday-pal/app"
 	"github.com/s-petit/birthday-pal/auth"
-	"github.com/s-petit/birthday-pal/bpal"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/request"
@@ -14,7 +14,7 @@ import (
 )
 
 //Mowcli calls the mow.cli CLI which is the entry point of birthday-pal
-func Mowcli(birthdayPal bpal.Pal, system system.System) {
+func Mowcli(birthdayPal app.App, system system.System) {
 	app := cli.App("birthday-pal", "Remind me birthdays pls.")
 
 	app.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
@@ -121,7 +121,7 @@ func Mowcli(birthdayPal bpal.Pal, system system.System) {
 				EveryDayUntilBDay: *remindEveryDay,
 			}
 
-			err := birthdayPal.RemindBirthdays(contactsProvider, smtp, reminder, *recipients)
+			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
 			crashIfError(err)
 		}
 	})
@@ -176,7 +176,7 @@ func Mowcli(birthdayPal bpal.Pal, system system.System) {
 				EveryDayUntilBDay: *remindEveryDay,
 			}
 
-			err := birthdayPal.RemindBirthdays(contactsProvider, smtp, reminder, *recipients)
+			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
 			crashIfError(err)
 		}
 

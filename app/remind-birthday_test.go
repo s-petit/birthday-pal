@@ -1,4 +1,4 @@
-package bpal
+package app
 
 import (
 	"errors"
@@ -28,7 +28,7 @@ func Test_remind_birthdays_successful(t *testing.T) {
 	contactProvider.On("GetContacts").Return(con, nil)
 	smtp.On("Send", contactToRemind, recipients).Return(nil)
 
-	err := BirthdayPal{}.RemindBirthdays(contactProvider, smtp, reminder, recipients)
+	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
 
 	assert.NoError(t, err)
 	contactProvider.AssertExpectations(t)
@@ -43,7 +43,7 @@ func Test_remind_birthdays_fail_during_contact_retrieving(t *testing.T) {
 
 	contactProvider.On("GetContacts").Return([]contact.Contact{}, errors.New("woops"))
 
-	err := BirthdayPal{}.RemindBirthdays(contactProvider, smtp, remind.Reminder{}, []string{})
+	err := BirthdayPal{}.Exec(contactProvider, smtp, remind.Reminder{}, []string{})
 
 	assert.Error(t, err)
 	contactProvider.AssertExpectations(t)
@@ -67,7 +67,7 @@ func Test_remind_birthdays_fail_during_mail_sending(t *testing.T) {
 	contactProvider.On("GetContacts").Return(con, nil)
 	smtp.On("Send", contactToRemind, recipients).Return(errors.New("wow"))
 
-	err := BirthdayPal{}.RemindBirthdays(contactProvider, smtp, reminder, recipients)
+	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
 
 	assert.Error(t, err)
 	contactProvider.AssertExpectations(t)

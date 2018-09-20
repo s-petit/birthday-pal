@@ -17,7 +17,7 @@ type fakeBirthdayPal struct {
 	mock.Mock
 }
 
-func (fbp fakeBirthdayPal) RemindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error {
+func (fbp fakeBirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error {
 	args := fbp.Called(contactsProvider, smtp, reminder, recipients)
 	return args.Error(0)
 }
@@ -49,7 +49,7 @@ func Test_carddav(t *testing.T) {
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
-	bpal.On("RemindBirthdays", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
+	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
 
 	Mowcli(bpal, system)
 	bpal.AssertExpectations(t)
@@ -82,7 +82,7 @@ func Test_google(t *testing.T) {
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
-	bpal.On("RemindBirthdays", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
+	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
 
 	Mowcli(bpal, system)
 	bpal.AssertExpectations(t)
@@ -114,7 +114,7 @@ func Test_oauth(t *testing.T) {
 
 	Mowcli(bpal, system)
 
-	bpal.AssertNotCalled(t, "RemindBirthdays")
+	bpal.AssertNotCalled(t, "Exec")
 	bpal.AssertExpectations(t)
 	system.AssertExpectations(t)
 }

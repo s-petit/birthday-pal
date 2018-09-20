@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-//BasicAuth provides
+//BasicAuth is used to perform basic authentication
 type BasicAuth struct {
 	Username string
 	Password string

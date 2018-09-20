@@ -1,4 +1,4 @@
-package bpal
+package app
 
 import (
 	"github.com/s-petit/birthday-pal/email"
@@ -7,17 +7,17 @@ import (
 	"log"
 )
 
-//Pal represents the entity which helps fellow humains in the earth
-type Pal interface {
-	RemindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error
+//App is an interface which reprensets an executable application
+type App interface {
+	Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error
 }
 
-//BirthdayPal represents the entity which helps people to remind birthdays.
+//BirthdayPal represents this very software, and helps people to remind birthdays by sending reminders.
 type BirthdayPal struct {
 }
 
-//RemindBirthdays fetches contacts, then retrieve birthdays to remind, and finally send reminders to recipients
-func (bp BirthdayPal) RemindBirthdays(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error {
+//Exec of BirthdayPal fetches contacts, then retrieve birthdays to remind, and finally send reminders to recipients
+func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error {
 
 	contacts, err := contactsProvider.GetContacts()
 	if err != nil {
