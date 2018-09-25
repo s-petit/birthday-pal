@@ -22,5 +22,6 @@ tenter de mutualiser la gestion des recipents
 //TODO SPE duplication du code dans le CLI
 //TODO SPE duplication du code dans les mocks complexes
 BUG message erreur pas clair quand smtp non precise
+BUG mowcli : confusion entre URL et recipients
 
 

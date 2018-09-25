@@ -30,6 +30,7 @@ func Test_carddav(t *testing.T) {
 		"--smtp-user=user@test",
 		"--smtp-pass=smtp-pass",
 		"--days-before=3",
+		"--lang=FR",
 		"--remind-everyday",
 		"carddav",
 		"--user=login",
@@ -45,7 +46,7 @@ func Test_carddav(t *testing.T) {
 	system.On("Now").Return(time)
 
 	expectedContactProvider := request.CardDavContactsProvider{AuthClient: auth.BasicAuth{Username: "login", Password: "password"}, URL: "http://carddav"}
-	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass"}
+	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "FR"}
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
@@ -78,7 +79,7 @@ func Test_google(t *testing.T) {
 	system.On("Now").Return(time)
 
 	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", SecretPath: "/path/secret.json", System: system}, URL: "http://google"}
-	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass"}
+	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
