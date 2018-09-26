@@ -30,6 +30,10 @@ func toMail(contact remind.ContactBirthday, language string) ([]byte, error) {
 		i18nTemplate = frTemplate{}
 	}
 
+	return resolveMail(contact, i18nTemplate)
+}
+
+func resolveMail(contact remind.ContactBirthday, i18nTemplate i18nTemplate) ([]byte, error) {
 	subjFuncs := template.FuncMap{
 		"yearValid": yearValid,
 	}
@@ -59,6 +63,7 @@ func toMail(contact remind.ContactBirthday, language string) ([]byte, error) {
 	resolvedMail := resolveTemplate(mail, m)
 	return resolvedMail.Bytes(), nil
 }
+
 
 func resolveTemplate(template *template.Template, object interface{}) bytes.Buffer {
 	var doc bytes.Buffer

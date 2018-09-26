@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+	"github.com/stretchr/testify/mock"
 )
 
 func Test_should_get_mail_in_french(t *testing.T) {
@@ -44,4 +45,50 @@ The 08/22 will be John's birthday. Do not forget to make your wish!
 
 	bytes, _ := toMail(remind.ContactBirthday{"John", birthday, 34}, "EN")
 	assert.Equal(t, expectedMail, string(bytes))
+}
+
+func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
+
+	tmpl := new(fakeTemplate)
+	tmpl.On("subject").Return("{{{{{")
+
+	bytes, err := resolveMail(remind.ContactBirthday{}, tmpl)
+
+	assert.Error(t, err)
+	assert.Empty(t, bytes)
+}
+
+
+func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
+
+	tmpl := new(fakeTemplate)
+	tmpl.On("subject").Return("subject")
+	tmpl.On("body").Return("{{{{{")
+
+	bytes, err := resolveMail(remind.ContactBirthday{}, tmpl)
+
+	assert.Error(t, err)
+	assert.Empty(t, bytes)
+}
+
+type fakeTemplate struct {
+	mock.Mock
+}
+
+func (ft fakeTemplate) subject() string {
+	args := ft.Called()
+	return args.String(0)
+}
+
+func (ft fakeTemplate) body() string {
+	args := ft.Called()
+	return args.String(0)
+}
+
+func (ft fakeTemplate) dateLayout() string {
+	return "02/01"
+}
+
+func (ft fakeTemplate) formatDate(date time.Time) string {
+	return "dasDate"
 }
