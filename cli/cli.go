@@ -219,6 +219,66 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	})
 
+	app.Command("smtp", "save SMTP credentials in order to send email reminders", func(cmd *cli.Cmd) {
+
+		app.Spec = "[--lang] HOST PORT USER PASS"
+
+		var (
+			// OPTS
+
+			language = app.String(cli.StringOpt{
+				Name:   "l lang",
+				Desc:   "Email language [EN, FR]",
+				Value:  "EN",
+				EnvVar: "BPAL_LANG",
+			})
+
+			// ARGS
+
+			host = app.String(cli.StringOpt{
+				Name:   "smtp-host",
+				Desc:   "SMTP server hostname",
+				EnvVar: "BPAL_SMTP_HOST",
+			})
+
+			port = app.Int(cli.IntOpt{
+				Name:   "smtp-port",
+				Value:  587,
+				Desc:   "SMTP server port",
+				EnvVar: "BPAL_SMTP_PORT",
+			})
+
+			user = app.String(cli.StringOpt{
+				Name:   "smtp-user",
+				Desc:   "SMTP server username",
+				EnvVar: "BPAL_SMTP_USERNAME",
+			})
+
+			pass = app.String(cli.StringOpt{
+				Name:   "smtp-pass",
+				Desc:   "SMTP server password",
+				EnvVar: "BPAL_SMTP_PASSWORD",
+			})
+
+		)
+
+		cmd.Action = func() {
+
+	/*		auth := auth.OAuth2{
+				Scope:      people.ContactsReadonlyScope,
+				SecretPath: *secret,
+				System:     system,
+			}
+
+			err := auth.Authenticate()
+			crashIfError(err)*/
+
+			log.Println("Oauth2 authentication successful !")
+
+		}
+
+	})
+
 	app.Action = func() {
 		app.PrintHelp()
 	}
