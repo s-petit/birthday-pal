@@ -1,24 +1,71 @@
 package email
 
 import (
-	"fmt"
+	"bytes"
 	"github.com/s-petit/birthday-pal/remind"
+	"strings"
+	"text/template"
 	"time"
 )
 
-const frenchBody = "To: Birthday Pals \r\n" +
-	"Subject: Anniversaire de %s !\r\n" +
-	"\r\n" +
-	"Ce sera l'anniversaire de %s le %s. Il aura %d an(s). Pensez a le lui souhaiter !\r\n"
+const mailTemplate = `
+To: Birthday Pals\r\n
+Subject: {{.Subject}}\r\n
+{{.Body}}
+`
 
-const frenchLayout = "02/01"
-const englishLayout = "01/01"
-
-func formatDate(layout string, date time.Time) string {
-	return date.Format(layout)
+type subjectBody struct {
+	Subject string
+	Body    string
 }
 
-//French sends a reminder email in French.
-func French(contact remind.ContactBirthday) string {
-	return fmt.Sprintf(frenchBody, contact.Name, contact.Name, formatDate(frenchLayout, contact.BirthDate), contact.Age)
+func yearValid(date time.Time) bool {
+	return date.Year() > 0
+}
+
+func toMail(contact remind.ContactBirthday, language string) ([]byte, error) {
+
+	var i18nTemplate i18nTemplate = enTemplate{}
+	if strings.ToUpper(language) == "FR" {
+		i18nTemplate = frTemplate{}
+	}
+
+	return resolveMail(contact, i18nTemplate)
+}
+
+func resolveMail(contact remind.ContactBirthday, i18nTemplate i18nTemplate) ([]byte, error) {
+	subjFuncs := template.FuncMap{
+		"yearValid": yearValid,
+	}
+
+	bodyFuncs := template.FuncMap{
+		"formatDate": i18nTemplate.formatDate,
+	}
+
+	subj, err := template.New("subject").Funcs(subjFuncs).Parse(i18nTemplate.subject())
+	if err != nil {
+		return nil, err
+	}
+	bod, err := template.New("body").Funcs(bodyFuncs).Parse(i18nTemplate.body())
+	if err != nil {
+		return nil, err
+	}
+	mail, err := template.New("mail").Parse(mailTemplate)
+	if err != nil {
+		return nil, err
+	}
+
+	var subject = resolveTemplate(subj, contact)
+	var body = resolveTemplate(bod, contact)
+
+	m := subjectBody{subject.String(), body.String()}
+
+	resolvedMail := resolveTemplate(mail, m)
+	return resolvedMail.Bytes(), nil
+}
+
+func resolveTemplate(template *template.Template, object interface{}) bytes.Buffer {
+	var doc bytes.Buffer
+	template.Execute(&doc, object)
+	return doc
 }

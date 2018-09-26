@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//App is an interface which reprensets an executable application
+//App is an interface which represents an executable application
 type App interface {
 	Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error
 }

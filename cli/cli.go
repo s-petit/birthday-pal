@@ -18,7 +18,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 	app := cli.App("birthday-pal", "Remind me birthdays pls.")
 
 	app.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
-		"[--days-before] [--remind-everyday]"
+		"[--days-before] [--remind-everyday] [--lang]"
 
 	var (
 
@@ -59,6 +59,13 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			Name:  "d days-before",
 			Value: 0,
 			Desc:  "Number of days before birthday you want to be reminded.",
+		})
+
+		language = app.String(cli.StringOpt{
+			Name:   "l lang",
+			Desc:   "Email language [EN, FR]",
+			Value:  "EN",
+			EnvVar: "BPAL_LANG",
 		})
 
 		// ARGS
@@ -113,6 +120,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				Port:     *SMTPPort,
 				Username: *SMTPUsername,
 				Password: *SMTPPassword,
+				Language: *language,
 			}
 
 			reminder := remind.Reminder{
@@ -168,6 +176,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				Port:     *SMTPPort,
 				Username: *SMTPUsername,
 				Password: *SMTPPassword,
+				Language: *language,
 			}
 
 			reminder := remind.Reminder{

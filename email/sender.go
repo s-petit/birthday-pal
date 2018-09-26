@@ -17,6 +17,7 @@ type SMTPClient struct {
 	Port     int
 	Username string
 	Password string
+	Language string
 }
 
 func (ss SMTPClient) hostPort() string {
@@ -28,14 +29,19 @@ func (ss SMTPClient) Send(contact remind.ContactBirthday, recipients []string) e
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
+	mail, err := toMail(contact, ss.Language)
+	if err != nil {
+		return err
+	}
+
 	// Connect to the server, authenticate, set the sender and recipient,
-	// and send the email all in one step.
-	err := smtp.SendMail(
+	// and send the subjectBody all in one step.
+	err = smtp.SendMail(
 		ss.hostPort(),
 		auth,
 		ss.Username,
 		recipients,
-		[]byte(French(contact)),
+		mail,
 	)
 
 	return err
