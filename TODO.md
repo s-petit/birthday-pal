@@ -2,7 +2,6 @@
 
 ## Features ideas
 
-- implement a real i18n and templating solution
 - send a "digest" reminder for a given period. Example : Here are the birthdays of the week...
 - un vrai readme pro
 - essayer de clean les args du SMTP pour faire mieux: bpal smtp ??

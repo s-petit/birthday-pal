@@ -3,9 +3,9 @@ package email
 import (
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/mock"
 )
 
 func Test_should_get_mail_in_french(t *testing.T) {
@@ -57,7 +57,6 @@ func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, bytes)
 }
-
 
 func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 

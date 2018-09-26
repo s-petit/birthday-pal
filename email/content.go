@@ -64,7 +64,6 @@ func resolveMail(contact remind.ContactBirthday, i18nTemplate i18nTemplate) ([]b
 	return resolvedMail.Bytes(), nil
 }
 
-
 func resolveTemplate(template *template.Template, object interface{}) bytes.Buffer {
 	var doc bytes.Buffer
 	template.Execute(&doc, object)
