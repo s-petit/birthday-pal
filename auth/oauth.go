@@ -10,13 +10,17 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 )
+
+const TOKEN_FILE = "token.json"
+const CONFIG_FILE = "config.json"
 
 //OAuth2 is used to perform OAuth2 authentication
 type OAuth2 struct {
 	Scope      string
-	SecretPath string
 	System     system.System
+	Profile string
 }
 
 //Client returns a HTTP client authenticated with OAuth2
@@ -44,19 +48,35 @@ func (oa OAuth2) Client() (*http.Client, error) {
 // save the token to the specified path.
 func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 
-	path := oa.System.CachePath()
+	tokenPath := filepath.Join(oa.System.CachePath(oa.Profile), TOKEN_FILE)
 
 	// Open the file for writing
-	f, err := os.Create(path)
+	tokenFile, err := os.Create(tokenPath)
 	if err != nil {
 		return fmt.Errorf("unable to cache oauth token: %v", err)
 	}
-	defer f.Close()
+	defer tokenFile.Close()
 
 	// Encode the token and write to disk
-	if err := json.NewEncoder(f).Encode(token); err != nil {
+	if err := json.NewEncoder(tokenFile).Encode(token); err != nil {
 		return fmt.Errorf("could not encode oauth token: %v", err)
 	}
+
+	return nil
+}
+
+// save the token to the specified path.
+func (oa OAuth2) saveConfigInCache(secretPath string) error {
+
+	data, err := ioutil.ReadFile(secretPath)
+	if err != nil {
+		return fmt.Errorf("unable to read client secret file: %v", err)
+	}
+
+
+	// TODO SPE oa.oa ?? peut mieux faire ?
+	configFile := filepath.Join(oa.System.CachePath(oa.Profile), CONFIG_FILE)
+	ioutil.WriteFile(configFile, data, 0644)
 
 	return nil
 }
@@ -64,26 +84,29 @@ func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 // load the oauth2 token from the specified path
 func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
 
-	path := oa.System.CachePath()
+	cachePath := oa.System.CachePath(oa.Profile)
+	tokenPath := filepath.Join(cachePath, TOKEN_FILE)
 
 	// Open the file at the path
-	f, err := os.Open(path)
+	f, err := os.Open(tokenPath)
 	if err != nil {
-		return nil, fmt.Errorf("could not open cache file at %s: %v", path, err)
+		return nil, fmt.Errorf("could not open cache file at %s: %v", tokenPath, err)
 	}
 	defer f.Close()
 
 	// Decode the JSON token cache
 	token := new(oauth2.Token)
 	if err := json.NewDecoder(f).Decode(token); err != nil {
-		return nil, fmt.Errorf("could not decode token in cache file at %s: %v", path, err)
+		return nil, fmt.Errorf("could not decode token in cache file at %s: %v", tokenPath, err)
 	}
 
 	return token, nil
 }
 
-//Authenticate performs a an OAuth2 authentication and save token in cache
-func (oa OAuth2) Authenticate() error {
+//Authenticate performs a an OAuth2 authentication then save config and token in cache
+func (oa OAuth2) Authenticate(secretPath string) error {
+
+	oa.saveConfigInCache(secretPath)
 
 	config, err := oa.config()
 	if err != nil {
@@ -115,17 +138,22 @@ func (oa OAuth2) Authenticate() error {
 		return fmt.Errorf("unable to retrieve token from web %v", err)
 	}
 
-	// Cache the token to disk
+	// Cache the config and the token to disk
 	oa.saveTokenInCache(token)
 
 	return nil
 }
 
+//TODO SPE faire attention aux commentaires de cette classe
+// et aux noms a utiliser ? token ? secret ? config ?
+
 // config loads the secret file from the SecretPath. It is used both to
 // create the client for requests as well as to perform authentication.
 func (oa OAuth2) config() (*oauth2.Config, error) {
 
-	data, err := ioutil.ReadFile(oa.SecretPath)
+	configFile := filepath.Join(oa.System.CachePath(oa.Profile), CONFIG_FILE)
+
+	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read client secret file: %v", err)
 	}

@@ -15,53 +15,53 @@ import (
 
 //Mowcli calls the mow.cli CLI which is the entry point of birthday-pal
 func Mowcli(birthdayPal app.App, system system.System) {
-	app := cli.App("birthday-pal", "Remind me birthdays pls.")
+	bpal := cli.App("birthday-pal", "Remind me birthdays pls.")
 
-	app.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
+	bpal.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
 		"[--days-before] [--remind-everyday] [--lang]"
 
 	var (
 
 		// OPTS
 
-		SMTPHost = app.String(cli.StringOpt{
+		SMTPHost = bpal.String(cli.StringOpt{
 			Name:   "smtp-host",
 			Desc:   "SMTP server hostname",
 			EnvVar: "BPAL_SMTP_HOST",
 		})
 
-		SMTPPort = app.Int(cli.IntOpt{
+		SMTPPort = bpal.Int(cli.IntOpt{
 			Name:   "smtp-port",
 			Value:  587,
 			Desc:   "SMTP server port",
 			EnvVar: "BPAL_SMTP_PORT",
 		})
 
-		SMTPUsername = app.String(cli.StringOpt{
+		SMTPUsername = bpal.String(cli.StringOpt{
 			Name:   "smtp-user",
 			Desc:   "SMTP server username",
 			EnvVar: "BPAL_SMTP_USERNAME",
 		})
 
-		SMTPPassword = app.String(cli.StringOpt{
+		SMTPPassword = bpal.String(cli.StringOpt{
 			Name:   "smtp-pass",
 			Desc:   "SMTP server password",
 			EnvVar: "BPAL_SMTP_PASSWORD",
 		})
 
-		remindEveryDay = app.Bool(cli.BoolOpt{
+		remindEveryDay = bpal.Bool(cli.BoolOpt{
 			Name:  "e remind-everyday",
 			Value: false,
 			Desc:  "Send a reminder everyday until birthday instead of once.",
 		})
 
-		daysBefore = app.Int(cli.IntOpt{
+		daysBefore = bpal.Int(cli.IntOpt{
 			Name:  "d days-before",
 			Value: 0,
 			Desc:  "Number of days before birthday you want to be reminded.",
 		})
 
-		language = app.String(cli.StringOpt{
+		language = bpal.String(cli.StringOpt{
 			Name:   "l lang",
 			Desc:   "Email language [EN, FR]",
 			Value:  "EN",
@@ -72,7 +72,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	)
 
-	app.Command("carddav", "use carddav to retrieve contacts", func(cmd *cli.Cmd) {
+	bpal.Command("carddav", "use carddav to retrieve contacts", func(cmd *cli.Cmd) {
 
 		cmd.Spec = "[--user] [--pass] [--url] RECIPIENTS..."
 
@@ -134,9 +134,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 		}
 	})
 
-	app.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
+	bpal.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "[--url] SECRET RECIPIENTS"
+		cmd.Spec = "[--url] PROFILE RECIPIENTS"
 
 		var (
 			// OPTS
@@ -150,9 +150,10 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			//ARGS
 
-			secret = cmd.String(cli.StringArg{
-				Name: "SECRET",
-				Desc: "Google OAuth2 client_secret.json",
+			//TODO replace by profile .birthday-pal/profile/client.json and credentials.json
+			profile = cmd.String(cli.StringArg{
+				Name: "PROFILE",
+				Desc: "birthday-pal oauth saved profile",
 			})
 
 			recipients = cmd.Strings(cli.StringsArg{
@@ -165,7 +166,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			auth := auth.OAuth2{
 				Scope:      people.ContactsReadonlyScope,
-				SecretPath: *secret,
+				Profile: *profile,
 				System:     system,
 			}
 
@@ -191,39 +192,56 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	})
 
-	app.Command("oauth", "identify birthday-pal to your oauth api provider", func(cmd *cli.Cmd) {
+	bpal.Command("oauth", "identify birthday-pal to your oauth api provider", func(oauth *cli.Cmd) {
 
-		cmd.Spec = "SECRET"
+		/*		docker.Command("job", "actions on jobs", func(job *cli.Cmd) {
+				job.Command("list", "list jobs", listJobs)
+				job.Command("start", "start a new job", startJob)
+		*/
 
-		var (
-			secret = cmd.String(cli.StringArg{
-				Name: "SECRET",
-				Desc: "Google OAuth2 client_secret.json",
-			})
-		)
+		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
 
-		cmd.Action = func() {
+		})
 
-			auth := auth.OAuth2{
-				Scope:      people.ContactsReadonlyScope,
-				SecretPath: *secret,
-				System:     system,
+		oauth.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {
+
+			perform.Spec = "PROFILE SECRET"
+
+			var (
+				profile = perform.String(cli.StringArg{
+					Name: "PROFILE",
+					Desc: "Oauth Authentication profile name",
+				})
+
+				secret = perform.String(cli.StringArg{
+					Name: "SECRET",
+					Desc: "Google OAuth2 client_secret.json",
+				})
+			)
+
+			perform.Action = func() {
+
+				auth := auth.OAuth2{
+					Scope:      people.ContactsReadonlyScope,
+					System:     system,
+					Profile:    *profile,
+				}
+
+				err := auth.Authenticate(*secret)
+				crashIfError(err)
+
+				log.Println("Oauth2 authentication successful !")
+
 			}
-
-			err := auth.Authenticate()
-			crashIfError(err)
-
-			log.Println("Oauth2 authentication successful !")
-
-		}
+		})
 
 	})
 
-	app.Action = func() {
-		app.PrintHelp()
+	bpal.Action = func() {
+		bpal.PrintHelp()
 	}
 
-	app.Run(os.Args)
+	bpal.Run(os.Args)
 
 }
 
