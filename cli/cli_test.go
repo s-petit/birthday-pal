@@ -35,7 +35,7 @@ func Test_carddav(t *testing.T) {
 		"carddav",
 		"--user=login",
 		"--pass=password",
-		"http://carddav",
+		"--url=http://carddav",
 		"recipient@test",
 	}
 
@@ -67,8 +67,8 @@ func Test_google(t *testing.T) {
 		"--days-before=3",
 		"--remind-everyday",
 		"google",
+		"--url=http://google",
 		"/path/secret.json",
-		"http://google",
 		"recipient@test",
 	}
 

@@ -48,7 +48,7 @@ func Test_main_with_carddav(t *testing.T) {
 		"--smtp-user=user@test",
 		"--smtp-pass=smtp-pass",
 		"carddav",
-		fmt.Sprintf("%s/contact", srv.URL),
+		fmt.Sprintf("--url=%s/contact", srv.URL),
 		"recipient@test",
 	}
 

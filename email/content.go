@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-const mailTemplate = `
-To: Birthday Pals\r\n
-Subject: {{.Subject}}\r\n
-{{.Body}}
-`
+// MUST match RFC-822 format
+const mailTemplate = `To: Birthday Pals
+Subject: {{.Subject}}
+
+{{.Body}}`
 
 type subjectBody struct {
 	Subject string

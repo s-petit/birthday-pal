@@ -74,7 +74,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	app.Command("carddav", "use carddav to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "[--user] [--pass] [URL] RECIPIENTS..."
+		cmd.Spec = "[--user] [--pass] [--url] RECIPIENTS..."
 
 		var (
 
@@ -92,13 +92,13 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				EnvVar: "BPAL_CARDDAV_PASSWORD",
 			})
 
-			//ARGS
-
-			cardDavURL = cmd.String(cli.StringArg{
-				Name:   "URL",
+			cardDavURL = cmd.String(cli.StringOpt{
+				Name:   "url",
 				Desc:   "CardDAV server URL",
 				EnvVar: "BPAL_CARDDAV_URL",
 			})
+
+			//ARGS
 
 			recipients = cmd.Strings(cli.StringsArg{
 				Name: "RECIPIENTS",
@@ -136,23 +136,23 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	app.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "SECRET [URL] RECIPIENTS"
+		cmd.Spec = "[--url] SECRET RECIPIENTS"
 
 		var (
 			// OPTS
 
-			secret = cmd.String(cli.StringArg{
-				Name: "SECRET",
-				Desc: "Google OAuth2 client_secret.json",
+			googleURL = cmd.String(cli.StringOpt{
+				Name:   "u url",
+				Desc:   "Google API URL",
+				Value:  "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=500",
+				EnvVar: "BPAL_GOOGLE_API_URL",
 			})
 
 			//ARGS
 
-			googleURL = cmd.String(cli.StringArg{
-				Name:   "URL",
-				Desc:   "Google API URL",
-				Value:  "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=500",
-				EnvVar: "BPAL_GOOGLE_API_URL",
+			secret = cmd.String(cli.StringArg{
+				Name: "SECRET",
+				Desc: "Google OAuth2 client_secret.json",
 			})
 
 			recipients = cmd.Strings(cli.StringsArg{
