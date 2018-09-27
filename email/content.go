@@ -9,8 +9,7 @@ import (
 )
 
 // MUST match RFC-822 format
-const mailTemplate =
-`To: Birthday Pals
+const mailTemplate = `To: Birthday Pals
 Subject: {{.Subject}}
 
 {{.Body}}`

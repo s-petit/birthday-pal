@@ -92,7 +92,6 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				EnvVar: "BPAL_CARDDAV_PASSWORD",
 			})
 
-
 			cardDavURL = cmd.String(cli.StringOpt{
 				Name:   "url",
 				Desc:   "CardDAV server URL",

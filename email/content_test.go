@@ -11,7 +11,7 @@ import (
 func Test_should_get_mail_in_french(t *testing.T) {
 
 	expectedMail :=
-`To: Birthday Pals
+		`To: Birthday Pals
 Subject: Anniversaire de John -34 an(s)-
 
 Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
@@ -25,7 +25,7 @@ Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
 func Test_should_get_mail_in_french_without_age(t *testing.T) {
 
 	expectedMail :=
-`To: Birthday Pals
+		`To: Birthday Pals
 Subject: Anniversaire de John
 
 Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
@@ -39,7 +39,7 @@ Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
 func Test_should_get_mail_in_english(t *testing.T) {
 
 	expectedMail :=
-`To: Birthday Pals
+		`To: Birthday Pals
 Subject: John's birthday -34 yo-
 
 The 08/22 will be John's birthday. Do not forget to make your wish!`
