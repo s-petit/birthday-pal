@@ -165,9 +165,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 		cmd.Action = func() {
 
 			auth := auth.OAuth2{
-				Scope:      people.ContactsReadonlyScope,
+				Scope:   people.ContactsReadonlyScope,
 				Profile: *profile,
-				System:     system,
+				System:  system,
 			}
 
 			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
@@ -200,7 +200,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 		*/
 
 		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
-
+			//TODO
 		})
 
 		oauth.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {
@@ -222,9 +222,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			perform.Action = func() {
 
 				auth := auth.OAuth2{
-					Scope:      people.ContactsReadonlyScope,
-					System:     system,
-					Profile:    *profile,
+					Scope:   people.ContactsReadonlyScope,
+					System:  system,
+					Profile: *profile,
 				}
 
 				err := auth.Authenticate(*secret)

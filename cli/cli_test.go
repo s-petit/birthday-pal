@@ -68,7 +68,7 @@ func Test_google(t *testing.T) {
 		"--remind-everyday",
 		"google",
 		"--url=http://google",
-		"/path/secret.json",
+		"myProfile",
 		"recipient@test",
 	}
 
@@ -78,7 +78,7 @@ func Test_google(t *testing.T) {
 	system := new(testdata.FakeSystem)
 	system.On("Now").Return(time)
 
-	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", SecretPath: "/path/secret.json", System: system}, URL: "http://google"}
+	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: "myProfile", System: system}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
@@ -100,8 +100,11 @@ func Test_oauth(t *testing.T) {
 	expectedOauthConfig := testdata.Oauth2Config("c0nf1d3ential")
 	expectedOauthConfig.Scopes = []string{"https://www.googleapis.com/auth/contacts.readonly"}
 
+	profile := "myProfile"
 	os.Args = []string{"",
 		"oauth",
+		"perform",
+		profile,
 		tempFile,
 	}
 
@@ -111,7 +114,7 @@ func Test_oauth(t *testing.T) {
 	system.On("Prompt").Return("yolo", nil)
 	system.On("OpenBrowser", mock.Anything).Return(nil)
 	system.On("ExchangeToken", expectedOauthConfig, "yolo").Return(&oauth2.Token{}, nil)
-	system.On("CachePath").Return(tempDir + "/cache-file")
+	system.On("CachePath", profile).Return(tempDir)
 
 	Mowcli(bpal, system)
 

@@ -24,8 +24,8 @@ func (fs *FakeSystem) Prompt() (string, error) {
 }
 
 //CachePath returns a mocked cache path
-func (fs *FakeSystem) CachePath() string {
-	called := fs.Called()
+func (fs *FakeSystem) CachePath(profile string) string {
+	called := fs.Called(profile)
 	return called.String(0)
 }
 

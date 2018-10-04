@@ -13,13 +13,13 @@ import (
 	"path/filepath"
 )
 
-const TOKEN_FILE = "token.json"
-const CONFIG_FILE = "config.json"
+const tokenFile = "token.json"
+const configFile = "config.json"
 
 //OAuth2 is used to perform OAuth2 authentication
 type OAuth2 struct {
-	Scope      string
-	System     system.System
+	Scope   string
+	System  system.System
 	Profile string
 }
 
@@ -48,7 +48,7 @@ func (oa OAuth2) Client() (*http.Client, error) {
 // save the token to the specified path.
 func (oa OAuth2) saveTokenInCache(token *oauth2.Token) error {
 
-	tokenPath := filepath.Join(oa.System.CachePath(oa.Profile), TOKEN_FILE)
+	tokenPath := filepath.Join(oa.System.CachePath(oa.Profile), tokenFile)
 
 	// Open the file for writing
 	tokenFile, err := os.Create(tokenPath)
@@ -73,10 +73,9 @@ func (oa OAuth2) saveConfigInCache(secretPath string) error {
 		return fmt.Errorf("unable to read client secret file: %v", err)
 	}
 
-
 	// TODO SPE oa.oa ?? peut mieux faire ?
-	configFile := filepath.Join(oa.System.CachePath(oa.Profile), CONFIG_FILE)
-	ioutil.WriteFile(configFile, data, 0644)
+	conf := filepath.Join(oa.System.CachePath(oa.Profile), configFile)
+	ioutil.WriteFile(conf, data, 0644)
 
 	return nil
 }
@@ -85,7 +84,7 @@ func (oa OAuth2) saveConfigInCache(secretPath string) error {
 func (oa OAuth2) loadTokenFromCache() (*oauth2.Token, error) {
 
 	cachePath := oa.System.CachePath(oa.Profile)
-	tokenPath := filepath.Join(cachePath, TOKEN_FILE)
+	tokenPath := filepath.Join(cachePath, tokenFile)
 
 	// Open the file at the path
 	f, err := os.Open(tokenPath)
@@ -151,7 +150,7 @@ func (oa OAuth2) Authenticate(secretPath string) error {
 // create the client for requests as well as to perform authentication.
 func (oa OAuth2) config() (*oauth2.Config, error) {
 
-	configFile := filepath.Join(oa.System.CachePath(oa.Profile), CONFIG_FILE)
+	configFile := filepath.Join(oa.System.CachePath(oa.Profile), configFile)
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
