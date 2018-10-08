@@ -151,7 +151,6 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			//ARGS
 
-			//TODO replace by profile .birthday-pal/profile/client.json and credentials.json
 			profile = cmd.String(cli.StringArg{
 				Name: "PROFILE",
 				Desc: "birthday-pal oauth saved profile",

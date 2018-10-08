@@ -53,9 +53,7 @@ func homeDir() string {
 
 //ListProfiles lists the registered profiles by looking inside cache directory
 func (rs RealSystem) ListProfiles() ([]os.FileInfo, error) {
-	// Get the hidden credentials directory, making sure it's created
 	cacheDir := rs.CachePath("")
-
 	return ioutil.ReadDir(cacheDir)
 }
 
