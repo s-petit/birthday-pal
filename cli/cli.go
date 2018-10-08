@@ -11,6 +11,7 @@ import (
 	"google.golang.org/api/people/v1"
 	"log"
 	"os"
+	"fmt"
 )
 
 //Mowcli calls the mow.cli CLI which is the entry point of birthday-pal
@@ -194,13 +195,20 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	bpal.Command("oauth", "identify birthday-pal to your oauth api provider", func(oauth *cli.Cmd) {
 
-		/*		docker.Command("job", "actions on jobs", func(job *cli.Cmd) {
-				job.Command("list", "list jobs", listJobs)
-				job.Command("start", "start a new job", startJob)
-		*/
-
 		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
-			//TODO
+
+			list.Action = func() {
+				files, err := system.ListProfiles()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				for _, f := range files {
+					if f.IsDir() {
+						fmt.Println(f.Name())
+					}
+				}
+			}
 		})
 
 		oauth.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {

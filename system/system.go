@@ -13,12 +13,14 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"io/ioutil"
 )
 
 // System holds system-dependant methods which are hard to test/mock
 type System interface {
 	Now() time.Time
 	CachePath(profile string) string
+	ListProfiles() ([]os.FileInfo, error)
 	Prompt() (string, error)
 	OpenBrowser(url string) error
 	ExchangeToken(config *oauth2.Config, code string) (*oauth2.Token, error)
@@ -47,6 +49,14 @@ func homeDir() string {
 		log.Fatal(err)
 	}
 	return usr.HomeDir
+}
+
+//ListProfiles lists the registered profiles by looking inside cache directory
+func (rs RealSystem) ListProfiles() ([]os.FileInfo, error) {
+	// Get the hidden credentials directory, making sure it's created
+	cacheDir := rs.CachePath("")
+
+	return ioutil.ReadDir(cacheDir)
 }
 
 //Prompt asks user the auth code returned by oauth server.

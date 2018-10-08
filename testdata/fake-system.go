@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
 	"time"
+	"os"
 )
 
 //FakeSystem represents a mockable system
@@ -27,6 +28,12 @@ func (fs *FakeSystem) Prompt() (string, error) {
 func (fs *FakeSystem) CachePath(profile string) string {
 	called := fs.Called(profile)
 	return called.String(0)
+}
+
+//ListProfiles returns a mocked profile list
+func (fs *FakeSystem) ListProfiles() ([]os.FileInfo, error) {
+	called := fs.Called()
+	return called.Get(0).([]os.FileInfo), called.Error(1)
 }
 
 //OpenBrowser mocks the browser opening
