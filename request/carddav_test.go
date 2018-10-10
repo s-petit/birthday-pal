@@ -23,7 +23,7 @@ END:VCARD
 `
 )
 
-func handler() http.Handler {
+func basicAuthCarddavServer() http.Handler {
 
 	h := func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
@@ -42,7 +42,7 @@ func handler() http.Handler {
 
 func Test_GetContacts_should_return_carddav_contacts(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	carddav := CardDavContactsProvider{
@@ -60,7 +60,7 @@ func Test_GetContacts_should_return_carddav_contacts(t *testing.T) {
 
 func Test_call_should_return_carddav_payload(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	carddav := CardDavContactsProvider{
@@ -76,7 +76,7 @@ func Test_call_should_return_carddav_payload(t *testing.T) {
 
 func Test_call_carddav_should_return_error_when_url_goes_to_404(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	r := CardDavContactsProvider{
@@ -92,7 +92,7 @@ func Test_call_carddav_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 func Test_call_carddav_should_return_error_when_url_is_malformed(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	r := CardDavContactsProvider{

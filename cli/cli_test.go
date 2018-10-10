@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -39,15 +40,15 @@ func Test_carddav(t *testing.T) {
 		"recipient@test",
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	bpal := new(fakeBirthdayPal)
 	system := new(testdata.FakeSystem)
-	system.On("Now").Return(time)
+	system.On("Now").Return(now)
 
 	expectedContactProvider := request.CardDavContactsProvider{AuthClient: auth.BasicAuth{Username: "login", Password: "password"}, URL: "http://carddav"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "FR"}
-	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
+	expectedReminder := remind.Reminder{CurrentDate: now, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
@@ -68,19 +69,19 @@ func Test_google(t *testing.T) {
 		"--remind-everyday",
 		"google",
 		"--url=http://google",
-		"/path/secret.json",
+		"myProfile",
 		"recipient@test",
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	bpal := new(fakeBirthdayPal)
 	system := new(testdata.FakeSystem)
-	system.On("Now").Return(time)
+	system.On("Now").Return(now)
 
-	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", SecretPath: "/path/secret.json", System: system}, URL: "http://google"}
+	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2Authenticator{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
-	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
+	expectedReminder := remind.Reminder{CurrentDate: now, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
@@ -90,7 +91,7 @@ func Test_google(t *testing.T) {
 	system.AssertExpectations(t)
 }
 
-func Test_oauth(t *testing.T) {
+func Test_oauth_perform(t *testing.T) {
 
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
 	tempDir := testdata.TempDir()
@@ -100,8 +101,11 @@ func Test_oauth(t *testing.T) {
 	expectedOauthConfig := testdata.Oauth2Config("c0nf1d3ential")
 	expectedOauthConfig.Scopes = []string{"https://www.googleapis.com/auth/contacts.readonly"}
 
+	profile := "myProfile"
 	os.Args = []string{"",
 		"oauth",
+		"perform",
+		profile,
 		tempFile,
 	}
 
@@ -111,7 +115,29 @@ func Test_oauth(t *testing.T) {
 	system.On("Prompt").Return("yolo", nil)
 	system.On("OpenBrowser", mock.Anything).Return(nil)
 	system.On("ExchangeToken", expectedOauthConfig, "yolo").Return(&oauth2.Token{}, nil)
-	system.On("CachePath").Return(tempDir + "/cache-file")
+	system.On("HomeDir").Return(tempDir)
+
+	Mowcli(bpal, system)
+
+	bpal.AssertNotCalled(t, "Exec")
+	bpal.AssertExpectations(t)
+	system.AssertExpectations(t)
+}
+
+func Test_oauth_list(t *testing.T) {
+
+	tempDir := testdata.TempDir()
+	defer os.RemoveAll(tempDir)
+	testdata.TempFileWithName("anyContent", filepath.Join(tempDir, auth.CacheDirectory, "john"), "token.json")
+
+	os.Args = []string{"",
+		"oauth",
+		"list",
+	}
+
+	bpal := new(fakeBirthdayPal)
+	system := new(testdata.FakeSystem)
+	system.On("HomeDir").Return(tempDir)
 
 	Mowcli(bpal, system)
 

@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"golang.org/x/oauth2"
 	"log"
-	"net/url"
 	"os"
 	"os/exec"
 	"os/user"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -19,7 +17,7 @@ import (
 // System holds system-dependant methods which are hard to test/mock
 type System interface {
 	Now() time.Time
-	CachePath() string
+	HomeDir() string
 	Prompt() (string, error)
 	OpenBrowser(url string) error
 	ExchangeToken(config *oauth2.Config, code string) (*oauth2.Token, error)
@@ -34,17 +32,8 @@ func (rs RealSystem) Now() time.Time {
 	return time.Now()
 }
 
-//CachePath is the location where the token will be stored in order to remember authentication.
-func (rs RealSystem) CachePath() string {
-	// Get the hidden credentials directory, making sure it's created
-	cacheDir := filepath.Join(homeDir(), ".birthday-pal")
-	os.MkdirAll(cacheDir, 0700)
-	// Determine the path to the token cache file
-	cacheFile := url.QueryEscape("credentials.json")
-	return filepath.Join(cacheDir, cacheFile)
-}
-
-func homeDir() string {
+//HomeDir is the home directory of current user depending of the running system
+func (rs RealSystem) HomeDir() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
