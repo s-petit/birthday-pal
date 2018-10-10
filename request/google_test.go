@@ -36,7 +36,7 @@ var (
 	]
 }
 `
-malformedContact = `
+	malformedContact = `
 {
 	"connections": [
 		{
@@ -65,7 +65,6 @@ func googleHandler() http.Handler {
 	h4 := func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, malformedContact)
 	}
-
 
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
