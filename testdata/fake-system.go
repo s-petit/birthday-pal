@@ -25,8 +25,14 @@ func (fs *FakeSystem) Prompt() (string, error) {
 }
 
 //CachePath returns a mocked cache path
-func (fs *FakeSystem) CachePath(profile string) string {
+/*func (fs *FakeSystem) CachePath(profile string) string {
 	called := fs.Called(profile)
+	return called.String(0)
+}*/
+
+//HomeDir returns a mocked homedir
+func (fs *FakeSystem) HomeDir() string {
+	called := fs.Called()
 	return called.String(0)
 }
 

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/jawher/mow.cli"
 	"github.com/s-petit/birthday-pal/app"
 	"github.com/s-petit/birthday-pal/auth"
@@ -11,7 +12,6 @@ import (
 	"google.golang.org/api/people/v1"
 	"log"
 	"os"
-	"fmt"
 )
 
 //Mowcli calls the mow.cli CLI which is the entry point of birthday-pal
@@ -166,7 +166,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			auth := auth.OAuth2{
 				Scope:   people.ContactsReadonlyScope,
-				Profile: *profile,
+				Profile: auth.OAuthProfile{system, *profile},
 				System:  system,
 			}
 
@@ -197,16 +197,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
 
 			list.Action = func() {
-				files, err := system.ListProfiles()
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				for _, f := range files {
-					if f.IsDir() {
-						fmt.Println(f.Name())
-					}
-				}
+				profiles, err := auth.OAuthProfile{System: system}.ListProfiles()
+				crashIfError(err)
+				fmt.Println(profiles)
 			}
 		})
 
@@ -231,7 +224,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				auth := auth.OAuth2{
 					Scope:   people.ContactsReadonlyScope,
 					System:  system,
-					Profile: *profile,
+					Profile: auth.OAuthProfile{system, *profile},
 				}
 
 				err := auth.Authenticate(*secret)

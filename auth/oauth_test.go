@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -17,13 +18,14 @@ func Test_should_return_oauth2_authenticated_client(t *testing.T) {
 
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	testdata.TempFileWithName(jsonConfig, tempDir, "config.json")
-	testdata.TempFileWithName(token, tempDir, "token.json")
+	testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory), "config.json")
+	testdata.TempFileWithName(token, filepath.Join(tempDir, CacheDirectory), "token.json")
 
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", "authProfile").Return(tempDir)
+	sys.On("HomeDir").Return(tempDir)
 
-	oauth2 := OAuth2{Profile: "authProfile", System: sys}
+	//TODO sys, sys :/
+	oauth2 := OAuth2{Profile: OAuthProfile{System: sys}, System: sys}
 
 	clt, err := oauth2.Client()
 
@@ -45,56 +47,14 @@ func Test_should_return_oauth2_authenticated_client(t *testing.T) {
 func Test_should_not_return_oauth2_client_when_authentication_token_not_found(t *testing.T) {
 
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", "authProfile").Return("")
+	sys.On("HomeDir").Return("")
 
-	oauth2 := OAuth2{Profile: "authProfile", System: sys}
+	oauth2 := OAuth2{Profile: OAuthProfile{System: sys}, System: sys}
 
 	clt, err := oauth2.Client()
 
 	assert.Error(t, err)
 	assert.Empty(t, clt)
-}
-
-func Test_should_get_token_from_cache(t *testing.T) {
-
-	jsonToken := `{"access_token":"s3cr3t"}`
-
-	tempDir := testdata.TempDir()
-	defer os.RemoveAll(tempDir)
-	testdata.TempFileWithName(jsonToken, tempDir, "token.json")
-
-	profile := "authProfile"
-	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
-
-	auth := OAuth2{Profile: profile, System: sys}
-
-	token, err := auth.loadTokenFromCache()
-
-	assert.NoError(t, err)
-	assert.Equal(t, "s3cr3t", token.AccessToken)
-	sys.AssertExpectations(t)
-}
-
-func Test_should_not_get_token_from_cache_when_json_not_deserilizable(t *testing.T) {
-
-	jsonToken := `{{{}}}`
-
-	tempDir := testdata.TempDir()
-	defer os.RemoveAll(tempDir)
-	testdata.TempFileWithName(jsonToken, tempDir, "token.json")
-
-	profile := "authProfile"
-	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
-
-	auth := OAuth2{Profile: profile, System: sys}
-
-	token, err := auth.loadTokenFromCache()
-
-	assert.Error(t, err)
-	assert.Empty(t, token)
-	sys.AssertExpectations(t)
 }
 
 func Test_should_get_config_from_client_secret_file(t *testing.T) {
@@ -104,12 +64,13 @@ func Test_should_get_config_from_client_secret_file(t *testing.T) {
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
 
-	testdata.TempFileWithName(jsonConfig, tempDir, "config.json")
-
-	profile := "authProfile"
+	profileName := "authProfile"
+	testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName), "config.json")
 
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -126,15 +87,16 @@ func Test_should_authenticate_with_config(t *testing.T) {
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
 
-	secretPath := testdata.TempFileWithName(jsonConfig, tempDir, "config.json")
-
-	profile := "authProfile"
+	profileName := "authProfile"
+	secretPath := testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName), "config.json")
 
 	sys := new(testdata.FakeSystem)
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, nil)
-	sys.On("CachePath", profile).Return(tempDir)
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -149,14 +111,15 @@ func Test_should_not_authenticate_when_token_not_exchanged(t *testing.T) {
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	tempFile := testdata.TempFile(jsonConfig, tempDir)
+	profileName := "authProfile"
+	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 
-	profile := "authProfile"
 	sys := new(testdata.FakeSystem)
+	profile := OAuthProfile{Profile: profileName, System: sys}
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, errors.New("oops"))
-	sys.On("CachePath", profile).Return(tempDir)
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -171,13 +134,14 @@ func Test_should_not_authenticate_when_value_prompted_is_malformed(t *testing.T)
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	tempFile := testdata.TempFile(jsonConfig, tempDir)
-	profile := "authProfile"
-
+	profileName := "authProfile"
+	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 	sys := new(testdata.FakeSystem)
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
 	sys.On("Prompt").Return("", errors.New("oops"))
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
-	sys.On("CachePath", profile).Return(tempDir)
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -192,14 +156,16 @@ func Test_should_authenticate_even_when_browser_not_openable(t *testing.T) {
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	tempFile := testdata.TempFile(jsonConfig, tempDir)
-	profile := "authProfile"
-
+	profileName := "authProfile"
+	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 	sys := new(testdata.FakeSystem)
+
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(errors.New("erf"))
 	sys.On("ExchangeToken", &oauth2.Config{ClientID: "c0nf1d3ential", ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}, "yolo").Return(&oauth2.Token{}, nil)
-	sys.On("CachePath", profile).Return(tempDir)
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -215,11 +181,13 @@ func Test_should_not_authenticate_when_config_not_valid(t *testing.T) {
 
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	tempFile := testdata.TempFile(jsonConfig, tempDir)
-	profile := "authProfile"
+	profileName := "authProfile"
+	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -234,12 +202,13 @@ func Test_config_should_throw_error_when_client_secret_file_is_not_valid_json(t 
 
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	testdata.TempFile(jsonConfig, tempDir)
-
-	profile := "authProfile"
+	profileName := "authProfile"
+	testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
+	profile := OAuthProfile{Profile: profileName, System: sys}
+
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -254,10 +223,10 @@ func Test_config_should_throw_error_when_client_secret_file_does_not_exist(t *te
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
 
-	profile := "authProfile"
-
 	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
+	profile := OAuthProfile{Profile: "authProfile", System: sys}
+
+	sys.On("HomeDir").Return(tempDir)
 
 	auth := OAuth2{Profile: profile, System: sys}
 
@@ -265,46 +234,4 @@ func Test_config_should_throw_error_when_client_secret_file_does_not_exist(t *te
 
 	assert.Error(t, err)
 	assert.Empty(t, config)
-}
-
-func Test_should_save_token_in_cache_then_load_it(t *testing.T) {
-
-	tempDir := testdata.TempDir()
-	defer os.RemoveAll(tempDir)
-
-	profile := "authProfile"
-
-	sys := new(testdata.FakeSystem)
-	sys.On("CachePath", profile).Return(tempDir)
-
-	auth := OAuth2{Profile: profile, System: sys}
-
-	tok := &oauth2.Token{AccessToken: "s3cr3t"}
-
-	err := auth.saveTokenInCache(tok)
-
-	assert.NoError(t, err)
-	sys.AssertExpectations(t)
-
-	cachedToken, err := auth.loadTokenFromCache()
-
-	assert.NoError(t, err)
-	assert.Equal(t, "s3cr3t", cachedToken.AccessToken)
-	sys.AssertExpectations(t)
-}
-
-func Test_should_not_save_token_in_not_authorized_path(t *testing.T) {
-
-	sys := new(testdata.FakeSystem)
-	profile := "authProfile"
-	sys.On("CachePath", profile).Return("/root")
-
-	auth := OAuth2{Profile: profile, System: sys}
-
-	tok := &oauth2.Token{AccessToken: "s3cr3t"}
-
-	err := auth.saveTokenInCache(tok)
-
-	assert.Error(t, err)
-	sys.AssertExpectations(t)
 }

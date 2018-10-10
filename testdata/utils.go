@@ -9,6 +9,7 @@ import (
 	"log"
 	"path/filepath"
 	"time"
+	"os"
 )
 
 func BirthDate(year int, month time.Month, day int) time.Time {
@@ -41,6 +42,7 @@ func TempFile(content string, dir string) string {
 }
 
 func TempFileWithName(content string, dir string, filename string) string {
+	os.MkdirAll(dir, 0700)
 	byteContent := []byte(content)
 	tmpfn := filepath.Join(dir, filename)
 	if err := ioutil.WriteFile(tmpfn, byteContent, 0666); err != nil {

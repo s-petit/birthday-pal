@@ -9,18 +9,15 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
-	"io/ioutil"
 )
 
 // System holds system-dependant methods which are hard to test/mock
 type System interface {
 	Now() time.Time
-	CachePath(profile string) string
-	ListProfiles() ([]os.FileInfo, error)
+	HomeDir() string
 	Prompt() (string, error)
 	OpenBrowser(url string) error
 	ExchangeToken(config *oauth2.Config, code string) (*oauth2.Token, error)
@@ -35,26 +32,21 @@ func (rs RealSystem) Now() time.Time {
 	return time.Now()
 }
 
+//TODO SPE MOVE
 //CachePath is the location where the token will be stored in order to remember authentication.
-func (rs RealSystem) CachePath(profile string) string {
+/*func (rs RealSystem) CachePath(profile string) string {
 	// Get the hidden credentials directory, making sure it's created
 	cacheDir := filepath.Join(homeDir(), ".birthday-pal", profile)
 	os.MkdirAll(cacheDir, 0700)
 	return cacheDir
-}
+}*/
 
-func homeDir() string {
+func (rs RealSystem) HomeDir() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
 	return usr.HomeDir
-}
-
-//ListProfiles lists the registered profiles by looking inside cache directory
-func (rs RealSystem) ListProfiles() ([]os.FileInfo, error) {
-	cacheDir := rs.CachePath("")
-	return ioutil.ReadDir(cacheDir)
 }
 
 //Prompt asks user the auth code returned by oauth server.

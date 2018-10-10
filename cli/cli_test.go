@@ -11,6 +11,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	"path/filepath"
 )
 
 type fakeBirthdayPal struct {
@@ -78,7 +79,7 @@ func Test_google(t *testing.T) {
 	system := new(testdata.FakeSystem)
 	system.On("Now").Return(time)
 
-	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: "myProfile", System: system}, URL: "http://google"}
+	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}, System: system}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
 	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
@@ -90,7 +91,7 @@ func Test_google(t *testing.T) {
 	system.AssertExpectations(t)
 }
 
-func Test_oauth(t *testing.T) {
+func Test_oauth_perform(t *testing.T) {
 
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
 	tempDir := testdata.TempDir()
@@ -114,7 +115,30 @@ func Test_oauth(t *testing.T) {
 	system.On("Prompt").Return("yolo", nil)
 	system.On("OpenBrowser", mock.Anything).Return(nil)
 	system.On("ExchangeToken", expectedOauthConfig, "yolo").Return(&oauth2.Token{}, nil)
-	system.On("CachePath", profile).Return(tempDir)
+	system.On("HomeDir").Return(tempDir)
+
+	Mowcli(bpal, system)
+
+	bpal.AssertNotCalled(t, "Exec")
+	bpal.AssertExpectations(t)
+	system.AssertExpectations(t)
+}
+
+
+func Test_oauth_list(t *testing.T) {
+
+	tempDir := testdata.TempDir()
+	defer os.RemoveAll(tempDir)
+	testdata.TempFileWithName("anyContent", filepath.Join(tempDir, auth.CacheDirectory, "john"), "token.json")
+
+	os.Args = []string{"",
+		"oauth",
+		"list",
+	}
+
+	bpal := new(fakeBirthdayPal)
+	system := new(testdata.FakeSystem)
+	system.On("HomeDir").Return(tempDir)
 
 	Mowcli(bpal, system)
 
