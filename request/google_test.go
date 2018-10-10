@@ -36,6 +36,16 @@ var (
 	]
 }
 `
+malformedContact = `
+{
+	"connections": [
+		{
+      		"names": [{}],
+      		"birthdays": [{}]
+    	}
+	]
+}
+`
 )
 
 func googleHandler() http.Handler {
@@ -52,10 +62,16 @@ func googleHandler() http.Handler {
 		io.WriteString(w, "{[}")
 	}
 
+	h4 := func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, malformedContact)
+	}
+
+
 	r := http.NewServeMux()
 	r.HandleFunc("/contact", h)
 	r.HandleFunc("/other-api", h2)
 	r.HandleFunc("/not-json", h3)
+	r.HandleFunc("/malformed-contact", h4)
 	return r
 }
 
@@ -106,6 +122,22 @@ func Test_GetContacts_should_return_error_when_payload_is_not_valid_json(t *test
 	contacts, err := google.GetContacts()
 
 	assert.Error(t, err)
+	assert.Equal(t, 0, len(contacts))
+}
+
+func Test_GetContacts_should_ignore_contacts_malformed(t *testing.T) {
+
+	srv := httptest.NewServer(googleHandler())
+	defer srv.Close()
+
+	google := GoogleContactsProvider{
+		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+		URL:        fmt.Sprintf("%s/malformed-contact", srv.URL),
+	}
+
+	contacts, err := google.GetContacts()
+
+	assert.NoError(t, err)
 	assert.Equal(t, 0, len(contacts))
 }
 
