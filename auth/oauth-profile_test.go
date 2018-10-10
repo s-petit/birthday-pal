@@ -42,7 +42,7 @@ func Test_should_get_token_from_cache(t *testing.T) {
 
 	auth := OAuthProfile{Profile: "authProfile", System: sys}
 
-	token, err := auth.loadTokenFromCache()
+	token, err := auth.loadProfileTokenFromCache()
 
 	assert.NoError(t, err)
 	assert.Equal(t, "s3cr3t", token.AccessToken)
@@ -62,7 +62,7 @@ func Test_should_not_get_token_from_cache_when_json_not_deserilizable(t *testing
 
 	auth := OAuthProfile{Profile: "authProfile", System: sys}
 
-	token, err := auth.loadTokenFromCache()
+	token, err := auth.loadProfileTokenFromCache()
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
@@ -81,12 +81,12 @@ func Test_should_save_token_in_cache_then_load_it(t *testing.T) {
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
-	err := auth.saveTokenInCache(tok)
+	err := auth.saveProfileTokenInCache(tok)
 
 	assert.NoError(t, err)
 	sys.AssertExpectations(t)
 
-	cachedToken, err := auth.loadTokenFromCache()
+	cachedToken, err := auth.loadProfileTokenFromCache()
 
 	assert.NoError(t, err)
 	assert.Equal(t, "s3cr3t", cachedToken.AccessToken)
@@ -102,7 +102,7 @@ func Test_should_not_save_token_in_not_authorized_path(t *testing.T) {
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
-	err := auth.saveTokenInCache(tok)
+	err := auth.saveProfileTokenInCache(tok)
 
 	assert.Error(t, err)
 	sys.AssertExpectations(t)

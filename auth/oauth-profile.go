@@ -52,7 +52,7 @@ func (oap OAuthProfile) profileCachePath() string {
 }
 
 // save the token to the specified path.
-func (oap OAuthProfile) saveTokenInCache(token *oauth2.Token) error {
+func (oap OAuthProfile) saveProfileTokenInCache(token *oauth2.Token) error {
 
 	tokenPath := filepath.Join(oap.profileCachePath(), tokenFile)
 
@@ -72,7 +72,7 @@ func (oap OAuthProfile) saveTokenInCache(token *oauth2.Token) error {
 }
 
 // save the token to the specified path.
-func (oap OAuthProfile) saveConfigInCache(secretPath string) error {
+func (oap OAuthProfile) saveProfileConfigInCache(secretPath string) error {
 
 	data, err := ioutil.ReadFile(secretPath)
 	if err != nil {
@@ -86,7 +86,7 @@ func (oap OAuthProfile) saveConfigInCache(secretPath string) error {
 }
 
 // load the oauth2 token from the specified path
-func (oap OAuthProfile) loadTokenFromCache() (*oauth2.Token, error) {
+func (oap OAuthProfile) loadProfileTokenFromCache() (*oauth2.Token, error) {
 
 	cachePath := oap.profileCachePath()
 	tokenPath := filepath.Join(cachePath, tokenFile)

@@ -40,15 +40,15 @@ func Test_carddav(t *testing.T) {
 		"recipient@test",
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	bpal := new(fakeBirthdayPal)
 	system := new(testdata.FakeSystem)
-	system.On("Now").Return(time)
+	system.On("Now").Return(now)
 
 	expectedContactProvider := request.CardDavContactsProvider{AuthClient: auth.BasicAuth{Username: "login", Password: "password"}, URL: "http://carddav"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "FR"}
-	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
+	expectedReminder := remind.Reminder{CurrentDate: now, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
@@ -73,15 +73,15 @@ func Test_google(t *testing.T) {
 		"recipient@test",
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	bpal := new(fakeBirthdayPal)
 	system := new(testdata.FakeSystem)
-	system.On("Now").Return(time)
+	system.On("Now").Return(now)
 
-	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}, System: system}, URL: "http://google"}
+	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2Authenticator{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
-	expectedReminder := remind.Reminder{CurrentDate: time, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
+	expectedReminder := remind.Reminder{CurrentDate: now, NbDaysBeforeBDay: 3, EveryDayUntilBDay: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)

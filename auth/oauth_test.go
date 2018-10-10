@@ -24,34 +24,38 @@ func Test_should_return_oauth2_authenticated_client(t *testing.T) {
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	//TODO sys, sys :/
-	oauth2 := OAuth2{Profile: OAuthProfile{System: sys}, System: sys}
+	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
 
-	clt, err := oauth2.Client()
+	clt, err := authenticator.Client()
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, clt)
 	sys.AssertExpectations(t)
 }
 
-/*func Test_should_not_return_oauth2_client_when_oauth_config_not_found(t *testing.T) {
+func Test_should_not_return_oauth2_client_when_oauth_config_not_found(t *testing.T) {
+	tempDir := testdata.TempDir()
+	defer os.RemoveAll(tempDir)
 
-	oauth2 := OAuth2{Profile: ""}
+	sys := new(testdata.FakeSystem)
+	sys.On("HomeDir").Return(tempDir)
 
-	clt, err := oauth2.Client()
+	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
+
+	clt, err := authenticator.Client()
 
 	assert.Error(t, err)
 	assert.Empty(t, clt)
-}*/
+}
 
 func Test_should_not_return_oauth2_client_when_authentication_token_not_found(t *testing.T) {
 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return("")
 
-	oauth2 := OAuth2{Profile: OAuthProfile{System: sys}, System: sys}
+	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
 
-	clt, err := oauth2.Client()
+	clt, err := authenticator.Client()
 
 	assert.Error(t, err)
 	assert.Empty(t, clt)
@@ -72,7 +76,7 @@ func Test_should_get_config_from_client_secret_file(t *testing.T) {
 
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	token, err := auth.config()
 
@@ -98,7 +102,7 @@ func Test_should_authenticate_with_config(t *testing.T) {
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	err := auth.Authenticate(secretPath)
 
@@ -121,7 +125,7 @@ func Test_should_not_authenticate_when_token_not_exchanged(t *testing.T) {
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, errors.New("oops"))
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -143,7 +147,7 @@ func Test_should_not_authenticate_when_value_prompted_is_malformed(t *testing.T)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -167,7 +171,7 @@ func Test_should_authenticate_even_when_browser_not_openable(t *testing.T) {
 	sys.On("ExchangeToken", &oauth2.Config{ClientID: "c0nf1d3ential", ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}, "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -189,7 +193,7 @@ func Test_should_not_authenticate_when_config_not_valid(t *testing.T) {
 
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -210,7 +214,7 @@ func Test_config_should_throw_error_when_client_secret_file_is_not_valid_json(t 
 
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	config, err := auth.config()
 
@@ -228,7 +232,7 @@ func Test_config_should_throw_error_when_client_secret_file_does_not_exist(t *te
 
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2{Profile: profile, System: sys}
+	auth := OAuth2Authenticator{Profile: profile}
 
 	config, err := auth.config()
 

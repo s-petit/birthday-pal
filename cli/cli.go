@@ -164,10 +164,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 		cmd.Action = func() {
 
-			auth := auth.OAuth2{
+			auth := auth.OAuth2Authenticator{
 				Scope:   people.ContactsReadonlyScope,
 				Profile: auth.OAuthProfile{system, *profile},
-				System:  system,
 			}
 
 			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
@@ -215,15 +214,14 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 				secret = perform.String(cli.StringArg{
 					Name: "SECRET",
-					Desc: "Google OAuth2 client_secret.json",
+					Desc: "Google OAuth2Authenticator client_secret.json",
 				})
 			)
 
 			perform.Action = func() {
 
-				auth := auth.OAuth2{
+				auth := auth.OAuth2Authenticator{
 					Scope:   people.ContactsReadonlyScope,
-					System:  system,
 					Profile: auth.OAuthProfile{system, *profile},
 				}
 

@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"fmt"
-	"github.com/s-petit/birthday-pal/system"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io/ioutil"
@@ -14,15 +13,14 @@ import (
 const tokenFile = "token.json"
 const configFile = "config.json"
 
-//OAuth2 is used to perform OAuth2 authentication
-type OAuth2 struct {
+//OAuth2Authenticator is used to perform OAuth2Authenticator authentication
+type OAuth2Authenticator struct {
 	Scope   string
-	System  system.System
 	Profile OAuthProfile
 }
 
-//Client returns a HTTP client authenticated with OAuth2
-func (oa OAuth2) Client() (*http.Client, error) {
+//Client returns a HTTP client authenticated with OAuth2Authenticator
+func (oa OAuth2Authenticator) Client() (*http.Client, error) {
 
 	// config returns the configuration from client_secret.json
 	config, err := oa.config()
@@ -30,7 +28,7 @@ func (oa OAuth2) Client() (*http.Client, error) {
 		return nil, err
 	}
 	// load the token from the cache
-	token, err := oa.Profile.loadTokenFromCache()
+	token, err := oa.Profile.loadProfileTokenFromCache()
 	if err != nil {
 		fmt.Println("not authenticated yet! please use 'birthday-pal oauth' command.")
 		return nil, err
@@ -43,10 +41,12 @@ func (oa OAuth2) Client() (*http.Client, error) {
 	return client, nil
 }
 
-//Authenticate performs a an OAuth2 authentication then save config and token in cache
-func (oa OAuth2) Authenticate(secretPath string) error {
+//Authenticate parses and save the config file provided by user
+//then performs a an OAuth2Authenticator authentication
+//then saves token in cache
+func (oa OAuth2Authenticator) Authenticate(configFilePath string) error {
 
-	oa.Profile.saveConfigInCache(secretPath)
+	oa.Profile.saveProfileConfigInCache(configFilePath)
 
 	config, err := oa.config()
 	if err != nil {
@@ -59,7 +59,7 @@ func (oa OAuth2) Authenticate(secretPath string) error {
 	// Notify the user of the web browser.
 	fmt.Println("Please use a browser in order to let birthday-pal access your contacts.")
 
-	err = oa.System.OpenBrowser(authURL)
+	err = oa.Profile.System.OpenBrowser(authURL)
 
 	// If we couldn't open the web browser, prompt the user to do it manually.
 	if err != nil {
@@ -67,29 +67,26 @@ func (oa OAuth2) Authenticate(secretPath string) error {
 	}
 
 	// prompt for the authorization code
-	code, err := oa.System.Prompt()
+	code, err := oa.Profile.System.Prompt()
 	if err != nil {
 		return fmt.Errorf("unable to read authorization code %v", err)
 	}
 
 	// Perform the exchange for the token
-	token, err := oa.System.ExchangeToken(config, code)
+	token, err := oa.Profile.System.ExchangeToken(config, code)
 	if err != nil {
 		return fmt.Errorf("unable to retrieve token from web %v", err)
 	}
 
 	// Cache the config and the token to disk
-	oa.Profile.saveTokenInCache(token)
+	oa.Profile.saveProfileTokenInCache(token)
 
 	return nil
 }
 
-//TODO SPE faire attention aux commentaires de cette classe
-// et aux noms a utiliser ? token ? secret ? config ?
-
-// config loads the secret file from the SecretPath. It is used both to
+// config loads the oauth config file from the cache. It is used both to
 // create the client for requests as well as to perform authentication.
-func (oa OAuth2) config() (*oauth2.Config, error) {
+func (oa OAuth2Authenticator) config() (*oauth2.Config, error) {
 
 	configFile := filepath.Join(oa.Profile.profileCachePath(), configFile)
 
