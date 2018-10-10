@@ -61,28 +61,25 @@ func Test_should_not_return_oauth2_client_when_authentication_token_not_found(t 
 	assert.Empty(t, clt)
 }
 
-func Test_should_get_config_from_client_secret_file(t *testing.T) {
+func Test_should_not_return_oauth2_client_when_authentication_token_malformed(t *testing.T) {
 
 	jsonConfig := testdata.JsonOauthConfig("c0nf1d3ential")
+	token := `{{{{{}`
 
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-
-	profileName := "authProfile"
-	testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName), "config.json")
+	testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory), "config.json")
+	testdata.TempFileWithName(token, filepath.Join(tempDir, CacheDirectory), "token.json")
 
 	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
-
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
 
-	token, err := auth.config()
+	clt, err := authenticator.Client()
 
-	assert.NoError(t, err)
-	assert.Equal(t, "c0nf1d3ential", token.ClientID)
-	assert.Equal(t, "http://uri", token.RedirectURL)
+	assert.Error(t, err)
+	assert.Empty(t, clt)
 }
 
 func Test_should_authenticate_with_config(t *testing.T) {
@@ -198,44 +195,4 @@ func Test_should_not_authenticate_when_config_not_valid(t *testing.T) {
 	err := auth.Authenticate(tempFile)
 
 	assert.Error(t, err)
-}
-
-func Test_config_should_throw_error_when_client_secret_file_is_not_valid_json(t *testing.T) {
-
-	jsonConfig := `{"invalid:}`
-
-	tempDir := testdata.TempDir()
-	defer os.RemoveAll(tempDir)
-	profileName := "authProfile"
-	testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
-
-	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
-
-	sys.On("HomeDir").Return(tempDir)
-
-	auth := OAuth2Authenticator{Profile: profile}
-
-	config, err := auth.config()
-
-	assert.Error(t, err)
-	assert.Empty(t, config)
-}
-
-func Test_config_should_throw_error_when_client_secret_file_does_not_exist(t *testing.T) {
-
-	tempDir := testdata.TempDir()
-	defer os.RemoveAll(tempDir)
-
-	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: "authProfile", System: sys}
-
-	sys.On("HomeDir").Return(tempDir)
-
-	auth := OAuth2Authenticator{Profile: profile}
-
-	config, err := auth.config()
-
-	assert.Error(t, err)
-	assert.Empty(t, config)
 }

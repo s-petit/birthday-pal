@@ -111,7 +111,7 @@ func Test_GetContacts_should_return_error_when_payload_is_not_valid_json(t *test
 
 func Test_GetContacts_should_return_error_when_url_goes_to_404(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	google := GoogleContactsProvider{
@@ -127,7 +127,7 @@ func Test_GetContacts_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 func Test_GetContacts_should_return_error_when_url_is_malformed(t *testing.T) {
 
-	srv := httptest.NewServer(handler())
+	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
 	google := GoogleContactsProvider{

@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 )
 
 const tokenFile = "token.json"
@@ -23,7 +20,7 @@ type OAuth2Authenticator struct {
 func (oa OAuth2Authenticator) Client() (*http.Client, error) {
 
 	// config returns the configuration from client_secret.json
-	config, err := oa.config()
+	config, err := oa.Profile.loadProfileConfigFromCache(oa.Scope)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +45,7 @@ func (oa OAuth2Authenticator) Authenticate(configFilePath string) error {
 
 	oa.Profile.saveProfileConfigInCache(configFilePath)
 
-	config, err := oa.config()
+	config, err := oa.Profile.loadProfileConfigFromCache(oa.Scope)
 	if err != nil {
 		return err
 	}
@@ -82,23 +79,4 @@ func (oa OAuth2Authenticator) Authenticate(configFilePath string) error {
 	oa.Profile.saveProfileTokenInCache(token)
 
 	return nil
-}
-
-// config loads the oauth config file from the cache. It is used both to
-// create the client for requests as well as to perform authentication.
-func (oa OAuth2Authenticator) config() (*oauth2.Config, error) {
-
-	configFile := filepath.Join(oa.Profile.profileCachePath(), configFile)
-
-	data, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		return nil, fmt.Errorf("unable to read client secret file: %v", err)
-	}
-
-	config, err := google.ConfigFromJSON(data, oa.Scope)
-	if err != nil {
-		return nil, fmt.Errorf("unable to parse client secret file to config: %v", err)
-	}
-
-	return config, nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/s-petit/birthday-pal/system"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -105,4 +106,23 @@ func (oap OAuthProfile) loadProfileTokenFromCache() (*oauth2.Token, error) {
 	}
 
 	return token, nil
+}
+
+// config loads the oauth config file from the cache. It is used both to
+// create the client for requests as well as to perform authentication.
+func (oap OAuthProfile) loadProfileConfigFromCache(scope string) (*oauth2.Config, error) {
+
+	configFile := filepath.Join(oap.profileCachePath(), configFile)
+
+	data, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read client secret file: %v", err)
+	}
+
+	config, err := google.ConfigFromJSON(data, scope)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse client secret file to config: %v", err)
+	}
+
+	return config, nil
 }
