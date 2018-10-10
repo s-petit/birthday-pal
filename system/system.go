@@ -32,15 +32,7 @@ func (rs RealSystem) Now() time.Time {
 	return time.Now()
 }
 
-//TODO SPE MOVE
-//CachePath is the location where the token will be stored in order to remember authentication.
-/*func (rs RealSystem) CachePath(profile string) string {
-	// Get the hidden credentials directory, making sure it's created
-	cacheDir := filepath.Join(homeDir(), ".birthday-pal", profile)
-	os.MkdirAll(cacheDir, 0700)
-	return cacheDir
-}*/
-
+//HomeDir is the home directory of current user depending of the running system
 func (rs RealSystem) HomeDir() string {
 	usr, err := user.Current()
 	if err != nil {

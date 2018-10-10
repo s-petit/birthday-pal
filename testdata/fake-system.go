@@ -3,8 +3,8 @@ package testdata
 import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
-	"time"
 	"os"
+	"time"
 )
 
 //FakeSystem represents a mockable system
@@ -23,12 +23,6 @@ func (fs *FakeSystem) Prompt() (string, error) {
 	called := fs.Called()
 	return called.String(0), called.Error(1)
 }
-
-//CachePath returns a mocked cache path
-/*func (fs *FakeSystem) CachePath(profile string) string {
-	called := fs.Called(profile)
-	return called.String(0)
-}*/
 
 //HomeDir returns a mocked homedir
 func (fs *FakeSystem) HomeDir() string {

@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
-	"path/filepath"
 )
 
 type fakeBirthdayPal struct {
@@ -123,7 +123,6 @@ func Test_oauth_perform(t *testing.T) {
 	bpal.AssertExpectations(t)
 	system.AssertExpectations(t)
 }
-
 
 func Test_oauth_list(t *testing.T) {
 

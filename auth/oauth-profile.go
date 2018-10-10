@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 )
 
+//CacheDirectory is the location of bpal's cached files
 const CacheDirectory = ".birthday-pal"
 
+//OAuthProfile holds logic of cache storage of oauth authentication profiles
 type OAuthProfile struct {
 	System  system.System
 	Profile string
@@ -35,13 +37,13 @@ func (oap OAuthProfile) ListProfiles() ([]string, error) {
 	return profiles, nil
 }
 
-//CachePath is the location where the token will be stored in order to remember authentication.
+//cachePath is the location where all profiles will be stored in order to remember authentication.
 func (oap OAuthProfile) cachePath() string {
 	cacheDir := filepath.Join(oap.System.HomeDir(), CacheDirectory)
 	return cacheDir
 }
 
-//CachePath is the location where the token will be stored in order to remember authentication.
+//profileCachePath is the cache location for a given profile.
 func (oap OAuthProfile) profileCachePath() string {
 	// Get the hidden credentials directory, making sure it's created
 	cacheDir := filepath.Join(oap.cachePath(), oap.Profile)
