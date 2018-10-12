@@ -78,3 +78,14 @@ func Test_should_remind_once_with_different_timezones(t *testing.T) {
 	remind = Reminder{CurrentDate: aug22Paris, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(birthday)
 	assert.Equal(t, true, remind)
 }
+
+func Test_should_remind_when_current_day_is_a_birthday(t *testing.T) {
+	birthday := testdata.BirthDate(2016, time.August, 22)
+	aug22 := testdata.LocalDate(2018, time.August, 22)
+
+	remind := Reminder{CurrentDate: aug22, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.ShouldRemind(birthday)
+	assert.Equal(t, true, remind)
+
+	remind2 := Reminder{CurrentDate: aug22, NbDaysBeforeBDay: 0, EveryDayUntilBDay: true}.ShouldRemind(birthday)
+	assert.Equal(t, true, remind2)
+}

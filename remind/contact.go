@@ -19,7 +19,7 @@ func ContactsToRemind(contacts []contact.Contact, reminder Reminder) []ContactBi
 
 	for _, c := range contacts {
 
-		if reminder.remindEveryDay(c.BirthDate) || reminder.remindOnce(c.BirthDate) {
+		if reminder.ShouldRemind(c.BirthDate) {
 			contactsToRemind = append(contactsToRemind, ContactBirthday{c.Name, c.BirthDate, c.Age(reminder.RemindDay())})
 		}
 	}
