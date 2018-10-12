@@ -19,7 +19,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 	bpal := cli.App("birthday-pal", "Remind me birthdays pls.")
 
 	bpal.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
-		"[--days-before] [--remind-everyday] [--lang]"
+		"[--days-before] [--remind-everyday] [--weekly-digest] [--monthly-digest] [--lang]"
 
 	var (
 
@@ -54,6 +54,18 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			Name:  "e remind-everyday",
 			Value: false,
 			Desc:  "Send a reminder everyday until birthday instead of once.",
+		})
+
+		weeklyDigest = bpal.Bool(cli.BoolOpt{
+			Name:  "w weekly-digest",
+			Value: false,
+			Desc:  "Send a reminder every monday for every birthdays of the incoming week.",
+		})
+
+		monthlyDigest = bpal.Bool(cli.BoolOpt{
+			Name:  "m monthly-digest",
+			Value: false,
+			Desc:  "Send a reminder every 1st of the month for every birthdays of the incoming month.",
 		})
 
 		daysBefore = bpal.Int(cli.IntOpt{
@@ -128,6 +140,8 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				CurrentDate:       system.Now(),
 				NbDaysBeforeBDay:  *daysBefore,
 				EveryDayUntilBDay: *remindEveryDay,
+				WeeklyDigest: *weeklyDigest,
+				MonthlyDigest: *monthlyDigest,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
@@ -183,6 +197,8 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				CurrentDate:       system.Now(),
 				NbDaysBeforeBDay:  *daysBefore,
 				EveryDayUntilBDay: *remindEveryDay,
+				WeeklyDigest: *weeklyDigest,
+				MonthlyDigest: *monthlyDigest,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)

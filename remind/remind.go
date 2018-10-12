@@ -5,8 +5,11 @@ import "time"
 //Reminder holds remind context and conditions
 type Reminder struct {
 	CurrentDate       time.Time
+	//TODO rename fields
 	NbDaysBeforeBDay  int
 	EveryDayUntilBDay bool
+	WeeklyDigest bool
+	MonthlyDigest bool
 }
 
 //ShouldRemind returns true when the birthdate should be reminded
@@ -14,6 +17,7 @@ func (r Reminder) ShouldRemind(birthDate time.Time) bool {
 	return r.remindOnce(birthDate) || r.remindEveryDay(birthDate)
 }
 
+// remind a la date exacte, une fois TODO
 func (r Reminder) remindOnce(birthDate time.Time) bool {
 
 	remindDay := r.RemindDay()
@@ -21,6 +25,23 @@ func (r Reminder) remindOnce(birthDate time.Time) bool {
 	return !r.EveryDayUntilBDay && remindDay.Day() == birthDate.Day() && remindDay.Month() == birthDate.Month()
 }
 
+func (r Reminder) remindWeek(birthDate time.Time) bool {
+
+	remindDay := r.RemindDay()
+
+
+	if r.CurrentDate.Weekday() != time.Monday {
+		return []ContactBirthday{}
+	}
+
+	weeklyReminder := reminder
+	weeklyReminder.NbDaysBeforeBDay = 7
+	weeklyReminder.EveryDayUntilBDay = true
+
+	return !r.EveryDayUntilBDay && remindDay.Day() == birthDate.Day() && remindDay.Month() == birthDate.Month()
+}
+
+// remind dans une fenetre de x jours TODO
 func (r Reminder) remindEveryDay(birthDate time.Time) bool {
 
 	dateAtMidnight := r.dateAtMidnight()
