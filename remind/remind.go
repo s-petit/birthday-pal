@@ -9,6 +9,11 @@ type Reminder struct {
 	EveryDayUntilBDay bool
 }
 
+//ShouldRemind returns true when the birthdate should be reminded
+func (r Reminder) ShouldRemind(birthDate time.Time) bool {
+	return r.remindOnce(birthDate) || r.remindEveryDay(birthDate)
+}
+
 func (r Reminder) remindOnce(birthDate time.Time) bool {
 
 	remindDay := r.RemindDay()

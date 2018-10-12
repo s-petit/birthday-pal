@@ -33,7 +33,7 @@ readmecheck:
 
 setup:
 	go get github.com/gordonklaus/ineffassign
-	go get github.com/golang/lint/golint
+	go get golang.org/x/lint/golint
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/mattn/goveralls
 	go get github.com/modocache/gover
