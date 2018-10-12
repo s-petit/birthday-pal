@@ -42,11 +42,11 @@ func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, err
 		"formatDate": i18nTemplate.formatDate,
 	}
 
-	subj, err := template.New("subject").Funcs(subjFuncs).Parse(i18nTemplate.subject())
+	subj, err := template.New("simpleReminderSubject").Funcs(subjFuncs).Parse(i18nTemplate.simpleReminderSubject())
 	if err != nil {
 		return nil, err
 	}
-	bod, err := template.New("body").Funcs(bodyFuncs).Parse(i18nTemplate.body())
+	bod, err := template.New("simpleReminderBody").Funcs(bodyFuncs).Parse(i18nTemplate.simpleReminderBody())
 	if err != nil {
 		return nil, err
 	}

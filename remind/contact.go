@@ -3,7 +3,7 @@ package remind
 import (
 	"github.com/s-petit/birthday-pal/contact"
 	"time"
-	"errors"
+	"log"
 )
 
 //ContactBirthday represents a Contact with birthday information
@@ -36,7 +36,7 @@ func WeeklyDigestContactsToRemind(contacts []contact.Contact, reminder Reminder)
 	}
 
 	weeklyReminder := reminder
-	weeklyReminder.NbDaysBeforeBDay = 7
+	weeklyReminder.NbDaysBeforeBDay = 6
 	weeklyReminder.EveryDayUntilBDay = true
 
 	return ContactsToRemind(contacts, weeklyReminder)
@@ -49,28 +49,30 @@ func MonthlyDigestContactsToRemind(contacts []contact.Contact, reminder Reminder
 		return []ContactBirthday{}
 	}
 
-	reminder.CurrentDate.Month()
-
+	lastDayOfMonth := searchLastDayOfMonth(reminder.CurrentDate)
 
 	monthlyReminder := reminder
-	monthlyReminder.NbDaysBeforeBDay = 7
+	monthlyReminder.NbDaysBeforeBDay = lastDayOfMonth - 1
 	monthlyReminder.EveryDayUntilBDay = true
 
 	return ContactsToRemind(contacts, monthlyReminder)
 }
 
 
-func searchLastDayOfMonth(date time.Time) (int, error) {
+func searchLastDayOfMonth(date time.Time) int {
+
+	monthFirstDay := time.Date(date.Year(), date.Month(), 1, date.Hour(), date.Minute(), date.Second(), date.Nanosecond(), date.Location())
 
 	// the last day of a month is between 28 and 31
-	daysToCheck := []int{27, 28, 29, 30}
+	possibleLastDays := []int{28, 29, 30, 31}
 
-	for _, c := range daysToCheck {
+	for _, dayNumber := range possibleLastDays {
 
-		lol := date.AddDate(0, 0, c)
-		if lol.Month() != date.Month() {
-			return c-1, nil
+		day := monthFirstDay.AddDate(0, 0, dayNumber)
+		if day.Month() != date.Month() {
+			return dayNumber
 		}
 	}
-	return 0, errors.New("waaaaaa")
+	log.Fatal("Unexpected error. Can not find last day of month for date: " + date.String())
+	return -1
 }

@@ -25,22 +25,7 @@ func (r Reminder) remindOnce(birthDate time.Time) bool {
 	return !r.EveryDayUntilBDay && remindDay.Day() == birthDate.Day() && remindDay.Month() == birthDate.Month()
 }
 
-func (r Reminder) remindWeek(birthDate time.Time) bool {
-
-	remindDay := r.RemindDay()
-
-
-	if r.CurrentDate.Weekday() != time.Monday {
-		return []ContactBirthday{}
-	}
-
-	weeklyReminder := reminder
-	weeklyReminder.NbDaysBeforeBDay = 7
-	weeklyReminder.EveryDayUntilBDay = true
-
-	return !r.EveryDayUntilBDay && remindDay.Day() == birthDate.Day() && remindDay.Month() == birthDate.Month()
-}
-
+// rendre cette fonction inclusive ? genre 2 jours avant, 1 jours avant, jour j
 // remind dans une fenetre de x jours TODO
 func (r Reminder) remindEveryDay(birthDate time.Time) bool {
 

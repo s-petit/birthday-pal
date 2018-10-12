@@ -99,7 +99,7 @@ The 08/22, don't forget to wish birthdays of :
 func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 
 	tmpl := new(fakeTemplate)
-	tmpl.On("subject").Return("{{{{{")
+	tmpl.On("simpleReminderSubject").Return("{{{{{")
 
 	bytes, err := resolveMail(Contacts{}, tmpl)
 
@@ -110,8 +110,8 @@ func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 
 	tmpl := new(fakeTemplate)
-	tmpl.On("subject").Return("subject")
-	tmpl.On("body").Return("{{{{{")
+	tmpl.On("simpleReminderSubject").Return("simpleReminderSubject")
+	tmpl.On("simpleReminderBody").Return("{{{{{")
 
 	bytes, err := resolveMail(Contacts{}, tmpl)
 
