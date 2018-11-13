@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//ContactBirthday represents a Contact with all information necessary for the email content.
+//ContactBirthday represents a Contact with birthday information
 type ContactBirthday struct {
 	Name      string
 	BirthDate time.Time

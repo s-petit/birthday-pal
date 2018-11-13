@@ -25,12 +25,11 @@ func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email
 	}
 
 	remindContacts := remind.ContactsToRemind(contacts, reminder)
+	contactsEmail := email.Contacts{Contacts: remindContacts, RemindDate: reminder.RemindDay()}
 
-	for _, contact := range remindContacts {
-		err := smtp.Send(contact, recipients)
-		if err != nil {
-			return err
-		}
+	err = smtp.Send(contactsEmail, recipients)
+	if err != nil {
+		return err
 	}
 
 	log.Printf("--> %d Reminder(s) sent. %d contact(s) will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))

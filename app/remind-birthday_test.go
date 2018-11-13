@@ -3,6 +3,7 @@ package app
 import (
 	"errors"
 	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,8 @@ func Test_remind_birthdays_successful(t *testing.T) {
 	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
 
 	contactProvider.On("GetContacts").Return(con, nil)
-	smtp.On("Send", contactToRemind, recipients).Return(nil)
+	emailContacts := email.Contacts{Contacts: []remind.ContactBirthday{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
+	smtp.On("Send", emailContacts, recipients).Return(nil)
 
 	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
 
@@ -63,9 +65,10 @@ func Test_remind_birthdays_fail_during_mail_sending(t *testing.T) {
 
 	contactToRemind := remind.ContactBirthday{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31), Age: 32}
 	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
+	emailContacts := email.Contacts{Contacts: []remind.ContactBirthday{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
 
 	contactProvider.On("GetContacts").Return(con, nil)
-	smtp.On("Send", contactToRemind, recipients).Return(errors.New("wow"))
+	smtp.On("Send", emailContacts, recipients).Return(errors.New("wow"))
 
 	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
 
@@ -87,7 +90,7 @@ type fakeSender struct {
 	mock.Mock
 }
 
-func (c *fakeSender) Send(contact remind.ContactBirthday, recipients []string) error {
+func (c *fakeSender) Send(contact email.Contacts, recipients []string) error {
 	args := c.Called(contact, recipients)
 	return args.Error(0)
 }

@@ -6,13 +6,15 @@ type enTemplate struct {
 }
 
 func (en enTemplate) subject() string {
-	return "{{.Name}}'s birthday {{if yearValid .BirthDate}}-{{.Age}} yo- {{- end}}"
+	return "Your {{formatDate .RemindDate}} birthday reminder"
 }
 
 func (en enTemplate) body() string {
-	return "The {{formatDate .BirthDate}} will be {{.Name}}'s birthday. Do not forget to make your wish!"
+	return `The {{formatDate .RemindDate}}, don't forget to wish birthdays of :
+{{range .Contacts}}
+- {{.Name}}{{if yearValid .BirthDate}} ({{.Age}} yo) {{- end}}
+{{end}}`
 }
-
 func (en enTemplate) dateLayout() string {
 	return "01/02"
 }

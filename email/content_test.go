@@ -12,13 +12,47 @@ func Test_should_get_mail_in_french(t *testing.T) {
 
 	expectedMail :=
 		`To: Birthday Pals
-Subject: Anniversaire de John -34 an(s)-
+Subject: Anniversaires du 22/08
 
-Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
+Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
+
+- John (34 ans)
+`
 
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 
-	bytes, _ := toMail(remind.ContactBirthday{"John", birthday, 34}, "fr")
+	bytes, err := toMail(Contacts{
+		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+	}, "fr")
+	assert.NoError(t, err)
+	assert.Equal(t, expectedMail, string(bytes))
+}
+
+func Test_should_get_mail_in_french_for_several_contacts(t *testing.T) {
+
+	expectedMail :=
+		`To: Birthday Pals
+Subject: Anniversaires du 22/08
+
+Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
+
+- John (34 ans)
+
+- Jane (23 ans)
+
+- Jill (2 ans)
+`
+
+	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
+
+	bytes, err := toMail(Contacts{
+		Contacts: []remind.ContactBirthday{
+			{"John", birthday, 34},
+			{"Jane", birthday, 23},
+			{"Jill", birthday, 2},
+		}, RemindDate: birthday,
+	}, "fr")
+	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
 
@@ -26,13 +60,19 @@ func Test_should_get_mail_in_french_without_age(t *testing.T) {
 
 	expectedMail :=
 		`To: Birthday Pals
-Subject: Anniversaire de John
+Subject: Anniversaires du 22/08
 
-Ce sera l'anniversaire de John le 22/08. Pensez à le lui souhaiter!`
+Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
+
+- John
+`
 
 	birthday := time.Date(0, time.August, 22, 0, 0, 0, 0, time.UTC)
 
-	bytes, _ := toMail(remind.ContactBirthday{"John", birthday, 34}, "fr")
+	bytes, err := toMail(Contacts{
+		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+	}, "fr")
+	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
 
@@ -40,13 +80,19 @@ func Test_should_get_mail_in_english(t *testing.T) {
 
 	expectedMail :=
 		`To: Birthday Pals
-Subject: John's birthday -34 yo-
+Subject: Your 08/22 birthday reminder
 
-The 08/22 will be John's birthday. Do not forget to make your wish!`
+The 08/22, don't forget to wish birthdays of :
+
+- John (34 yo)
+`
 
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 
-	bytes, _ := toMail(remind.ContactBirthday{"John", birthday, 34}, "EN")
+	bytes, err := toMail(Contacts{
+		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+	}, "EN")
+	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
 
@@ -55,7 +101,7 @@ func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 	tmpl := new(fakeTemplate)
 	tmpl.On("subject").Return("{{{{{")
 
-	bytes, err := resolveMail(remind.ContactBirthday{}, tmpl)
+	bytes, err := resolveMail(Contacts{}, tmpl)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)
@@ -67,7 +113,7 @@ func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 	tmpl.On("subject").Return("subject")
 	tmpl.On("body").Return("{{{{{")
 
-	bytes, err := resolveMail(remind.ContactBirthday{}, tmpl)
+	bytes, err := resolveMail(Contacts{}, tmpl)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)

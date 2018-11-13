@@ -4,11 +4,18 @@ import (
 	"github.com/s-petit/birthday-pal/remind"
 	"net/smtp"
 	"strconv"
+	"time"
 )
 
 // Sender holds methods necessary for sending reminder emails.
 type Sender interface {
-	Send(contactToRemind remind.ContactBirthday, recipients []string) error
+	Send(emailContacts Contacts, recipients []string) error
+}
+
+// Contacts holds every contacts related data necessary for the email content.
+type Contacts struct {
+	Contacts   []remind.ContactBirthday
+	RemindDate time.Time
 }
 
 // SMTPClient represents a SMTP client with its credentials
@@ -25,11 +32,11 @@ func (ss SMTPClient) hostPort() string {
 }
 
 //Send sends an email to recipients about the related contact incoming birthday.
-func (ss SMTPClient) Send(contact remind.ContactBirthday, recipients []string) error {
+func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 
-	mail, err := toMail(contact, ss.Language)
+	mail, err := toMail(emailContacts, ss.Language)
 	if err != nil {
 		return err
 	}
