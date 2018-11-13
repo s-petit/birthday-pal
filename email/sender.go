@@ -54,26 +54,3 @@ func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
 	return err
 }
 
-
-//Send sends an email to recipients about the related contact incoming birthday.
-func (ss SMTPClient) Send2(contacts []remind.ContactBirthday, recipients []string) error {
-
-	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
-
-	mail, err := toMail(contact, ss.Language)
-	if err != nil {
-		return err
-	}
-
-	// Connect to the server, authenticate, set the sender and recipient,
-	// and send the subjectBody all in one step.
-	err = smtp.SendMail(
-		ss.hostPort(),
-		auth,
-		ss.Username,
-		recipients,
-		mail,
-	)
-
-	return err
-}

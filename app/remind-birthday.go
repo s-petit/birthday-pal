@@ -34,8 +34,8 @@ func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email
 
 	log.Printf("--> %d Reminder(s) sent. %d contact(s) will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
 
-
-	weeklyDigestContacts := remind.WeeklyDigestContactsToRemind(contacts, reminder)
+	//TODO SPE
+/*	weeklyDigestContacts := remind.WeeklyDigestContactsToRemind(contacts, reminder)
 	if len(weeklyDigestContacts) > 0 {
 		err := smtp.SendWeeklyDigest(weeklyDigestContacts, recipients)
 		if err != nil {
@@ -51,7 +51,7 @@ func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email
 			return err
 		}
 		log.Printf("--> Monthly Digest sent. %d contact(s) will celebrate their birthday(s) this month.", len(monthlyDigestContacts))
-	}
+	}*/
 
 
 	return nil
