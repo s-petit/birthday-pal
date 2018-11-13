@@ -6,11 +6,14 @@ type frTemplate struct {
 }
 
 func (fr frTemplate) subject() string {
-	return "Anniversaire de {{.Name}}{{if yearValid .BirthDate}} -{{.Age}} an(s)- {{- end}}"
+	return "Anniversaires du {{formatDate .RemindDate}}"
 }
 
 func (fr frTemplate) body() string {
-	return "Ce sera l'anniversaire de {{.Name}} le {{formatDate .BirthDate}}. Pensez à le lui souhaiter!"
+	return `Le {{formatDate .RemindDate}}, n'oubliez pas de souhaiter l'anniversaire de :
+{{range .Contacts}}
+- {{.Name}}{{if yearValid .BirthDate}} ({{.Age}} ans) {{- end}}
+{{end}}`
 }
 
 func (fr frTemplate) dateLayout() string {

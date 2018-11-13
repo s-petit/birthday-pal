@@ -2,7 +2,6 @@ package email
 
 import (
 	"bytes"
-	"github.com/s-petit/birthday-pal/remind"
 	"strings"
 	"text/template"
 	"time"
@@ -23,22 +22,23 @@ func yearValid(date time.Time) bool {
 	return date.Year() > 0
 }
 
-func toMail(contact remind.ContactBirthday, language string) ([]byte, error) {
+func toMail(emailContacts Contacts, language string) ([]byte, error) {
 
 	var i18nTemplate i18nTemplate = enTemplate{}
 	if strings.ToUpper(language) == "FR" {
 		i18nTemplate = frTemplate{}
 	}
 
-	return resolveMail(contact, i18nTemplate)
+	return resolveMail(emailContacts, i18nTemplate)
 }
 
-func resolveMail(contact remind.ContactBirthday, i18nTemplate i18nTemplate) ([]byte, error) {
+func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, error) {
 	subjFuncs := template.FuncMap{
-		"yearValid": yearValid,
+		"formatDate": i18nTemplate.formatDate,
 	}
 
 	bodyFuncs := template.FuncMap{
+		"yearValid":  yearValid,
 		"formatDate": i18nTemplate.formatDate,
 	}
 
@@ -55,8 +55,8 @@ func resolveMail(contact remind.ContactBirthday, i18nTemplate i18nTemplate) ([]b
 		return nil, err
 	}
 
-	var subject = resolveTemplate(subj, contact)
-	var body = resolveTemplate(bod, contact)
+	var subject = resolveTemplate(subj, emailContacts)
+	var body = resolveTemplate(bod, emailContacts)
 
 	m := subjectBody{subject.String(), body.String()}
 
