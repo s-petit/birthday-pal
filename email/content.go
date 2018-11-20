@@ -22,14 +22,26 @@ func yearValid(date time.Time) bool {
 	return date.Year() > 0
 }
 
-func toMail(emailContacts Contacts, language string) ([]byte, error) {
 
-	var i18nTemplate i18nTemplate = enTemplate{}
+type TemplateFactory struct {
+	Language   string
+	EmailType string
+}
+
+func toMail(emailContacts Contacts, language string, emailType string) ([]byte, error) {
+
+	//TODO SPE enums ?
+	// TODO SPE factory en go ?
+	var i18nTemplate i18nTemplate = enSimpleTemplate{}
+
+	if (emailType)
+
+	var i18nDateTemplate i18nDateTemplate = enDateTemplate{}
 	if strings.ToUpper(language) == "FR" {
-		i18nTemplate = frTemplate{}
+		i18nDateTemplate = frDateTemplate{}
 	}
 
-	return resolveMail(emailContacts, i18nTemplate)
+	return resolveMail(emailContacts, i18nTemplate, i18nDateTemplate)
 }
 
 func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, error) {
@@ -42,11 +54,11 @@ func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, err
 		"formatDate": i18nTemplate.formatDate,
 	}
 
-	subj, err := template.New("simpleReminderSubject").Funcs(subjFuncs).Parse(i18nTemplate.simpleReminderSubject())
+	subj, err := template.New("subject").Funcs(subjFuncs).Parse(i18nTemplate.simpleReminderSubject())
 	if err != nil {
 		return nil, err
 	}
-	bod, err := template.New("simpleReminderBody").Funcs(bodyFuncs).Parse(i18nTemplate.simpleReminderBody())
+	bod, err := template.New("body").Funcs(bodyFuncs).Parse(i18nTemplate.simpleReminderBody())
 	if err != nil {
 		return nil, err
 	}

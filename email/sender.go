@@ -25,18 +25,19 @@ type SMTPClient struct {
 	Username string
 	Password string
 	Language string
+	EmailType 	 string
 }
 
-func (ss SMTPClient) hostPort() string {
-	return ss.Host + ":" + strconv.Itoa(ss.Port)
+func (clt SMTPClient) hostPort() string {
+	return clt.Host + ":" + strconv.Itoa(clt.Port)
 }
 
 //Send sends an email to recipients about the related contact incoming birthday.
-func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
+func (clt SMTPClient) Send(emailContacts Contacts, recipients []string) error {
 
-	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
+	auth := smtp.PlainAuth("", clt.Username, clt.Password, clt.Host)
 
-	mail, err := toMail(emailContacts, ss.Language)
+	mail, err := toMail(emailContacts, clt.Language, clt.EmailType)
 	if err != nil {
 		return err
 	}
@@ -44,9 +45,9 @@ func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the subjectBody all in one step.
 	err = smtp.SendMail(
-		ss.hostPort(),
+		clt.hostPort(),
 		auth,
-		ss.Username,
+		clt.Username,
 		recipients,
 		mail,
 	)
