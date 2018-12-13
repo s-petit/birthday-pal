@@ -2,6 +2,7 @@ package email
 
 import (
 	"github.com/s-petit/birthday-pal/remind"
+	"log"
 	"net/smtp"
 	"strconv"
 	"time"
@@ -28,11 +29,20 @@ type SMTPClient struct {
 }
 
 func (ss SMTPClient) hostPort() string {
+
+	if len(ss.Host) < 1 {
+		log.Printf("WARNING: SMTP host is empty")
+	}
+
 	return ss.Host + ":" + strconv.Itoa(ss.Port)
 }
 
 //Send sends an email to recipients about the related contact incoming birthday.
 func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
+
+	if len(emailContacts.Contacts) < 1 {
+		return nil
+	}
 
 	auth := smtp.PlainAuth("", ss.Username, ss.Password, ss.Host)
 

@@ -75,7 +75,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	bpal.Command("carddav", "use carddav to retrieve contacts", func(cmd *cli.Cmd) {
 
-		cmd.Spec = "[--user] [--pass] [--url] RECIPIENTS..."
+		cmd.Spec = "[--user] [--pass] --url RECIPIENTS..."
 
 		var (
 
@@ -209,12 +209,12 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			var (
 				profile = perform.String(cli.StringArg{
 					Name: "PROFILE",
-					Desc: "Oauth Authentication profile name",
+					Desc: "Define a Oauth Authentication profile name",
 				})
 
 				secret = perform.String(cli.StringArg{
 					Name: "SECRET",
-					Desc: "Google OAuth2Authenticator client_secret.json",
+					Desc: "Local Path to your OAuth2Authenticator client secret json file (for Google, download it on https://console.developers.google.com)",
 				})
 			)
 

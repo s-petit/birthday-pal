@@ -7,6 +7,7 @@ import (
 	"google.golang.org/api/gensupport"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/people/v1"
+	"log"
 	"time"
 )
 
@@ -25,6 +26,7 @@ func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
 
 	res, err := clt.Get(gp.URL)
 	if err != nil {
+		log.Printf("Carddav HTTP GET - Something went wrong with the URL: %s ", gp.URL)
 		return []contact.Contact{}, err
 	}
 
@@ -37,6 +39,7 @@ func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
 
 	target := &connections
 	if err := gensupport.DecodeResponse(target, res); err != nil {
+		log.Printf("Failed to decode HTTP Response - Something went wrong with the URL: %s ", gp.URL)
 		return nil, err
 	}
 

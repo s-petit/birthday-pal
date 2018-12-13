@@ -6,6 +6,7 @@ import (
 	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/vcard"
 	"io/ioutil"
+	"log"
 	"strconv"
 )
 
@@ -32,6 +33,7 @@ func (carddav CardDavContactsProvider) call() (string, error) {
 
 	resp, err := client.Get(carddav.URL)
 	if err != nil {
+		log.Printf("Carddav HTTP GET - Something went wrong with the URL: %s ", carddav.URL)
 		return "", err
 	}
 
