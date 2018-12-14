@@ -19,7 +19,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 	bpal := cli.App("birthday-pal", "Remind me birthdays pls.")
 
 	bpal.Spec = "[--smtp-host] [--smtp-port] [--smtp-user] [--smtp-pass] " +
-		"[--days-before] [--remind-everyday] [--lang]"
+		"[--days-before] [--less-than-or-equal] [--lang]"
 
 	var (
 
@@ -51,9 +51,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 		})
 
 		remindEveryDay = bpal.Bool(cli.BoolOpt{
-			Name:  "e remind-everyday",
+			Name:  "less-than-or-equal",
 			Value: false,
-			Desc:  "Send a reminder everyday until birthday instead of once.",
+			Desc:  "Activates 'less than or equal' operator to trigger reminders depending on 'days-before' option ('equal' by default)",
 		})
 
 		daysBefore = bpal.Int(cli.IntOpt{
