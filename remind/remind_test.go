@@ -7,6 +7,27 @@ import (
 	"time"
 )
 
+
+func Test_lol(t *testing.T) {
+	aug21 := testdata.LocalDate(2018, time.August, 21)
+	aug20 := testdata.LocalDate(2018, time.August, 20)
+	aug19 := testdata.LocalDate(2018, time.August, 19)
+
+	johnBday := aug20
+	saraBday := aug21
+
+	remindJohn := Reminder{CurrentDate: aug19, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(johnBday)
+	remindSara := Reminder{CurrentDate: aug19, NbDaysBeforeBDay: 0, EveryDayUntilBDay: false}.remindOnce(saraBday)
+
+	assert.Equal(t, false, remindJohn)
+	assert.Equal(t, false, remindSara)
+
+}
+
+
+//TODO SPE faire en sorte que tous les tests soient sur une date fixe, il faut jouer uniquement sur le -d -e -i
+
+// comme celui ci par exemple
 func Test_should_remind_everyday_from_a_given_days_before_birthdate_until_birthday(t *testing.T) {
 	birthday := testdata.BirthDate(2016, time.August, 22)
 
@@ -47,6 +68,27 @@ func Test_should_remind_once_a_given_days_before_until_birthday(t *testing.T) {
 	remind = Reminder{CurrentDate: aug19, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
 	assert.Equal(t, false, remind)
 }
+
+func Test_should_remind_all_birthdays_in_the_next_two_days(t *testing.T) {
+	birthday := testdata.BirthDate(2016, time.August, 22)
+	aug23 := testdata.LocalDate(2018, time.August, 23)
+	aug22 := testdata.LocalDate(2018, time.August, 22)
+	aug21 := testdata.LocalDate(2018, time.August, 21)
+	aug20 := testdata.LocalDate(2018, time.August, 20)
+	aug19 := testdata.LocalDate(2018, time.August, 19)
+
+	remind := Reminder{CurrentDate: aug23, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
+	assert.Equal(t, false, remind)
+	remind = Reminder{CurrentDate: aug22, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
+	assert.Equal(t, false, remind)
+	remind = Reminder{CurrentDate: aug21, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
+	assert.Equal(t, false, remind)
+	remind = Reminder{CurrentDate: aug20, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
+	assert.Equal(t, true, remind)
+	remind = Reminder{CurrentDate: aug19, NbDaysBeforeBDay: 2, EveryDayUntilBDay: false}.remindOnce(birthday)
+	assert.Equal(t, false, remind)
+}
+
 
 func Test_should_remind_once_when_current_day_is_a_birthday(t *testing.T) {
 	birthday := testdata.BirthDate(2016, time.August, 22)

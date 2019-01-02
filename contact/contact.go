@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//TODO SPE pourquoi VCARD ? ca represent un contact tout court ?
 //Contact represents a Vcard Contact.
 type Contact struct {
 	Name      string

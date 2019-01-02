@@ -2,13 +2,13 @@ package remind
 
 import (
 	"github.com/s-petit/birthday-pal/contact"
-	"time"
 )
 
+//TODO SPE remplacer name et birthdate par contact ?
+//renommer par contact with age ?
 //ContactBirthday represents a Contact with birthday information
 type ContactBirthday struct {
-	Name      string
-	BirthDate time.Time
+	Contact      contact.Contact
 	Age       int
 }
 
@@ -20,7 +20,7 @@ func ContactsToRemind(contacts []contact.Contact, reminder Reminder) []ContactBi
 	for _, c := range contacts {
 
 		if reminder.ShouldRemind(c.BirthDate) {
-			contactsToRemind = append(contactsToRemind, ContactBirthday{c.Name, c.BirthDate, c.Age(reminder.RemindDay())})
+			contactsToRemind = append(contactsToRemind, ContactBirthday{c, c.Age(reminder.RemindDay())})
 		}
 	}
 
