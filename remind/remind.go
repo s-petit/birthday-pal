@@ -36,6 +36,7 @@ func (r Reminder) remindEveryDay(birthDate time.Time) bool {
 	dateAtMidnight := r.dateAtMidnight()
 	remindDay := r.RemindDay()
 
+	//return r.EveryDayUntilBDay && (birthDate.Before(remindDay) || birthDate.Equal(remindDay)) && (birthDate.After(dateAtMidnight) || birthDate.Equal(dateAtMidnight))
 	return r.EveryDayUntilBDay && (birthDate.Day() <= remindDay.Day() && birthDate.Month() <= remindDay.Month()) &&
 		(birthDate.Day() >= dateAtMidnight.Day() && birthDate.Month() >= dateAtMidnight.Month())
 }

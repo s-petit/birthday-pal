@@ -1,7 +1,7 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/remind"
+	"github.com/s-petit/birthday-pal/contact"
 	"log"
 	"net/smtp"
 	"strconv"
@@ -15,7 +15,7 @@ type Sender interface {
 
 // Contacts holds every contacts related data necessary for the email content.
 type Contacts struct {
-	Contacts   []remind.ContactBirthday
+	Contacts   []contact.Contact
 	RemindDate time.Time
 }
 

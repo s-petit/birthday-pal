@@ -1,7 +1,7 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/remind"
+	"github.com/s-petit/birthday-pal/contact"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -22,7 +22,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
 	}, "fr")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -46,10 +46,10 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []remind.ContactBirthday{
-			{"John", birthday, 34},
-			{"Jane", birthday, 23},
-			{"Jill", birthday, 2},
+		Contacts: []contact.Contact{
+			{"John", birthday},
+			{"Jane", birthday},
+			{"Jill", birthday},
 		}, RemindDate: birthday,
 	}, "fr")
 	assert.NoError(t, err)
@@ -70,7 +70,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	birthday := time.Date(0, time.August, 22, 0, 0, 0, 0, time.UTC)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
 	}, "fr")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -90,7 +90,7 @@ The 08/22, don't forget to wish birthdays of :
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []remind.ContactBirthday{{"John", birthday, 34}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
 	}, "EN")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -118,6 +118,54 @@ func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, bytes)
 }
+
+/*func Test_should_calculate_age(t *testing.T) {
+
+	birthday := testdata.BirthDate(1986, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 23)
+
+	c := contact.Contact{"John", birthday}
+
+	age := Age(c, date)
+
+	assert.Equal(t, 32, age)
+}
+
+func Test_should_calculate_age_one_day_before_birthday(t *testing.T) {
+
+	birthday := testdata.BirthDate(1986, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 21)
+
+	c := contact.Contact{"John", birthday}
+
+	age := Age(c, date)
+
+	assert.Equal(t, 31, age)
+}
+
+func Test_age_should_be_negative_when_birthday_is_in_the_future(t *testing.T) {
+
+	birthday := testdata.BirthDate(2019, time.August, 22)
+	date := testdata.LocalDate(2018, time.August, 23)
+
+	c := contact.Contact{"John", birthday}
+
+	age := Age(c, date)
+
+	assert.Equal(t, -1, age)
+}
+
+func Test_age_should_be_0_for_new_born(t *testing.T) {
+	birthday := testdata.BirthDate(2017, time.November, 22)
+	date := testdata.LocalDate(2018, time.August, 23)
+
+	c := contact.Contact{Name: "John", BirthDate: birthday}
+
+	age := Age(c, date)
+
+	assert.Equal(t, 0, age)
+}
+*/
 
 type fakeTemplate struct {
 	mock.Mock

@@ -9,10 +9,11 @@ func (fr frTemplate) subject() string {
 	return "Anniversaires du {{formatDate .RemindDate}}"
 }
 
+//TODO CHUUI BLOQUE
 func (fr frTemplate) body() string {
 	return `Le {{formatDate .RemindDate}}, n'oubliez pas de souhaiter l'anniversaire de :
 {{range .Contacts}}
-- {{.Name}}{{if yearValid .BirthDate}} ({{.Age}} ans) {{- end}}
+- {{.Name}}{{if yearValid .BirthDate}} ({{(lol .RemindDate .RemindDate)}} ans) {{- end}}
 {{end}}`
 }
 

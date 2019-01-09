@@ -22,6 +22,14 @@ func yearValid(date time.Time) bool {
 	return date.Year() > 0
 }
 
+//TODO SPE voir si cette func est a sa place ici ?
+// voir si on peut la remettre dans Contact, et l'invoquer dans le template ?
+// Age return the Age of the contact at a given date
+func Age(date time.Time, date2 time.Time) int {
+	return 34
+}
+
+
 func toMail(emailContacts Contacts, language string) ([]byte, error) {
 
 	var i18nTemplate i18nTemplate = enTemplate{}
@@ -40,6 +48,7 @@ func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, err
 	bodyFuncs := template.FuncMap{
 		"yearValid":  yearValid,
 		"formatDate": i18nTemplate.formatDate,
+		"lol": Age,
 	}
 
 	subj, err := template.New("subject").Funcs(subjFuncs).Parse(i18nTemplate.subject())
