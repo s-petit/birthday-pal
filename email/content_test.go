@@ -2,6 +2,7 @@ package email
 
 import (
 	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -19,10 +20,11 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 - John (34 ans)
 `
 
-	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
+	birthday := testdata.BirthDate(1980, time.August, 22)
+	remindDate := testdata.LocalDate(2014, time.August, 22)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: remindDate,
 	}, "fr")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -43,14 +45,17 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 - Jill (2 ans)
 `
 
-	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
+	johnBirthday := testdata.BirthDate(1980, time.August, 22)
+	janeBirthday := testdata.BirthDate(1991, time.August, 22)
+	jillBirthday := testdata.BirthDate(2012, time.August, 22)
+	remindDate := testdata.LocalDate(2014, time.August, 22)
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
-			{"John", birthday},
-			{"Jane", birthday},
-			{"Jill", birthday},
-		}, RemindDate: birthday,
+			{"John", johnBirthday},
+			{"Jane", janeBirthday},
+			{"Jill", jillBirthday},
+		}, RemindDate: remindDate,
 	}, "fr")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -67,10 +72,11 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 - John
 `
 
-	birthday := time.Date(0, time.August, 22, 0, 0, 0, 0, time.UTC)
+	invalidBirthday := testdata.BirthDate(0, time.August, 22)
+	remindDate := testdata.LocalDate(2014, time.August, 22)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", invalidBirthday}}, RemindDate: remindDate,
 	}, "fr")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
@@ -88,9 +94,10 @@ The 08/22, don't forget to wish birthdays of :
 `
 
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
+	remindDate := testdata.LocalDate(2014, time.August, 22)
 
 	bytes, err := toMail(Contacts{
-		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: birthday,
+		Contacts: []contact.Contact{{"John", birthday}}, RemindDate: remindDate,
 	}, "EN")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))

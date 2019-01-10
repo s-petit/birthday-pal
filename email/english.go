@@ -12,7 +12,7 @@ func (en enTemplate) subject() string {
 func (en enTemplate) body() string {
 	return `The {{formatDate .RemindDate}}, don't forget to wish birthdays of :
 {{range .Contacts}}
-- {{.Name}}{{if yearValid .BirthDate}} ({{.Age}} yo) {{- end}}
+- {{.Name}}{{if yearValid .BirthDate}} ({{.Age $.RemindDate}} yo) {{- end}}
 {{end}}`
 }
 func (en enTemplate) dateLayout() string {

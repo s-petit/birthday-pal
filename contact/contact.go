@@ -1,6 +1,7 @@
 package contact
 
 import (
+	"github.com/bearbin/go-age"
 	"github.com/s-petit/birthday-pal/remind"
 	"time"
 )
@@ -24,5 +25,10 @@ func ContactsToRemind(contacts []Contact, reminder remind.Reminder) []Contact {
 	}
 
 	return contactsToRemind
+}
+
+// Age return the Age of the contact at a given date
+func(c Contact) Age(date time.Time) int {
+	return age.AgeAt(c.BirthDate, date)
 }
 
