@@ -126,54 +126,6 @@ func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 	assert.Empty(t, bytes)
 }
 
-/*func Test_should_calculate_age(t *testing.T) {
-
-	birthday := testdata.BirthDate(1986, time.August, 22)
-	date := testdata.LocalDate(2018, time.August, 23)
-
-	c := contact.Contact{"John", birthday}
-
-	age := Age(c, date)
-
-	assert.Equal(t, 32, age)
-}
-
-func Test_should_calculate_age_one_day_before_birthday(t *testing.T) {
-
-	birthday := testdata.BirthDate(1986, time.August, 22)
-	date := testdata.LocalDate(2018, time.August, 21)
-
-	c := contact.Contact{"John", birthday}
-
-	age := Age(c, date)
-
-	assert.Equal(t, 31, age)
-}
-
-func Test_age_should_be_negative_when_birthday_is_in_the_future(t *testing.T) {
-
-	birthday := testdata.BirthDate(2019, time.August, 22)
-	date := testdata.LocalDate(2018, time.August, 23)
-
-	c := contact.Contact{"John", birthday}
-
-	age := Age(c, date)
-
-	assert.Equal(t, -1, age)
-}
-
-func Test_age_should_be_0_for_new_born(t *testing.T) {
-	birthday := testdata.BirthDate(2017, time.November, 22)
-	date := testdata.LocalDate(2018, time.August, 23)
-
-	c := contact.Contact{Name: "John", BirthDate: birthday}
-
-	age := Age(c, date)
-
-	assert.Equal(t, 0, age)
-}
-*/
-
 type fakeTemplate struct {
 	mock.Mock
 }

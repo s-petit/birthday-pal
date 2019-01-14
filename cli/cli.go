@@ -125,9 +125,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			}
 
 			reminder := remind.Reminder{
-				CurrentDate:       system.Now(),
-				NbDaysBeforeBDay:  *daysBefore,
-				EveryDayUntilBDay: *remindEveryDay,
+				CurrentDate: system.Now(),
+				InNbDays:    *daysBefore,
+				Inclusive:   *remindEveryDay,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
@@ -180,9 +180,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			}
 
 			reminder := remind.Reminder{
-				CurrentDate:       system.Now(),
-				NbDaysBeforeBDay:  *daysBefore,
-				EveryDayUntilBDay: *remindEveryDay,
+				CurrentDate: system.Now(),
+				InNbDays:    *daysBefore,
+				Inclusive:   *remindEveryDay,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)

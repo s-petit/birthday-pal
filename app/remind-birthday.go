@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/s-petit/birthday-pal/contact"
 	"github.com/s-petit/birthday-pal/email"
 	"github.com/s-petit/birthday-pal/remind"
 	"github.com/s-petit/birthday-pal/request"
@@ -25,7 +24,7 @@ func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email
 		return err
 	}
 
-	remindContacts := contact.ContactsToRemind(contacts, reminder)
+	remindContacts := reminder.ContactsToRemind(contacts)
 	contactsEmail := email.Contacts{Contacts: remindContacts, RemindDate: reminder.RemindDay()}
 
 	err = smtp.Send(contactsEmail, recipients)
@@ -33,7 +32,7 @@ func (bp BirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email
 		return err
 	}
 
-	log.Printf("--> %d Reminder(s) sent. %d contact(s) will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.NbDaysBeforeBDay, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
+	log.Printf("--> %d Reminder(s) sent. %d contact(s) will celebrate their birthday(s) in %d day(s), on %s.", len(remindContacts), len(remindContacts), reminder.InNbDays, reminder.RemindDay().Format("Mon, 02 Jan 2006"))
 
 	return nil
 }

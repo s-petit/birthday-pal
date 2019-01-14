@@ -24,7 +24,7 @@ func Test_remind_birthdays_successful(t *testing.T) {
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
+	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
 
 	contactProvider.On("GetContacts").Return(con, nil)
 	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
@@ -64,7 +64,7 @@ func Test_remind_birthdays_fail_during_mail_sending(t *testing.T) {
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), NbDaysBeforeBDay: 1}
+	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
 	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
 
 	contactProvider.On("GetContacts").Return(con, nil)

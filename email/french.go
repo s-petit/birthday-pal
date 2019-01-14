@@ -9,6 +9,8 @@ func (fr frTemplate) subject() string {
 	return "Anniversaires du {{formatDate .RemindDate}}"
 }
 
+
+//TODO SPE rendre le template plus generique pour le digest
 func (fr frTemplate) body() string {
 	return `Le {{formatDate .RemindDate}}, n'oubliez pas de souhaiter l'anniversaire de :
 {{range .Contacts}}
