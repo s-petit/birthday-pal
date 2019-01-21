@@ -24,13 +24,13 @@ func Test_remind_birthdays_successful(t *testing.T) {
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
+	remindParams := remind.Params{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
 
 	contactProvider.On("GetContacts").Return(con, nil)
-	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
+	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindParams: remindParams}
 	smtp.On("Send", emailContacts, recipients).Return(nil)
 
-	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
+	err := BirthdayPal{}.Exec(contactProvider, smtp, remindParams, recipients)
 
 	assert.NoError(t, err)
 	contactProvider.AssertExpectations(t)
@@ -45,7 +45,7 @@ func Test_remind_birthdays_fail_during_contact_retrieving(t *testing.T) {
 
 	contactProvider.On("GetContacts").Return([]contact.Contact{}, errors.New("woops"))
 
-	err := BirthdayPal{}.Exec(contactProvider, smtp, remind.Reminder{}, []string{})
+	err := BirthdayPal{}.Exec(contactProvider, smtp, remind.Params{}, []string{})
 
 	assert.Error(t, err)
 	contactProvider.AssertExpectations(t)
@@ -64,13 +64,13 @@ func Test_remind_birthdays_fail_during_mail_sending(t *testing.T) {
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
 	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	reminder := remind.Reminder{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
-	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindDate: testdata.LocalDate(2018, time.August, 31)}
+	remindParams := remind.Params{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
+	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindParams: remindParams}
 
 	contactProvider.On("GetContacts").Return(con, nil)
 	smtp.On("Send", emailContacts, recipients).Return(errors.New("wow"))
 
-	err := BirthdayPal{}.Exec(contactProvider, smtp, reminder, recipients)
+	err := BirthdayPal{}.Exec(contactProvider, smtp, remindParams, recipients)
 
 	assert.Error(t, err)
 	contactProvider.AssertExpectations(t)

@@ -2,10 +2,10 @@ package email
 
 import (
 	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/remind"
 	"log"
 	"net/smtp"
 	"strconv"
-	"time"
 )
 
 // Sender holds methods necessary for sending reminder emails.
@@ -15,8 +15,8 @@ type Sender interface {
 
 // Contacts holds every contacts related data necessary for the email content.
 type Contacts struct {
-	Contacts   []contact.Contact
-	RemindDate time.Time
+	Contacts     []contact.Contact
+	RemindParams remind.Params
 }
 
 // SMTPClient represents a SMTP client with its credentials

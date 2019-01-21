@@ -18,7 +18,7 @@ type fakeBirthdayPal struct {
 	mock.Mock
 }
 
-func (fbp fakeBirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Reminder, recipients []string) error {
+func (fbp fakeBirthdayPal) Exec(contactsProvider request.ContactsProvider, smtp email.Sender, reminder remind.Params, recipients []string) error {
 	args := fbp.Called(contactsProvider, smtp, reminder, recipients)
 	return args.Error(0)
 }
@@ -48,7 +48,7 @@ func Test_carddav(t *testing.T) {
 
 	expectedContactProvider := request.CardDavContactsProvider{AuthClient: auth.BasicAuth{Username: "login", Password: "password"}, URL: "http://carddav"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "FR"}
-	expectedReminder := remind.Reminder{CurrentDate: now, InNbDays: 3, Inclusive: true}
+	expectedReminder := remind.Params{CurrentDate: now, InNbDays: 3, Inclusive: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
@@ -81,7 +81,7 @@ func Test_google(t *testing.T) {
 
 	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2Authenticator{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
-	expectedReminder := remind.Reminder{CurrentDate: now, InNbDays: 3, Inclusive: true}
+	expectedReminder := remind.Params{CurrentDate: now, InNbDays: 3, Inclusive: true}
 	expectedRecipients := []string{"recipient@test"}
 
 	bpal.On("Exec", expectedContactProvider, expectedSMTP, expectedReminder, expectedRecipients).Return(nil)
