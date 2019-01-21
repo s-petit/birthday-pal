@@ -1,18 +1,20 @@
 package email
 
-import "time"
+import (
+	"time"
+)
 
 type frTemplate struct {
 }
 
 func (fr frTemplate) subject() string {
-	return "Anniversaires du {{formatDate .RemindDate}}"
+	return "Anniversaires du {{formatDate .RemindParams.RemindDay}}"
 }
 
 func (fr frTemplate) body() string {
-	return `Le {{formatDate .RemindDate}}, n'oubliez pas de souhaiter l'anniversaire de :
+	return `{{if .RemindParams.Inclusive}}Durant les 7 prochains jours{{else}}Le {{formatDate .RemindParams.RemindDay}}{{end}}, n'oubliez pas de souhaiter l'anniversaire de :
 {{range .Contacts}}
-- {{.Name}}{{if yearValid .BirthDate}} ({{.Age}} ans) {{- end}}
+- {{.Name}}{{if yearValid .BirthDate}} ({{.Age $.RemindParams.RemindDay}} ans{{if $.RemindParams.Inclusive}} le {{formatDate .BirthDate}}{{- end}}) {{- end}}
 {{end}}`
 }
 

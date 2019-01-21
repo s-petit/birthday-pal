@@ -124,10 +124,10 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				Language: *language,
 			}
 
-			reminder := remind.Reminder{
-				CurrentDate:       system.Now(),
-				NbDaysBeforeBDay:  *daysBefore,
-				EveryDayUntilBDay: *remindEveryDay,
+			reminder := remind.Params{
+				CurrentDate: system.Now(),
+				InNbDays:    *daysBefore,
+				Inclusive:   *remindEveryDay,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
@@ -166,7 +166,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			auth := auth.OAuth2Authenticator{
 				Scope:   people.ContactsReadonlyScope,
-				Profile: auth.OAuthProfile{system, *profile},
+				Profile: auth.OAuthProfile{System: system, Profile: *profile},
 			}
 
 			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
@@ -179,10 +179,10 @@ func Mowcli(birthdayPal app.App, system system.System) {
 				Language: *language,
 			}
 
-			reminder := remind.Reminder{
-				CurrentDate:       system.Now(),
-				NbDaysBeforeBDay:  *daysBefore,
-				EveryDayUntilBDay: *remindEveryDay,
+			reminder := remind.Params{
+				CurrentDate: system.Now(),
+				InNbDays:    *daysBefore,
+				Inclusive:   *remindEveryDay,
 			}
 
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
@@ -222,7 +222,7 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 				auth := auth.OAuth2Authenticator{
 					Scope:   people.ContactsReadonlyScope,
-					Profile: auth.OAuthProfile{system, *profile},
+					Profile: auth.OAuthProfile{System: system, Profile: *profile},
 				}
 
 				err := auth.Authenticate(*secret)

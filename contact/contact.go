@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//Contact represents a Vcard Contact.
+//Contact represents a Contact.
 type Contact struct {
 	Name      string
 	BirthDate time.Time
