@@ -63,7 +63,7 @@ func Test_should_parse_one_contact_from_vcard_to_contact(t *testing.T) {
 	card.BirthDay = "19830409"
 
 	c, err := parseContact(card)
-	assert.Equal(t, contact.Contact{"John Doe", testdata.BirthDate(1983, time.April, 9)}, c)
+	assert.Equal(t, contact.Contact{Name: "John Doe", BirthDate: testdata.BirthDate(1983, time.April, 9)}, c)
 	assert.NoError(t, err)
 }
 
@@ -142,8 +142,22 @@ END:VCARD
 
 	contacts, err := ParseContacts(vcard)
 	assert.Equal(t, 2, len(contacts))
-	assert.Equal(t, contact.Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
-	assert.Equal(t, contact.Contact{"John Bar", testdata.BirthDate(1986, time.November, 25)}, contacts[1])
+	assert.Equal(t, contact.Contact{Name: "Alexis Foo", BirthDate: testdata.BirthDate(1983, time.December, 28)}, contacts[0])
+	assert.Equal(t, contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.November, 25)}, contacts[1])
+	assert.NoError(t, err)
+}
+
+func Test_should_not_parse_contacts_without_birthday(t *testing.T) {
+
+	vcard := `
+BEGIN:VCARD
+VERSION:3.0
+FN:Alexis Foo
+END:VCARD
+`
+
+	contacts, err := ParseContacts(vcard)
+	assert.Equal(t, 0, len(contacts))
 	assert.NoError(t, err)
 }
 

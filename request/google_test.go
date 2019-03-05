@@ -88,7 +88,7 @@ func Test_GetContacts_should_return_google_contacts(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(contacts))
-	assert.Equal(t, contact.Contact{"Alexis Foo", testdata.BirthDate(1983, time.December, 28)}, contacts[0])
+	assert.Equal(t, contact.Contact{Name: "Alexis Foo", BirthDate: testdata.BirthDate(1983, time.December, 28)}, contacts[0])
 
 }
 

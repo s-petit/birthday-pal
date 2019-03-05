@@ -22,7 +22,7 @@ func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
 	for _, card := range vCards {
 		c, err := parseContact(card)
 
-		if err != nil {
+		if err != nil || c.BirthDate.IsZero() {
 			return nil, err
 		}
 
