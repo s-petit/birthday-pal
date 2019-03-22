@@ -22,11 +22,13 @@ func ParseContacts(cardDavPayload string) ([]contact.Contact, error) {
 	for _, card := range vCards {
 		c, err := parseContact(card)
 
-		if err != nil || c.BirthDate.IsZero() {
+		if err != nil {
 			return nil, err
 		}
 
-		contacts = append(contacts, c)
+		if !c.BirthDate.IsZero() {
+			contacts = append(contacts, c)
+		}
 	}
 	return contacts, nil
 }
