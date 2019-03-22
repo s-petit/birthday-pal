@@ -2,6 +2,7 @@ package remind
 
 import (
 	"github.com/s-petit/birthday-pal/contact"
+	"time"
 )
 
 //Reminder contains business logic between Params and Contacts
@@ -34,18 +35,23 @@ func (r Reminder) remindExactDay(c contact.Contact) bool {
 
 	remindParams := r.RemindParams
 	remindDay := remindParams.RemindDay()
-	birthDate := c.BirthDate
+	remindDayMinusAge := setYear(remindDay, remindDay.Year()-c.Age(remindDay))
 
-	return !remindParams.Inclusive && remindDay.Day() == birthDate.Day() && remindDay.Month() == birthDate.Month()
+	return !remindParams.Inclusive && remindDayMinusAge.Equal(c.BirthDate)
 }
 
 func (r Reminder) remindPeriod(c contact.Contact) bool {
 
 	remindParams := r.RemindParams
-	dateAtMidnight := remindParams.dateAtMidnight()
+	todayAtMidnight := remindParams.todayAtMidnight()
 	remindDay := remindParams.RemindDay()
-	birthDate := c.BirthDate
 
-	return remindParams.Inclusive && (birthDate.Day() <= remindDay.Day() && birthDate.Month() <= remindDay.Month()) &&
-		(birthDate.Day() >= dateAtMidnight.Day() && birthDate.Month() >= dateAtMidnight.Month())
+	todayAtMidnightMinusAge := setYear(todayAtMidnight, todayAtMidnight.Year()-c.Age(remindDay))
+	remindDayMinusAge := setYear(remindDay, remindDay.Year()-c.Age(remindDay))
+
+	return remindParams.Inclusive && (todayAtMidnightMinusAge.Before(c.BirthDate) || todayAtMidnightMinusAge.Equal(c.BirthDate)) && (remindDayMinusAge.After(c.BirthDate) || remindDayMinusAge.Equal(c.BirthDate))
+}
+
+func setYear(date time.Time, year int) time.Time {
+	return time.Date(year, date.Month(), date.Day(), date.Hour(), date.Minute(), date.Second(), date.Nanosecond(), date.Location())
 }

@@ -23,7 +23,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 
 	birthday := testdata.BirthDate(1980, time.August, 22)
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,
@@ -51,7 +51,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	janeBirthday := testdata.BirthDate(1991, time.August, 22)
 	jillBirthday := testdata.BirthDate(2012, time.August, 22)
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
@@ -84,7 +84,7 @@ Durant les 7 prochains jours, n'oubliez pas de souhaiter l'anniversaire de :
 	jillBirthday := testdata.BirthDate(2012, time.August, 15)
 
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1, Inclusive: true}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1, Inclusive: true}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
@@ -117,7 +117,7 @@ During the next 7 days, don't forget to wish birthdays of :
 	jillBirthday := testdata.BirthDate(2012, time.August, 15)
 
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1, Inclusive: true}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1, Inclusive: true}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
@@ -143,7 +143,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 
 	invalidBirthday := testdata.BirthDate(0, time.August, 22)
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", invalidBirthday}}, RemindParams: remindParams,
@@ -165,7 +165,7 @@ The 08/22, don't forget to wish birthdays of :
 
 	birthday := time.Date(1980, time.August, 22, 0, 0, 0, 0, time.UTC)
 	currentDate := testdata.LocalDate(2014, time.August, 21)
-	remindParams := remind.Params{CurrentDate: currentDate, InNbDays: 1}
+	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,

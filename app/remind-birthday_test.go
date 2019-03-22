@@ -23,11 +23,10 @@ func Test_remind_birthdays_successful(t *testing.T) {
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
-	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	remindParams := remind.Params{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
+	remindParams := remind.Params{Today: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
 
 	contactProvider.On("GetContacts").Return(con, nil)
-	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindParams: remindParams}
+	emailContacts := email.Contacts{Contacts: []contact.Contact{john}, RemindParams: remindParams}
 	smtp.On("Send", emailContacts, recipients).Return(nil)
 
 	err := BirthdayPal{}.Exec(contactProvider, smtp, remindParams, recipients)
@@ -63,9 +62,8 @@ func Test_remind_birthdays_fail_during_mail_sending(t *testing.T) {
 
 	recipients := []string{"spe@mail.com", "wsh@prov.fr"}
 
-	contactToRemind := contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.August, 31)}
-	remindParams := remind.Params{CurrentDate: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
-	emailContacts := email.Contacts{Contacts: []contact.Contact{contactToRemind}, RemindParams: remindParams}
+	remindParams := remind.Params{Today: testdata.LocalDate(2018, time.August, 30), InNbDays: 1}
+	emailContacts := email.Contacts{Contacts: []contact.Contact{john}, RemindParams: remindParams}
 
 	contactProvider.On("GetContacts").Return(con, nil)
 	smtp.On("Send", emailContacts, recipients).Return(errors.New("wow"))
