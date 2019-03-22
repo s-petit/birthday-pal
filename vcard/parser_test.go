@@ -154,10 +154,16 @@ BEGIN:VCARD
 VERSION:3.0
 FN:Alexis Foo
 END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:John Bar
+BDAY:19861125
+END:VCARD
 `
 
 	contacts, err := ParseContacts(vcard)
-	assert.Equal(t, 0, len(contacts))
+	assert.Equal(t, 1, len(contacts))
+	assert.Equal(t, contact.Contact{Name: "John Bar", BirthDate: testdata.BirthDate(1986, time.November, 25)}, contacts[0])
 	assert.NoError(t, err)
 }
 
