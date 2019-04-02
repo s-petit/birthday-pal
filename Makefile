@@ -44,7 +44,12 @@ setup-prod:
 	go get github.com/s-petit/birthday-pal
 
 build-linux:
-	GOARCH=amd64 GOOS=linux go build
+	GOARCH=amd64 GOOS=linux go build -o bin/birthday-pal-linux-amd64
 
 build-mac:
-	GOARCH=amd64 GOOS=darwin go build
+	GOARCH=amd64 GOOS=darwin go build -o bin/birthday-pal-mac-amd64
+
+build-windows:
+	GOARCH=amd64 GOOS=windows go build -o bin/birthday-pal-windows-amd64.exe
+
+release: build-linux build-mac build-windows
