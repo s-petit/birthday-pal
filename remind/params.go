@@ -16,9 +16,9 @@ type Params struct {
 
 //RemindDay returns the day to remind
 func (r Params) RemindDay() time.Time {
-	return r.todayAtMidnight().AddDate(0, 0, r.InNbDays)
+	return r.todayAtMidnightUTC().AddDate(0, 0, r.InNbDays)
 }
 
-func (r Params) todayAtMidnight() time.Time {
-	return time.Date(r.Today.Year(), r.Today.Month(), r.Today.Day(), 0, 0, 0, 0, time.Local)
+func (r Params) todayAtMidnightUTC() time.Time {
+	return time.Date(r.Today.Year(), r.Today.Month(), r.Today.Day(), 0, 0, 0, 0, time.UTC)
 }

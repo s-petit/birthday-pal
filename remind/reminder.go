@@ -43,7 +43,7 @@ func (r Reminder) remindExactDay(c contact.Contact) bool {
 func (r Reminder) remindPeriod(c contact.Contact) bool {
 
 	remindParams := r.RemindParams
-	todayAtMidnight := remindParams.todayAtMidnight()
+	todayAtMidnight := remindParams.todayAtMidnightUTC()
 	remindDay := remindParams.RemindDay()
 
 	todayAtMidnightMinusAge := setYear(todayAtMidnight, todayAtMidnight.Year()-c.Age(remindDay))

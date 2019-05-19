@@ -19,12 +19,12 @@ var aug21 = testdata.LocalDate(2018, time.August, 21)
 var aug20 = testdata.LocalDate(2018, time.August, 20)
 var aug19 = testdata.LocalDate(2018, time.August, 19)
 
-var john = contact.Contact{Name: "John", BirthDate: testdata.LocalDate(1980, time.August, 20)}
-var sara = contact.Contact{Name: "Sara", BirthDate: testdata.LocalDate(1994, time.August, 21)}
-var rob = contact.Contact{Name: "Rob", BirthDate: testdata.LocalDate(1994, time.May, 31)}
-var jane = contact.Contact{Name: "Jane", BirthDate: testdata.LocalDate(1994, time.June, 1)}
-var jill = contact.Contact{Name: "Jill", BirthDate: testdata.LocalDate(1994, time.December, 31)}
-var nick = contact.Contact{Name: "Nick", BirthDate: testdata.LocalDate(1994, time.January, 1)}
+var john = contact.Contact{Name: "John", BirthDate: testdata.BirthDate(1980, time.August, 20)}
+var sara = contact.Contact{Name: "Sara", BirthDate: testdata.BirthDate(1994, time.August, 21)}
+var rob = contact.Contact{Name: "Rob", BirthDate: testdata.BirthDate(1994, time.May, 31)}
+var jane = contact.Contact{Name: "Jane", BirthDate: testdata.BirthDate(1994, time.June, 1)}
+var jill = contact.Contact{Name: "Jill", BirthDate: testdata.BirthDate(1994, time.December, 31)}
+var nick = contact.Contact{Name: "Nick", BirthDate: testdata.BirthDate(1994, time.January, 1)}
 
 var contacts = []contact.Contact{john, sara}
 
