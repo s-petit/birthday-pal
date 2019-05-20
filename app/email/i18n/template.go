@@ -2,13 +2,21 @@ package i18n
 
 import (
 	"bytes"
-	"github.com/s-petit/birthday-pal/app/email"
+	"github.com/s-petit/birthday-pal/app/contact"
 	"github.com/s-petit/birthday-pal/app/email/i18n/en"
 	"github.com/s-petit/birthday-pal/app/email/i18n/fr"
+	"github.com/s-petit/birthday-pal/app/remind"
 	"html/template"
 	"strings"
 	"time"
 )
+
+
+// Contacts holds every contacts related data necessary for the email content.
+type Contacts struct {
+	Contacts     []contact.Contact
+	RemindParams remind.Criteria
+}
 
 type Template interface {
 	subject() string
@@ -32,7 +40,7 @@ func yearValid(date time.Time) bool {
 	return date.Year() > 0
 }
 
-func ToMail(emailContacts email.Contacts, language string) ([]byte, error) {
+func ToMail(emailContacts Contacts, language string) ([]byte, error) {
 
 	var i18nTemplate Template = en.Template{}
 	if strings.ToUpper(language) == "FR" {
@@ -42,7 +50,7 @@ func ToMail(emailContacts email.Contacts, language string) ([]byte, error) {
 	return resolveMail(emailContacts, i18nTemplate)
 }
 
-func resolveMail(emailContacts email.Contacts, i18nTemplate Template) ([]byte, error) {
+func resolveMail(emailContacts Contacts, i18nTemplate Template) ([]byte, error) {
 	subjFuncs := template.FuncMap{
 		"formatDate": Template.formatDate,
 	}

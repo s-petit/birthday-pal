@@ -1,9 +1,7 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/app/contact"
 	"github.com/s-petit/birthday-pal/app/email/i18n"
-	"github.com/s-petit/birthday-pal/app/remind"
 	"log"
 	"net/smtp"
 	"strconv"
@@ -11,13 +9,7 @@ import (
 
 // Sender holds methods necessary for sending reminder emails.
 type Sender interface {
-	Send(emailContacts Contacts, recipients []string) error
-}
-
-// Contacts holds every contacts related data necessary for the email content.
-type Contacts struct {
-	Contacts     []contact.Contact
-	RemindParams remind.Criteria
+	Send(emailContacts i18n.Contacts, recipients []string) error
 }
 
 // SMTPClient represents a SMTP client with its credentials
@@ -39,7 +31,7 @@ func (ss SMTPClient) hostPort() string {
 }
 
 //Send sends an email to recipients about the related contact incoming birthday.
-func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
+func (ss SMTPClient) Send(emailContacts i18n.Contacts, recipients []string) error {
 
 	if len(emailContacts.Contacts) < 1 {
 		return nil
