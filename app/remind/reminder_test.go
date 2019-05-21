@@ -2,7 +2,7 @@ package remind
 
 import (
 	"fmt"
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/app/contact"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"

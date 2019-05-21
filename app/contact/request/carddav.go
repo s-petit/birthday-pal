@@ -2,9 +2,9 @@ package request
 
 import (
 	"errors"
-	"github.com/s-petit/birthday-pal/auth"
-	"github.com/s-petit/birthday-pal/contact"
-	"github.com/s-petit/birthday-pal/vcard"
+	"github.com/s-petit/birthday-pal/app/contact"
+	"github.com/s-petit/birthday-pal/app/contact/auth"
+	"github.com/s-petit/birthday-pal/app/contact/request/vcard"
 	"io/ioutil"
 	"log"
 	"strconv"

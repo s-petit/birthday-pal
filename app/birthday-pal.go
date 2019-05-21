@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/s-petit/birthday-pal/email"
-	"github.com/s-petit/birthday-pal/remind"
-	"github.com/s-petit/birthday-pal/request"
+	"github.com/s-petit/birthday-pal/app/contact/request"
+	"github.com/s-petit/birthday-pal/app/email"
+	"github.com/s-petit/birthday-pal/app/remind"
 	"log"
 )
 

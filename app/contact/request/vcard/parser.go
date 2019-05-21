@@ -3,7 +3,7 @@ package vcard
 import (
 	"errors"
 	"github.com/mapaiva/vcard-go"
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/app/contact"
 	"io"
 	"regexp"
 	"strings"
