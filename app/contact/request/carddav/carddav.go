@@ -10,14 +10,14 @@ import (
 	"strconv"
 )
 
-//CardDavContactsProvider represents a provider which return contacts via CardDav protocol
-type CardDavContactsProvider struct {
+//ContactsProvider represents a provider which return contacts via CardDav protocol
+type ContactsProvider struct {
 	AuthClient auth.AuthenticationClient
 	URL        string
 }
 
 //GetContacts returns contacts via a CardDav HTTP API call
-func (carddav CardDavContactsProvider) GetContacts() ([]contact.Contact, error) {
+func (carddav ContactsProvider) GetContacts() ([]contact.Contact, error) {
 	vcards, err := carddav.call()
 	if err != nil {
 		return []contact.Contact{}, err
@@ -25,7 +25,7 @@ func (carddav CardDavContactsProvider) GetContacts() ([]contact.Contact, error) 
 	return vcard.ParseContacts(vcards)
 }
 
-func (carddav CardDavContactsProvider) call() (string, error) {
+func (carddav ContactsProvider) call() (string, error) {
 	client, err := carddav.AuthClient.Client()
 	if err != nil {
 		return "", err

@@ -25,7 +25,7 @@ func Test_should_return_oauth_registered_profiles_inside_cache_path_as_directori
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	profiles, err := OAuthProfile{System: sys}.ListProfiles()
+	profiles, err := Profile{System: sys}.ListProfiles()
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"bob", "john"}, profiles)
@@ -39,7 +39,7 @@ func Test_should_not_return_oauth_registered_profiles_when_cache_path_does_not_e
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	profiles, err := OAuthProfile{System: sys}.ListProfiles()
+	profiles, err := Profile{System: sys}.ListProfiles()
 
 	assert.Error(t, err)
 	assert.Empty(t, profiles)
@@ -53,7 +53,7 @@ func Test_not_should_get_token_from_cache_when_token_not_found(t *testing.T) {
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuthProfile{Profile: profileName, System: sys}
+	auth := Profile{Profile: profileName, System: sys}
 
 	token, err := auth.loadProfileTokenFromCache()
 
@@ -74,7 +74,7 @@ func Test_should_not_get_token_from_cache_when_json_not_deserilizable(t *testing
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuthProfile{Profile: profileName, System: sys}
+	auth := Profile{Profile: profileName, System: sys}
 
 	token, err := auth.loadProfileTokenFromCache()
 
@@ -91,7 +91,7 @@ func Test_should_save_token_in_cache_then_load_it(t *testing.T) {
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuthProfile{Profile: "authProfile", System: sys}
+	auth := Profile{Profile: "authProfile", System: sys}
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
@@ -112,7 +112,7 @@ func Test_should_not_save_token_in_not_authorized_path(t *testing.T) {
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return("/root")
 
-	auth := OAuthProfile{Profile: "authProfile", System: sys}
+	auth := Profile{Profile: "authProfile", System: sys}
 
 	tok := &oauth2.Token{AccessToken: "s3cr3t"}
 
@@ -134,7 +134,7 @@ func Test_config_should_throw_error_when_client_secret_file_is_not_valid_json(t 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	config, err := profile.loadProfileConfigFromCache("")
 
@@ -149,7 +149,7 @@ func Test_config_should_throw_error_when_client_secret_file_does_not_exist(t *te
 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
-	profile := OAuthProfile{Profile: "authProfile", System: sys}
+	profile := Profile{Profile: "authProfile", System: sys}
 
 	config, err := profile.loadProfileConfigFromCache("")
 
@@ -169,7 +169,7 @@ func Test_should_save_config_from_client_secret_file_then_load_it(t *testing.T) 
 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	profile.saveProfileConfigInCache(configPath)
 
@@ -186,7 +186,7 @@ func Test_should_not_save_config_when_config_path_not_exists(t *testing.T) {
 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return("any")
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	profile.saveProfileConfigInCache("anypath")
 

@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-//GoogleContactsProvider represents a provider which return contacts via Google People API
-type GoogleContactsProvider struct {
+//ContactsProvider represents a provider which return contacts via Google People API
+type ContactsProvider struct {
 	AuthClient auth.AuthenticationClient
 	URL        string
 }
 
 //GetContacts returns contacts via a Google People API call
-func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
+func (gp ContactsProvider) GetContacts() ([]contact.Contact, error) {
 	clt, err := gp.AuthClient.Client()
 	if err != nil {
 		return []contact.Contact{}, err

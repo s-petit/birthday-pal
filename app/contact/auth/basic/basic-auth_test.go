@@ -10,7 +10,7 @@ import (
 
 func Test_should_return_basicauth_authenticated_client(t *testing.T) {
 
-	basic := BasicAuth{Username: "user", Password: "pass"}
+	basic := Auth{Username: "user", Password: "pass"}
 
 	client, err := basic.Client()
 	assert.NoError(t, err)

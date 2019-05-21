@@ -10,14 +10,14 @@ import (
 const tokenFile = "token.json"
 const configFile = "config.json"
 
-//OAuth2Authenticator is used to perform OAuth2Authenticator authentication
-type OAuth2Authenticator struct {
+//Authenticator is used to perform Authenticator authentication
+type Authenticator struct {
 	Scope   string
-	Profile OAuthProfile
+	Profile Profile
 }
 
-//Client returns a HTTP client authenticated with OAuth2Authenticator
-func (oa OAuth2Authenticator) Client() (*http.Client, error) {
+//Client returns a HTTP client authenticated with Authenticator
+func (oa Authenticator) Client() (*http.Client, error) {
 
 	// config returns the configuration from client_secret.json
 	config, err := oa.Profile.loadProfileConfigFromCache(oa.Scope)
@@ -39,9 +39,9 @@ func (oa OAuth2Authenticator) Client() (*http.Client, error) {
 }
 
 //Authenticate parses and save the config file provided by user
-//then performs a an OAuth2Authenticator authentication
+//then performs a an Authenticator authentication
 //then saves token in cache
-func (oa OAuth2Authenticator) Authenticate(configFilePath string) error {
+func (oa Authenticator) Authenticate(configFilePath string) error {
 
 	oa.Profile.saveProfileConfigInCache(configFilePath)
 

@@ -5,14 +5,14 @@ import (
 	"net/url"
 )
 
-//BasicAuth is used to perform basic authentication
-type BasicAuth struct {
+//Auth is used to perform basic authentication
+type Auth struct {
 	Username string
 	Password string
 }
 
 //Client returns a HTTP client authenticated with basic Auth
-func (ba BasicAuth) Client() (*http.Client, error) {
+func (ba Auth) Client() (*http.Client, error) {
 
 	basicAuth := func(req *http.Request) (*url.URL, error) {
 		req.SetBasicAuth(ba.Username, ba.Password)

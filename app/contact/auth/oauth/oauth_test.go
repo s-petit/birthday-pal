@@ -24,7 +24,7 @@ func Test_should_return_oauth2_authenticated_client(t *testing.T) {
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
+	authenticator := Authenticator{Profile: Profile{System: sys}}
 
 	clt, err := authenticator.Client()
 
@@ -40,7 +40,7 @@ func Test_should_not_return_oauth2_client_when_oauth_config_not_found(t *testing
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
+	authenticator := Authenticator{Profile: Profile{System: sys}}
 
 	clt, err := authenticator.Client()
 
@@ -53,7 +53,7 @@ func Test_should_not_return_oauth2_client_when_authentication_token_not_found(t 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return("")
 
-	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
+	authenticator := Authenticator{Profile: Profile{System: sys}}
 
 	clt, err := authenticator.Client()
 
@@ -74,7 +74,7 @@ func Test_should_not_return_oauth2_client_when_authentication_token_malformed(t 
 	sys := new(testdata.FakeSystem)
 	sys.On("HomeDir").Return(tempDir)
 
-	authenticator := OAuth2Authenticator{Profile: OAuthProfile{System: sys}}
+	authenticator := Authenticator{Profile: Profile{System: sys}}
 
 	clt, err := authenticator.Client()
 
@@ -92,14 +92,14 @@ func Test_should_authenticate_with_config(t *testing.T) {
 	secretPath := testdata.TempFileWithName(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName), "config.json")
 
 	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	auth := Authenticator{Profile: profile}
 
 	err := auth.Authenticate(secretPath)
 
@@ -116,13 +116,13 @@ func Test_should_not_authenticate_when_token_not_exchanged(t *testing.T) {
 	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 
 	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("ExchangeToken", testdata.Oauth2Config("c0nf1d3ential"), "yolo").Return(&oauth2.Token{}, errors.New("oops"))
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	auth := Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -138,13 +138,13 @@ func Test_should_not_authenticate_when_value_prompted_is_malformed(t *testing.T)
 	profileName := "authProfile"
 	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	sys.On("Prompt").Return("", errors.New("oops"))
 	sys.On("OpenBrowser", mock.Anything).Return(nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	auth := Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -161,14 +161,14 @@ func Test_should_authenticate_even_when_browser_not_openable(t *testing.T) {
 	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 	sys := new(testdata.FakeSystem)
 
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	sys.On("Prompt").Return("yolo", nil)
 	sys.On("OpenBrowser", mock.Anything).Return(errors.New("erf"))
 	sys.On("ExchangeToken", &oauth2.Config{ClientID: "c0nf1d3ential", ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}, "yolo").Return(&oauth2.Token{}, nil)
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	auth := Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 
@@ -186,11 +186,11 @@ func Test_should_not_authenticate_when_config_not_valid(t *testing.T) {
 	tempFile := testdata.TempFile(jsonConfig, filepath.Join(tempDir, CacheDirectory, profileName))
 
 	sys := new(testdata.FakeSystem)
-	profile := OAuthProfile{Profile: profileName, System: sys}
+	profile := Profile{Profile: profileName, System: sys}
 
 	sys.On("HomeDir").Return(tempDir)
 
-	auth := OAuth2Authenticator{Profile: profile}
+	auth := Authenticator{Profile: profile}
 
 	err := auth.Authenticate(tempFile)
 

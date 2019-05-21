@@ -1,27 +1,28 @@
-package fr
+package email
 
 import (
 	"time"
 )
 
-type Template struct {
+//French represents an email in french
+type French struct {
 }
 
-func (t Template) subject() string {
+func (fr French) subject() string {
 	return "Anniversaires du {{formatDate .RemindParams.RemindDay}}"
 }
 
-func (t Template) body() string {
+func (fr French) body() string {
 	return `{{if .RemindParams.Inclusive}}Durant les 7 prochains jours{{else}}Le {{formatDate .RemindParams.RemindDay}}{{end}}, n'oubliez pas de souhaiter l'anniversaire de :
 {{range .Contacts}}
 - {{.Name}}{{if yearValid .BirthDate}} ({{.Age $.RemindParams.RemindDay}} ans{{if $.RemindParams.Inclusive}} le {{formatDate .BirthDate}}{{- end}}) {{- end}}
 {{end}}`
 }
 
-func (t Template) dateLayout() string {
+func (fr French) dateLayout() string {
 	return "02/01"
 }
 
-func (t Template) formatDate(date time.Time) string {
-	return date.Format(t.dateLayout())
+func (fr French) formatDate(date time.Time) string {
+	return date.Format(fr.dateLayout())
 }

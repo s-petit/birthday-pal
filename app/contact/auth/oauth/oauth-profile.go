@@ -14,14 +14,14 @@ import (
 //CacheDirectory is the location of bpal's cached files
 const CacheDirectory = ".birthday-pal"
 
-//OAuthProfile holds logic of cache storage of oauth authentication profiles
-type OAuthProfile struct {
+//Profile holds logic of cache storage of oauth authentication profiles
+type Profile struct {
 	System  system.System
 	Profile string
 }
 
 //ListProfiles lists the registered profiles by looking inside cache directory
-func (oap OAuthProfile) ListProfiles() ([]string, error) {
+func (oap Profile) ListProfiles() ([]string, error) {
 	cachePath := oap.cachePath()
 	files, err := ioutil.ReadDir(cachePath)
 	if err != nil {
@@ -39,13 +39,13 @@ func (oap OAuthProfile) ListProfiles() ([]string, error) {
 }
 
 //cachePath is the location where all profiles will be stored in order to remember authentication.
-func (oap OAuthProfile) cachePath() string {
+func (oap Profile) cachePath() string {
 	cacheDir := filepath.Join(oap.System.HomeDir(), CacheDirectory)
 	return cacheDir
 }
 
 //profileCachePath is the cache location for a given profile.
-func (oap OAuthProfile) profileCachePath() string {
+func (oap Profile) profileCachePath() string {
 	// Get the hidden credentials directory, making sure it's created
 	cacheDir := filepath.Join(oap.cachePath(), oap.Profile)
 	os.MkdirAll(cacheDir, 0700)
@@ -53,7 +53,7 @@ func (oap OAuthProfile) profileCachePath() string {
 }
 
 // save the token to the specified path.
-func (oap OAuthProfile) saveProfileTokenInCache(token *oauth2.Token) error {
+func (oap Profile) saveProfileTokenInCache(token *oauth2.Token) error {
 
 	tokenPath := filepath.Join(oap.profileCachePath(), tokenFile)
 
@@ -73,7 +73,7 @@ func (oap OAuthProfile) saveProfileTokenInCache(token *oauth2.Token) error {
 }
 
 // save the token to the specified path.
-func (oap OAuthProfile) saveProfileConfigInCache(secretPath string) error {
+func (oap Profile) saveProfileConfigInCache(secretPath string) error {
 
 	data, err := ioutil.ReadFile(secretPath)
 	if err != nil {
@@ -87,7 +87,7 @@ func (oap OAuthProfile) saveProfileConfigInCache(secretPath string) error {
 }
 
 // load the oauth2 token from the specified path
-func (oap OAuthProfile) loadProfileTokenFromCache() (*oauth2.Token, error) {
+func (oap Profile) loadProfileTokenFromCache() (*oauth2.Token, error) {
 
 	cachePath := oap.profileCachePath()
 	tokenPath := filepath.Join(cachePath, tokenFile)
@@ -110,7 +110,7 @@ func (oap OAuthProfile) loadProfileTokenFromCache() (*oauth2.Token, error) {
 
 // config loads the oauth config file from the cache. It is used both to
 // create the client for requests as well as to perform authentication.
-func (oap OAuthProfile) loadProfileConfigFromCache(scope string) (*oauth2.Config, error) {
+func (oap Profile) loadProfileConfigFromCache(scope string) (*oauth2.Config, error) {
 
 	configFile := filepath.Join(oap.profileCachePath(), configFile)
 

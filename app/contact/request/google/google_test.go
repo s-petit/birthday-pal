@@ -3,7 +3,7 @@ package google
 import (
 	"fmt"
 	"github.com/s-petit/birthday-pal/app/contact"
-	"github.com/s-petit/birthday-pal/app/contact/auth"
+	"github.com/s-petit/birthday-pal/app/contact/auth/basic"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -79,8 +79,8 @@ func Test_GetContacts_should_return_google_contacts(t *testing.T) {
 	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/contact", srv.URL),
 	}
 
@@ -97,8 +97,8 @@ func Test_GetContacts_should_not_return_contact_when_payload_is_not_from_people_
 	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/other-api", srv.URL),
 	}
 
@@ -113,8 +113,8 @@ func Test_GetContacts_should_return_error_when_payload_is_not_valid_json(t *test
 	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/not-json", srv.URL),
 	}
 
@@ -129,8 +129,8 @@ func Test_GetContacts_should_ignore_contacts_malformed(t *testing.T) {
 	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/malformed-contact", srv.URL),
 	}
 
@@ -142,11 +142,11 @@ func Test_GetContacts_should_ignore_contacts_malformed(t *testing.T) {
 
 func Test_GetContacts_should_return_error_when_url_goes_to_404(t *testing.T) {
 
-	srv := httptest.NewServer(basicAuthCarddavServer())
+	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/unknown", srv.URL),
 	}
 
@@ -158,11 +158,11 @@ func Test_GetContacts_should_return_error_when_url_goes_to_404(t *testing.T) {
 
 func Test_GetContacts_should_return_error_when_url_is_malformed(t *testing.T) {
 
-	srv := httptest.NewServer(basicAuthCarddavServer())
+	srv := httptest.NewServer(googleHandler())
 	defer srv.Close()
 
-	google := GoogleContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	google := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        "http://://",
 	}
 

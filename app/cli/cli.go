@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/jawher/mow.cli"
 	"github.com/s-petit/birthday-pal/app"
-	"github.com/s-petit/birthday-pal/app/contact/auth"
-	"github.com/s-petit/birthday-pal/app/contact/request"
+	"github.com/s-petit/birthday-pal/app/contact/auth/basic"
+	"github.com/s-petit/birthday-pal/app/contact/auth/oauth"
+	"github.com/s-petit/birthday-pal/app/contact/request/carddav"
+	"github.com/s-petit/birthday-pal/app/contact/request/google"
 	"github.com/s-petit/birthday-pal/app/email"
 	"github.com/s-petit/birthday-pal/app/remind"
 	"github.com/s-petit/birthday-pal/system"
@@ -109,12 +111,12 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 		// Run this function when the command is invoked
 		cmd.Action = func() {
-			auth := auth.BasicAuth{
+			auth := basic.Auth{
 				Username: *cardDavUsername,
 				Password: *cardDavPassword,
 			}
 
-			contactsProvider := request.CardDavContactsProvider{AuthClient: auth, URL: *cardDavURL}
+			contactsProvider := carddav.ContactsProvider{AuthClient: auth, URL: *cardDavURL}
 
 			smtp := email.SMTPClient{
 				Host:     *SMTPHost,
@@ -164,12 +166,12 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 		cmd.Action = func() {
 
-			auth := auth.OAuth2Authenticator{
+			auth := oauth.Authenticator{
 				Scope:   people.ContactsReadonlyScope,
-				Profile: auth.OAuthProfile{System: system, Profile: *profile},
+				Profile: oauth.Profile{System: system, Profile: *profile},
 			}
 
-			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
+			contactsProvider := google.ContactsProvider{AuthClient: auth, URL: *googleURL}
 
 			smtp := email.SMTPClient{
 				Host:     *SMTPHost,
@@ -191,18 +193,18 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 	})
 
-	bpal.Command("oauth", "identify birthday-pal to your oauth api provider", func(oauth *cli.Cmd) {
+	bpal.Command("oauth", "identify birthday-pal to your oauth api provider", func(cmd *cli.Cmd) {
 
-		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
+		cmd.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
 
 			list.Action = func() {
-				profiles, err := auth.OAuthProfile{System: system}.ListProfiles()
+				profiles, err := oauth.Profile{System: system}.ListProfiles()
 				crashIfError(err)
 				fmt.Println(profiles)
 			}
 		})
 
-		oauth.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {
+		cmd.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {
 
 			perform.Spec = "PROFILE SECRET"
 
@@ -220,9 +222,9 @@ func Mowcli(birthdayPal app.App, system system.System) {
 
 			perform.Action = func() {
 
-				auth := auth.OAuth2Authenticator{
+				auth := oauth.Authenticator{
 					Scope:   people.ContactsReadonlyScope,
-					Profile: auth.OAuthProfile{System: system, Profile: *profile},
+					Profile: oauth.Profile{System: system, Profile: *profile},
 				}
 
 				err := auth.Authenticate(*secret)

@@ -1,8 +1,11 @@
 package cli
 
 import (
-	"github.com/s-petit/birthday-pal/app/contact/auth"
+	"github.com/s-petit/birthday-pal/app/contact/auth/basic"
+	"github.com/s-petit/birthday-pal/app/contact/auth/oauth"
 	"github.com/s-petit/birthday-pal/app/contact/request"
+	"github.com/s-petit/birthday-pal/app/contact/request/carddav"
+	"github.com/s-petit/birthday-pal/app/contact/request/google"
 	"github.com/s-petit/birthday-pal/app/email"
 	"github.com/s-petit/birthday-pal/app/remind"
 	"github.com/s-petit/birthday-pal/testdata"
@@ -46,7 +49,7 @@ func Test_carddav(t *testing.T) {
 	system := new(testdata.FakeSystem)
 	system.On("Now").Return(now)
 
-	expectedContactProvider := request.CardDavContactsProvider{AuthClient: auth.BasicAuth{Username: "login", Password: "password"}, URL: "http://carddav"}
+	expectedContactProvider := carddav.ContactsProvider{AuthClient: basic.Auth{Username: "login", Password: "password"}, URL: "http://carddav"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "FR"}
 	expectedReminder := remind.Criteria{Today: now, InNbDays: 3, Inclusive: true}
 	expectedRecipients := []string{"recipient@test"}
@@ -79,7 +82,7 @@ func Test_google(t *testing.T) {
 	system := new(testdata.FakeSystem)
 	system.On("Now").Return(now)
 
-	expectedContactProvider := request.GoogleContactsProvider{AuthClient: auth.OAuth2Authenticator{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: auth.OAuthProfile{System: system, Profile: "myProfile"}}, URL: "http://google"}
+	expectedContactProvider := google.ContactsProvider{AuthClient: oauth.Authenticator{Scope: "https://www.googleapis.com/auth/contacts.readonly", Profile: oauth.Profile{System: system, Profile: "myProfile"}}, URL: "http://google"}
 	expectedSMTP := email.SMTPClient{Host: "localhost", Port: 2525, Username: "user@test", Password: "smtp-pass", Language: "EN"}
 	expectedReminder := remind.Criteria{Today: now, InNbDays: 3, Inclusive: true}
 	expectedRecipients := []string{"recipient@test"}
@@ -128,7 +131,7 @@ func Test_oauth_list(t *testing.T) {
 
 	tempDir := testdata.TempDir()
 	defer os.RemoveAll(tempDir)
-	testdata.TempFileWithName("anyContent", filepath.Join(tempDir, auth.CacheDirectory, "john"), "token.json")
+	testdata.TempFileWithName("anyContent", filepath.Join(tempDir, oauth.CacheDirectory, "john"), "token.json")
 
 	os.Args = []string{"",
 		"oauth",

@@ -1,8 +1,7 @@
-package i18n
+package email
 
 import (
 	"github.com/s-petit/birthday-pal/app/contact"
-	"github.com/s-petit/birthday-pal/app/email"
 	"github.com/s-petit/birthday-pal/app/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +25,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,
 	}, "fr")
 	assert.NoError(t, err)
@@ -54,7 +53,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
@@ -87,7 +86,7 @@ Durant les 7 prochains jours, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1, Inclusive: true}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
@@ -120,7 +119,7 @@ During the next 7 days, don't forget to wish birthdays of :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1, Inclusive: true}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
@@ -146,7 +145,7 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", invalidBirthday}}, RemindParams: remindParams,
 	}, "fr")
 	assert.NoError(t, err)
@@ -168,7 +167,7 @@ The 08/22, don't forget to wish birthdays of :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Criteria{Today: currentDate, InNbDays: 1}
 
-	bytes, err := ToMail(email.Contacts{
+	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,
 	}, "EN")
 	assert.NoError(t, err)
@@ -180,7 +179,7 @@ func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 	tmpl := new(fakeTemplate)
 	tmpl.On("subject").Return("{{{{{")
 
-	bytes, err := resolveMail(email.Contacts{}, tmpl)
+	bytes, err := resolveMail(Contacts{}, tmpl)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)
@@ -192,7 +191,7 @@ func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 	tmpl.On("subject").Return("subject")
 	tmpl.On("body").Return("{{{{{")
 
-	bytes, err := resolveMail(email.Contacts{}, tmpl)
+	bytes, err := resolveMail(Contacts{}, tmpl)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)

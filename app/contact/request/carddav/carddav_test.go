@@ -3,7 +3,7 @@ package carddav
 import (
 	"fmt"
 	"github.com/s-petit/birthday-pal/app/contact"
-	"github.com/s-petit/birthday-pal/app/contact/auth"
+	"github.com/s-petit/birthday-pal/app/contact/auth/basic"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -45,8 +45,8 @@ func Test_GetContacts_should_return_carddav_contacts(t *testing.T) {
 	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
-	carddav := CardDavContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	carddav := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/contact", srv.URL),
 	}
 
@@ -63,8 +63,8 @@ func Test_call_should_return_carddav_payload(t *testing.T) {
 	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
-	carddav := CardDavContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	carddav := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/contact", srv.URL),
 	}
 
@@ -79,8 +79,8 @@ func Test_call_carddav_should_return_error_when_url_goes_to_404(t *testing.T) {
 	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
-	r := CardDavContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	r := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        fmt.Sprintf("%s/unknown", srv.URL),
 	}
 
@@ -95,8 +95,8 @@ func Test_call_carddav_should_return_error_when_url_is_malformed(t *testing.T) {
 	srv := httptest.NewServer(basicAuthCarddavServer())
 	defer srv.Close()
 
-	r := CardDavContactsProvider{
-		AuthClient: auth.BasicAuth{Username: "user", Password: "pass"},
+	r := ContactsProvider{
+		AuthClient: basic.Auth{Username: "user", Password: "pass"},
 		URL:        "http://://",
 	}
 
