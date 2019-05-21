@@ -1,8 +1,8 @@
 package email
 
 import (
-	"github.com/s-petit/birthday-pal/contact"
-	"github.com/s-petit/birthday-pal/remind"
+	"github.com/s-petit/birthday-pal/app/contact"
+	"github.com/s-petit/birthday-pal/app/remind"
 	"log"
 	"net/smtp"
 	"strconv"

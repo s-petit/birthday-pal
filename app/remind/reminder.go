@@ -1,7 +1,7 @@
 package remind
 
 import (
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/app/contact"
 	"time"
 )
 

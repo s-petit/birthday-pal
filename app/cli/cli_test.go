@@ -1,10 +1,10 @@
 package cli
 
 import (
-	"github.com/s-petit/birthday-pal/auth"
-	"github.com/s-petit/birthday-pal/email"
-	"github.com/s-petit/birthday-pal/remind"
-	"github.com/s-petit/birthday-pal/request"
+	"github.com/s-petit/birthday-pal/app/contact/auth"
+	"github.com/s-petit/birthday-pal/app/contact/request"
+	"github.com/s-petit/birthday-pal/app/email"
+	"github.com/s-petit/birthday-pal/app/remind"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"

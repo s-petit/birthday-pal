@@ -2,8 +2,8 @@ package request
 
 import (
 	"fmt"
-	"github.com/s-petit/birthday-pal/auth"
-	"github.com/s-petit/birthday-pal/contact"
+	"github.com/s-petit/birthday-pal/app/contact"
+	"github.com/s-petit/birthday-pal/app/contact/auth"
 	"github.com/s-petit/birthday-pal/testdata"
 	"github.com/stretchr/testify/assert"
 	"io"
