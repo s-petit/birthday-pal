@@ -2,8 +2,8 @@ package email
 
 import (
 	"bytes"
-	"text/template"
 	"strings"
+	"text/template"
 	"time"
 )
 
