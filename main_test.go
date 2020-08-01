@@ -45,8 +45,6 @@ func Test_main_with_carddav(t *testing.T) {
 	os.Args = []string{"",
 		"--smtp-host=localhost",
 		"--smtp-port=2525",
-		"--smtp-user=user@test",
-		"--smtp-pass=smtp-pass",
 		"carddav",
 		fmt.Sprintf("--url=%s/contact", srv.URL),
 		"recipient@test",

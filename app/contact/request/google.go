@@ -1,13 +1,14 @@
 package request
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/s-petit/birthday-pal/app/contact"
 	"github.com/s-petit/birthday-pal/app/contact/auth"
-	"google.golang.org/api/gensupport"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/people/v1"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -38,12 +39,19 @@ func (gp GoogleContactsProvider) GetContacts() ([]contact.Contact, error) {
 	}
 
 	target := &connections
-	if err := gensupport.DecodeResponse(target, res); err != nil {
+	if err := decodeResponse(target, res); err != nil {
 		log.Printf("Failed to decode HTTP Response - Something went wrong with the URL: %s ", gp.URL)
 		return nil, err
 	}
 
 	return parseContacts(connections), nil
+}
+
+func decodeResponse(target interface{}, res *http.Response) error {
+	if res.StatusCode == http.StatusNoContent {
+		return nil
+	}
+	return json.NewDecoder(res.Body).Decode(target)
 }
 
 func parseContacts(connections *people.ListConnectionsResponse) []contact.Contact {
