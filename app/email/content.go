@@ -19,7 +19,7 @@ type subjectBody struct {
 }
 
 func yearValid(date time.Time) bool {
-	return date.Year() > 0
+	return date.Year() > 1900
 }
 
 func toMail(emailContacts Contacts, language string) ([]byte, error) {
