@@ -4,11 +4,6 @@ import (
 	"fmt"
 	"github.com/flashmob/go-guerrilla"
 	glog "github.com/flashmob/go-guerrilla/log"
-	"golang.org/x/oauth2"
-	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -35,36 +30,4 @@ func StartSMTPServer() guerrilla.Daemon {
 	}
 
 	return d
-}
-
-func TempFile(content string, dir string) string {
-	return TempFileWithName(content, dir, "tmp-file")
-}
-
-func TempFileWithName(content string, dir string, filename string) string {
-	os.MkdirAll(dir, 0700)
-	byteContent := []byte(content)
-	tmpfn := filepath.Join(dir, filename)
-	if err := ioutil.WriteFile(tmpfn, byteContent, 0666); err != nil {
-		log.Fatal(err)
-	}
-	return tmpfn
-}
-
-func TempDir() string {
-	dir, err := ioutil.TempDir("", "tmp-dir")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return dir
-}
-
-func JsonOauthConfig(clientId string) string {
-	return "{\"installed\": " +
-		"{\"client_id\": \"" + clientId + "\"," +
-		"\"redirect_uris\": [\"http://uri\"]}}"
-}
-
-func Oauth2Config(clientID string) *oauth2.Config {
-	return &oauth2.Config{ClientID: clientID, ClientSecret: "", Endpoint: oauth2.Endpoint{AuthURL: "", TokenURL: ""}, RedirectURL: "http://uri", Scopes: []string{""}}
 }
