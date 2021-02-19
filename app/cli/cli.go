@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/jawher/mow.cli"
 	"github.com/s-petit/birthday-pal/app"
 	"github.com/s-petit/birthday-pal/app/contact/auth"
@@ -9,7 +8,6 @@ import (
 	"github.com/s-petit/birthday-pal/app/email"
 	"github.com/s-petit/birthday-pal/app/remind"
 	"github.com/s-petit/birthday-pal/system"
-	"google.golang.org/api/people/v1"
 	"log"
 	"os"
 )
@@ -133,106 +131,6 @@ func Mowcli(birthdayPal app.App, system system.System) {
 			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
 			crashIfError(err)
 		}
-	})
-
-	bpal.Command("google", "use Google People API to retrieve contacts", func(cmd *cli.Cmd) {
-
-		cmd.Spec = "[--url] PROFILE RECIPIENTS"
-
-		var (
-			// OPTS
-
-			googleURL = cmd.String(cli.StringOpt{
-				Name:   "u url",
-				Desc:   "Google API URL",
-				Value:  "https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=500",
-				EnvVar: "BPAL_GOOGLE_API_URL",
-			})
-
-			//ARGS
-
-			profile = cmd.String(cli.StringArg{
-				Name: "PROFILE",
-				Desc: "birthday-pal oauth saved profile",
-			})
-
-			recipients = cmd.Strings(cli.StringsArg{
-				Name: "RECIPIENTS",
-				Desc: "Reminders email recipients",
-			})
-		)
-
-		cmd.Action = func() {
-
-			auth := auth.OAuth2Authenticator{
-				Scope:   people.ContactsReadonlyScope,
-				Profile: auth.OAuthProfile{System: system, Profile: *profile},
-			}
-
-			contactsProvider := request.GoogleContactsProvider{AuthClient: auth, URL: *googleURL}
-
-			smtp := email.SMTPClient{
-				Host:     *SMTPHost,
-				Port:     *SMTPPort,
-				Username: *SMTPUsername,
-				Password: *SMTPPassword,
-				Language: *language,
-			}
-
-			reminder := remind.Params{
-				Today:     system.Now(),
-				InNbDays:  *daysBefore,
-				Inclusive: *remindEveryDay,
-			}
-
-			err := birthdayPal.Exec(contactsProvider, smtp, reminder, *recipients)
-			crashIfError(err)
-		}
-
-	})
-
-	bpal.Command("oauth", "identify birthday-pal to your oauth api provider", func(oauth *cli.Cmd) {
-
-		oauth.Command("list", "list authenticated profiles", func(list *cli.Cmd) {
-
-			list.Action = func() {
-				profiles, err := auth.OAuthProfile{System: system}.ListProfiles()
-				crashIfError(err)
-				fmt.Println(profiles)
-			}
-		})
-
-		oauth.Command("perform", "perform and save authentication for a profile", func(perform *cli.Cmd) {
-
-			perform.Spec = "PROFILE SECRET"
-
-			var (
-				profile = perform.String(cli.StringArg{
-					Name: "PROFILE",
-					Desc: "Define a Oauth Authentication profile name",
-				})
-
-				secret = perform.String(cli.StringArg{
-					Name: "SECRET",
-					Desc: "Local Path to your OAuth2Authenticator client secret json file (for Google, download it on https://console.developers.google.com)",
-				})
-			)
-
-			perform.Action = func() {
-
-				auth := auth.OAuth2Authenticator{
-					Scope:   people.ContactsReadonlyScope,
-					Profile: auth.OAuthProfile{System: system, Profile: *profile},
-				}
-
-				err := auth.Authenticate(*secret)
-				crashIfError(err)
-
-				log.Println("Oauth2 authentication successful !")
-
-			}
-		})
-
 	})
 
 	bpal.Action = func() {

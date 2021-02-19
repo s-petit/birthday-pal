@@ -16,7 +16,7 @@ The goal of this app is to remind you birthdays of your contacts, by sending ema
 
 The best way to store and sync contact data between all your devices is to use a contact provider, which uses standard protocols.
 
-`CardDAV` protocol and `vCard` files are the standard for many contact providers. `Google Contacts` is also widely spread.
+`CardDAV` protocol and `vCard` files are the standard for many contact providers.
 
 Notifications are sent inside an email, because everyone consults his mailbox regularly.
 
@@ -51,7 +51,7 @@ In order to use `birthday-pal` in an optimal way, you will need :
 
 - A `contact provider`, with up-to-date data (at least contacts names and birthdates)
 - A `SMTP` server, usually available via [email providers](https://en.wikipedia.org/wiki/Comparison_of_webmail_providers) or hosting solutions.
-- Host URLs, ports, and credentials (only `BasicAuth` and `OAuth2` are supported)
+- Host URLs, ports, and credentials (only `BasicAuth` is supported)
 
 
 ## Targeted public (for now)
@@ -68,13 +68,13 @@ depending on several criteria.
 
 This app uses standard / popular protocols to achieve this :
 
-- `CardDAV/VCard` and `Google People API` in order to read contacts
-- `BasicAuth` and `OAuth2` for authentication
+- `CardDAV/VCard` in order to read contacts
+- `BasicAuth` for authentication
 - `SMTP` for email reminders
 
 You just have to provide :
 
-- A `CardDAV` or `Google` server URL with credentials (BasicAuth or OAuth2)
+- A `CardDAV` server URL with credentials (BasicAuth)
 - A `SMTP` server URL with credentials
 - The email recipients
 
@@ -123,7 +123,7 @@ For example, in Unix systems :
 
 `birthday-pal` is a stateless executable app which needs :
 
-- Contacts (`CardDAV` or `Google`) server HTTP URL, with credentials (`BasicAuth` or `OAuth2`)
+- Contacts (`CardDAV`) server HTTP URL, with credentials (`BasicAuth`)
 - `SMTP` server information : host, port, username and password
 - Your recipients list
 - Other Parameters:
@@ -164,62 +164,6 @@ birthday-pal
   john@mail.com susan@mail.com
 ```
 
-Please note that the app was designed to support `CardDAV` with `OAuth2` but i never tried it.
-
-#### Google and OAuth2
-
-`Google APIs` use `OAuth2` for authentication. Before using `birthday-pal`, you have to authorize the app for calling the APIs.
-
-1. **Authentication**
-
-Log in to the [Google Dev Console](https://console.developers.google.com) and create a new project.
-
-Next, enable Google People API` inside the API Library menu, then create an `OAuth Client ID` via the Credentials menu.
-
-Once the credential is created, download the json file. You can now perform the authentication:
-
-`./birthday-pal oauth perform MYPROFILE google-credential.json`
-
-Follow the instructions, and you're all set.
-
-The authentication is linked to a profile id (MYPROFILE in the example), so you can perform and store as much authentications as you need.
-
-Authentication data is stored in a dedicated folder: `.birthday-pal`
-
-You can view the authorized profiles like this :
-
-`./birthday-pal oauth list`
-
-2. **Run birthday-pal towards Google People API with a authorized profile**
-
-> Assuming today is Monday.
-
-> Given my Google contacts provider accessible via People API and OAuth2
-
-> Using my SMTP provider
-
-> Remind me who will celebrate his birthday amongst my acquaintances, during the incoming week (ie. in 6 days or less, from Monday to Sunday)
-
-
-```
-./birthday-pal \
-  --smtp-host smtp.PROVIDER.com \
-  --smtp-port 587 \
-  --smtp-user smtpUser \
-  --smtp-pass smtpPass \
-  --days-before 6 \
-  --less-than-or-equal \
-  google \
-  MYPROFILE \
-  me@mail.com
-
-```
-
-By default, `birthday-pal` calls `People API` like this : `https://people.googleapis.com/v1/people/me/connections?requestMask.includeField=person.names%2Cperson.birthdays&pageSize=50`
-
-Depending on your needs, you may want to override this URL. You can do it with the `--url` option or a dedicated environment variable (see below)
-
-
 ## Using environment variables
 
 
@@ -237,7 +181,6 @@ export BPAL_CARDDAV_USERNAME=zeUser
 export BPAL_CARDDAV_PASSWORD=zePass
 
 export BPAL_LANG=FR
-export BPAL_GOOGLE_API_URL=https://people.googleapis.com/YOURQUERY
 
 ```
 
