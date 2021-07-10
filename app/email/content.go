@@ -7,13 +7,16 @@ import (
 	"time"
 )
 
-// MUST match RFC-822 format
-const mailTemplate = `To: Birthday Pals
+// MUST match RFC-5322 format
+const mailTemplate = `From: {{.From}}
+To: {{.To}}
 Subject: {{.Subject}}
 
 {{.Body}}`
 
 type subjectBody struct {
+	From    string
+	To      string
 	Subject string
 	Body    string
 }
@@ -22,17 +25,18 @@ func yearValid(date time.Time) bool {
 	return date.Year() > 1900
 }
 
-func toMail(emailContacts Contacts, language string) ([]byte, error) {
+func toMail(emailContacts Contacts, language string, sender string, recipients []string) ([]byte, error) {
 
 	var i18nTemplate i18nTemplate = enTemplate{}
 	if strings.ToUpper(language) == "FR" {
 		i18nTemplate = frTemplate{}
 	}
 
-	return resolveMail(emailContacts, i18nTemplate)
+	return resolveMail(emailContacts, i18nTemplate, sender, recipients)
 }
 
-func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, error) {
+func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate, sender string, recipients []string) ([]byte, error) {
+
 	subjFuncs := template.FuncMap{
 		"formatDate": i18nTemplate.formatDate,
 	}
@@ -58,7 +62,7 @@ func resolveMail(emailContacts Contacts, i18nTemplate i18nTemplate) ([]byte, err
 	var subject = resolveTemplate(subj, emailContacts)
 	var body = resolveTemplate(bod, emailContacts)
 
-	m := subjectBody{subject.String(), body.String()}
+	m := subjectBody{formatRfc5322(sender), formatMultipleRfc5322(recipients), subject.String(), body.String()}
 
 	resolvedMail := resolveTemplate(mail, m)
 	return resolvedMail.Bytes(), nil
@@ -68,4 +72,20 @@ func resolveTemplate(template *template.Template, object interface{}) bytes.Buff
 	var doc bytes.Buffer
 	template.Execute(&doc, object)
 	return doc
+}
+
+func formatRfc5322(name string) string {
+	//Barry Gibbs <bg@example.com>
+	return name + " <" + name + ">"
+}
+
+func formatMultipleRfc5322(names []string) string {
+	rfc5322Names := ""
+	for i, s := range names {
+		if i > 0 {
+			rfc5322Names += ", "
+		}
+		rfc5322Names += formatRfc5322(s)
+	}
+	return rfc5322Names
 }
