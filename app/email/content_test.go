@@ -13,7 +13,8 @@ import (
 func Test_should_get_mail_in_french(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Anniversaires du 22/08
 
 Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
@@ -25,9 +26,13 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,
-	}, "fr")
+	}, "fr",
+		sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -35,7 +40,8 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 func Test_should_get_mail_in_french_for_several_contacts(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Anniversaires du 22/08
 
 Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
@@ -53,13 +59,16 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
 			{"Jill", jillBirthday},
 		}, RemindParams: remindParams,
-	}, "fr")
+	}, "fr", sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -67,7 +76,8 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 func Test_should_get_mail_in_french_for_several_contacts_and_several_days(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Anniversaires du 22/08
 
 Durant les 7 prochains jours, n'oubliez pas de souhaiter l'anniversaire de :
@@ -86,13 +96,16 @@ Durant les 7 prochains jours, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1, Inclusive: true}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
 			{"Jill", jillBirthday},
 		}, RemindParams: remindParams,
-	}, "fr")
+	}, "fr", sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -100,7 +113,8 @@ Durant les 7 prochains jours, n'oubliez pas de souhaiter l'anniversaire de :
 func Test_should_get_mail_in_english_for_several_contacts_and_several_days(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Your 08/22 birthday reminder
 
 During the next 7 days, don't forget to wish birthdays of :
@@ -119,13 +133,16 @@ During the next 7 days, don't forget to wish birthdays of :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1, Inclusive: true}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{
 			{"John", johnBirthday},
 			{"Jane", janeBirthday},
 			{"Jill", jillBirthday},
 		}, RemindParams: remindParams,
-	}, "en")
+	}, "en", sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -133,7 +150,8 @@ During the next 7 days, don't forget to wish birthdays of :
 func Test_should_get_mail_in_french_without_age(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Anniversaires du 22/08
 
 Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
@@ -145,9 +163,12 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", invalidBirthday}}, RemindParams: remindParams,
-	}, "fr")
+	}, "fr", sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -155,7 +176,8 @@ Le 22/08, n'oubliez pas de souhaiter l'anniversaire de :
 func Test_should_get_mail_in_english(t *testing.T) {
 
 	expectedMail :=
-		`To: Birthday Pals
+		`From: john@test.com <john@test.com>
+To: mary@test.com <mary@test.com>, bob@test.com <bob@test.com>
 Subject: Your 08/22 birthday reminder
 
 The 08/22, don't forget to wish birthdays of :
@@ -167,9 +189,12 @@ The 08/22, don't forget to wish birthdays of :
 	currentDate := testdata.LocalDate(2014, time.August, 21)
 	remindParams := remind.Params{Today: currentDate, InNbDays: 1}
 
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
 	bytes, err := toMail(Contacts{
 		Contacts: []contact.Contact{{"John", birthday}}, RemindParams: remindParams,
-	}, "EN")
+	}, "EN", sender, recipients)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedMail, string(bytes))
 }
@@ -179,7 +204,10 @@ func Test_should_throw_error_when_subject_template_malformed(t *testing.T) {
 	tmpl := new(fakeTemplate)
 	tmpl.On("subject").Return("{{{{{")
 
-	bytes, err := resolveMail(Contacts{}, tmpl)
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
+	bytes, err := resolveMail(Contacts{}, tmpl, sender, recipients)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)
@@ -191,7 +219,10 @@ func Test_should_throw_error_when_body_template_malformed(t *testing.T) {
 	tmpl.On("subject").Return("subject")
 	tmpl.On("body").Return("{{{{{")
 
-	bytes, err := resolveMail(Contacts{}, tmpl)
+	recipients := []string{"mary@test.com", "bob@test.com"}
+	sender := "john@test.com"
+
+	bytes, err := resolveMail(Contacts{}, tmpl, sender, recipients)
 
 	assert.Error(t, err)
 	assert.Empty(t, bytes)

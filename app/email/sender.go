@@ -53,7 +53,7 @@ func (ss SMTPClient) Send(emailContacts Contacts, recipients []string) error {
 		return nil
 	}
 
-	mail, err := toMail(emailContacts, ss.Language)
+	mail, err := toMail(emailContacts, ss.Language, ss.Username, recipients)
 	if err != nil {
 		return err
 	}
