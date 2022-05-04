@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/s-petit/birthday-pal.svg?branch=master)](https://travis-ci.com/s-petit/birthday-pal)
 [![GoDoc](https://godoc.org/github.com/github.com/s-petit/birthday-pal?status.svg)](https://godoc.org/github.com/s-petit/birthday-pal)
 [![Coverage Status](https://coveralls.io/repos/github/s-petit/birthday-pal/badge.svg?branch=master)](https://coveralls.io/github/s-petit/birthday-pal?branch=master)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/s-petit/birthday-pal/)
 
 
 
